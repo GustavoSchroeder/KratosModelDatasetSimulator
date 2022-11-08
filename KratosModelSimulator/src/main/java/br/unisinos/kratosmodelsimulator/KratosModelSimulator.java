@@ -5,7 +5,7 @@
 
 package br.unisinos.kratosmodelsimulator;
 
-import br.unisinos.pojo.Pessoa;
+import br.unisinos.pojo.Person;
 import br.unisinos.util.JPAUtil;
 import javax.persistence.EntityManager;
 
@@ -16,9 +16,9 @@ import javax.persistence.EntityManager;
 public class KratosModelSimulator {
 
     public static void main(String[] args) {
-        Pessoa p1 = new Pessoa(null, "Carlos da Silva", "carlos@gmail.com");
-		Pessoa p2 = new Pessoa(null, "Joaquim Torres", "joaquim@gmail.com");
-		Pessoa p3 = new Pessoa(null, "Ana Maria", "ana@gmail.com");
+        Person p1 = new Person(null, "Carlos da Silva", "carlos@gmail.com");
+		Person p2 = new Person(null, "Joaquim Torres", "joaquim@gmail.com");
+		Person p3 = new Person(null, "Ana Maria", "ana@gmail.com");
 
 		EntityManager em = JPAUtil.getEntityManager();
 		em.getTransaction().begin();
