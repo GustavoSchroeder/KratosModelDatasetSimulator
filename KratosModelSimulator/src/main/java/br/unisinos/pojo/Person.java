@@ -6,8 +6,6 @@ package br.unisinos.pojo;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
@@ -17,7 +15,7 @@ import javax.persistence.Id;
 @Entity
 public class Person implements Serializable {
 
-    private Integer id;
+    private Long id;
     private String name;
     private String email;
     private Integer age;
@@ -27,7 +25,15 @@ public class Person implements Serializable {
     public Person() {
     }
 
-    public Person(String name, String email, Integer age, String gender, Integer educationalLevel) {
+    public Person(Long id, String name, String email) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+    }
+
+    public Person(Long id, String name, String email, Integer age, 
+            String gender, Integer educationalLevel) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.age = age;
@@ -36,12 +42,11 @@ public class Person implements Serializable {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
