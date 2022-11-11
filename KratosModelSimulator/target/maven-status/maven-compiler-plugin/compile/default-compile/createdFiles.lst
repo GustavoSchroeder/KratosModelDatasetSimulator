@@ -1,3 +1,12 @@
-br/unisinos/util/JPAUtil.class
+br/unisinos/pojo/HistoricoContexto.class
+br/unisinos/pojo/Person.class
+br/unisinos/pojo/ScaleAnswer.class
 br/unisinos/kratosmodelsimulator/KratosModelSimulator.class
-br/unisinos/pojo/Pessoa.class
+br/unisinos/util/PersonUtil.class
+br/unisinos/util/JPAUtil.class
+br/unisinos/model/ImportChargingActivity.class
+br/unisinos/pojo/TimeDarkEnvironment.class
+br/unisinos/pojo/PhoneCharge.class
+br/unisinos/util/FileUtil.class
+br/unisinos/util/TimeUtil.class
+br/unisinos/model/ImportTimeDarkEnviroment.class

@@ -6,7 +6,7 @@ package br.unisinos.model;
 
 import br.unisinos.util.PersonUtil;
 import br.unisinos.pojo.Person;
-import br.unisinos.pojo.TimeDarkEnvironment;
+import br.unisinos.pojo.PhoneLock;
 import br.unisinos.util.FileUtil;
 import br.unisinos.util.JPAUtil;
 import br.unisinos.util.TimeUtil;
@@ -24,20 +24,20 @@ import javax.persistence.EntityManager;
  *
  * @author gustavolazarottoschroeder
  */
-public class ImportTimeDarkEnviroment implements Serializable {
+public class ImportScreenLocked implements Serializable {
 
     private final PersonUtil personUtil;
     private final TimeUtil timeUtil;
     private final FileUtil fileUtil;
 
-    public ImportTimeDarkEnviroment() {
+    public ImportScreenLocked() {
         this.personUtil = new PersonUtil();
         this.timeUtil = new TimeUtil();
         this.fileUtil = new FileUtil();
     }
 
     public void importFiles() throws FileNotFoundException, IOException {
-        String folder = "./src/main/java/files/dark/";
+        String folder = "./src/main/java/files/phone_lock/";
         List<String> files;
         try {
             files = this.fileUtil.scanForFiles(folder);
@@ -51,7 +51,7 @@ public class ImportTimeDarkEnviroment implements Serializable {
         em.getTransaction().begin();
         for (String fileName : files) {
             if (fileName.contains("csv")) {
-                System.out.println("File: " + fileName.split("_")[1].replace(".csv", "").replace("u", ""));
+                System.out.println("File: "+ fileName.split("_")[1].replace(".csv", "").replace("u", ""));
                 Long idPerson = Long.parseLong(fileName.split("_")[1].replace(".csv", "").replace("u", ""));
 
                 try ( BufferedReader br = new BufferedReader(new FileReader(folder + fileName))) {
@@ -75,12 +75,12 @@ public class ImportTimeDarkEnviroment implements Serializable {
                         Date diffHours = this.timeUtil.diffHours(initialDate.getTime(), finalDate.getTime());
 
                         Person person = this.personUtil.findPerson(idPerson);
-                        TimeDarkEnvironment tde = new TimeDarkEnvironment(
-                                person,
-                                initialDate.getTime(),
+                        PhoneLock tde = new PhoneLock(
+                                person, 
+                                initialDate.getTime(), 
                                 finalDate.getTime(), diffHours);
                         em.merge(tde);
-
+                        
                     }
                 }
             }
@@ -88,5 +88,4 @@ public class ImportTimeDarkEnviroment implements Serializable {
         em.getTransaction().commit();
         em.close();
     }
-
 }

@@ -1,3 +1,12 @@
-/Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/Pessoa.java
+/Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/ImportChargingActivity.java
+/Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/ImportTimeDarkEnviroment.java
+/Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/util/PersonUtil.java
+/Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/HistoricoContexto.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/kratosmodelsimulator/KratosModelSimulator.java
+/Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/util/FileUtil.java
+/Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/util/TimeUtil.java
+/Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/TimeDarkEnvironment.java
+/Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/Person.java
+/Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/ScaleAnswer.java
+/Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/PhoneCharge.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/util/JPAUtil.java

@@ -18,22 +18,22 @@ import javax.persistence.Temporal;
  * @author gustavolazarottoschroeder
  */
 @Entity
-public class TimeDarkEnvironment implements Serializable {
+public class PhoneLock implements Serializable {
 
     private Long id;
     private Person person;
     private Date startTime;
     private Date endTime;
-    private Date hoursSpent;
+    private Date hoursLocked;
 
-    public TimeDarkEnvironment() {
+    public PhoneLock() {
     }
 
-    public TimeDarkEnvironment(Person person, Date startTime, Date endTime, Date hoursSpent) {
+    public PhoneLock(Person person, Date startTime, Date endTime, Date hoursLocked) {
         this.person = person;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.hoursSpent = hoursSpent;
+        this.hoursLocked = hoursLocked;
     }
 
     @Id
@@ -74,12 +74,12 @@ public class TimeDarkEnvironment implements Serializable {
     }
 
     @Temporal(javax.persistence.TemporalType.TIME)
-    public Date getHoursSpent() {
-        return hoursSpent;
+    public Date getHoursLocked() {
+        return hoursLocked;
     }
 
-    public void setHoursSpent(Date hoursSpent) {
-        this.hoursSpent = hoursSpent;
+    public void setHoursLocked(Date hoursLocked) {
+        this.hoursLocked = hoursLocked;
     }
-
+    
 }

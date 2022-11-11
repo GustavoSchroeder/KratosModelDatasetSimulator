@@ -4,6 +4,8 @@
  */
 package br.unisinos.kratosmodelsimulator;
 
+import br.unisinos.model.ImportChargingActivity;
+import br.unisinos.model.ImportScreenLocked;
 import br.unisinos.model.ImportTimeDarkEnviroment;
 import br.unisinos.pojo.Person;
 import br.unisinos.util.JPAUtil;
@@ -19,7 +21,7 @@ import javax.persistence.EntityManager;
 public class KratosModelSimulator {
 
     public static void main(String[] args) {
-            //        Person p1 = new Person(null, "Carlos da Silva", "carlos@gmail.com");
+        //        Person p1 = new Person(null, "Carlos da Silva", "carlos@gmail.com");
 //		Person p2 = new Person(null, "Joaquim Torres", "joaquim@gmail.com");
 //		Person p3 = new Person(null, "Ana Maria", "ana@gmail.com");
 //
@@ -35,6 +37,8 @@ public class KratosModelSimulator {
 
         try {
             (new ImportTimeDarkEnviroment()).importFiles();
+//            (new ImportChargingActivity()).importFiles();
+//            (new ImportScreenLocked()).importFiles();
         } catch (IOException ex) {
             Logger.getLogger(KratosModelSimulator.class.getName()).log(Level.SEVERE, null, ex);
         }
