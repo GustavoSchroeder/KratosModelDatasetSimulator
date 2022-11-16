@@ -4,12 +4,14 @@
  */
 package br.unisinos.kratosmodelsimulator;
 
+import br.unisinos.model.ImportApplicationUse;
 import br.unisinos.model.ImportChargingActivity;
 import br.unisinos.model.ImportScreenLocked;
 import br.unisinos.model.ImportTimeDarkEnviroment;
 import br.unisinos.pojo.Person;
 import br.unisinos.util.JPAUtil;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
@@ -36,10 +38,11 @@ public class KratosModelSimulator {
 //		em.close();        
 
         try {
-            (new ImportTimeDarkEnviroment()).importFiles();
-//            (new ImportChargingActivity()).importFiles();
-//            (new ImportScreenLocked()).importFiles();
-        } catch (IOException ex) {
+            //(new ImportTimeDarkEnviroment()).importFiles();
+            //(new ImportChargingActivity()).importFiles();
+            //(new ImportScreenLocked()).importFiles();
+            (new ImportApplicationUse()).importFiles();
+        } catch (IOException | ParseException ex) {
             Logger.getLogger(KratosModelSimulator.class.getName()).log(Level.SEVERE, null, ex);
         }
 

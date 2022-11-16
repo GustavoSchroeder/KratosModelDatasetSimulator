@@ -68,10 +68,8 @@ public class ImportTimeDarkEnviroment implements Serializable {
 
                         Calendar initialDate = Calendar.getInstance();
                         initialDate.setTime(new Date(timeInicial * 1000));
-                        initialDate.set(Calendar.AM_PM, Calendar.PM);
                         Calendar finalDate = Calendar.getInstance();
                         finalDate.setTime(new Date(timeFinal * 1000));
-                        finalDate.set(Calendar.AM_PM, Calendar.PM);
                         Date diffHours = this.timeUtil.diffHours(initialDate.getTime(), finalDate.getTime());
 
                         Person person = this.personUtil.findPerson(idPerson);
