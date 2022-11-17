@@ -6,7 +6,7 @@ package br.unisinos.model;
 
 import br.unisinos.util.PersonUtil;
 import br.unisinos.pojo.Person;
-import br.unisinos.pojo.TimeDarkEnvironment;
+import br.unisinos.pojo.ContextInformation.TimeDarkEnvironment;
 import br.unisinos.util.FileUtil;
 import br.unisinos.util.JPAUtil;
 import br.unisinos.util.TimeUtil;

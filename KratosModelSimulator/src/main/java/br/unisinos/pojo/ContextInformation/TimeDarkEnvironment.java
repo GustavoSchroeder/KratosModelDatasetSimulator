@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package br.unisinos.pojo;
+package br.unisinos.pojo.ContextInformation;
 
+import br.unisinos.pojo.Person;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Entity;
@@ -18,22 +19,22 @@ import javax.persistence.Temporal;
  * @author gustavolazarottoschroeder
  */
 @Entity
-public class PhoneLock implements Serializable {
+public class TimeDarkEnvironment implements Serializable {
 
     private Long id;
     private Person person;
     private Date startTime;
     private Date endTime;
-    private Date hoursLocked;
+    private Date hoursSpent;
 
-    public PhoneLock() {
+    public TimeDarkEnvironment() {
     }
 
-    public PhoneLock(Person person, Date startTime, Date endTime, Date hoursLocked) {
+    public TimeDarkEnvironment(Person person, Date startTime, Date endTime, Date hoursSpent) {
         this.person = person;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.hoursLocked = hoursLocked;
+        this.hoursSpent = hoursSpent;
     }
 
     @Id
@@ -74,12 +75,12 @@ public class PhoneLock implements Serializable {
     }
 
     @Temporal(javax.persistence.TemporalType.TIME)
-    public Date getHoursLocked() {
-        return hoursLocked;
+    public Date getHoursSpent() {
+        return hoursSpent;
     }
 
-    public void setHoursLocked(Date hoursLocked) {
-        this.hoursLocked = hoursLocked;
+    public void setHoursSpent(Date hoursSpent) {
+        this.hoursSpent = hoursSpent;
     }
-    
+
 }

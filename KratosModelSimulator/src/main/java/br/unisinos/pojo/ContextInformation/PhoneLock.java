@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package br.unisinos.pojo;
+package br.unisinos.pojo.ContextInformation;
 
+import br.unisinos.pojo.Person;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Entity;
@@ -18,22 +19,22 @@ import javax.persistence.Temporal;
  * @author gustavolazarottoschroeder
  */
 @Entity
-public class PhoneCharge implements Serializable {
+public class PhoneLock implements Serializable {
 
     private Long id;
     private Person person;
     private Date startTime;
     private Date endTime;
-    private Date hoursCharging;
+    private Date hoursLocked;
 
-    public PhoneCharge() {
+    public PhoneLock() {
     }
 
-    public PhoneCharge(Person person, Date startTime, Date endTime, Date hoursCharging) {
+    public PhoneLock(Person person, Date startTime, Date endTime, Date hoursLocked) {
         this.person = person;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.hoursCharging = hoursCharging;
+        this.hoursLocked = hoursLocked;
     }
 
     @Id
@@ -74,11 +75,12 @@ public class PhoneCharge implements Serializable {
     }
 
     @Temporal(javax.persistence.TemporalType.TIME)
-    public Date getHoursCharging() {
-        return hoursCharging;
+    public Date getHoursLocked() {
+        return hoursLocked;
     }
 
-    public void setHoursCharging(Date hoursCharging) {
-        this.hoursCharging = hoursCharging;
+    public void setHoursLocked(Date hoursLocked) {
+        this.hoursLocked = hoursLocked;
     }
+    
 }

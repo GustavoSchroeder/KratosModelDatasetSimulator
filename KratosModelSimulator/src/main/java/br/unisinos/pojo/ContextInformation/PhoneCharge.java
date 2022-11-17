@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package br.unisinos.pojo;
+package br.unisinos.pojo.ContextInformation;
 
+import br.unisinos.pojo.Person;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Entity;
@@ -18,23 +19,22 @@ import javax.persistence.Temporal;
  * @author gustavolazarottoschroeder
  */
 @Entity
-public class ApplicationUse implements Serializable {
+public class PhoneCharge implements Serializable {
+
     private Long id;
     private Person person;
-    private Long sessionId;
-    private Date openTime;
-    private String appName;
-    private String eventType;
+    private Date startTime;
+    private Date endTime;
+    private Date hoursCharging;
 
-    public ApplicationUse() {
+    public PhoneCharge() {
     }
 
-    public ApplicationUse(Person person, Long sessionId, Date openTime, String appName, String eventType) {
+    public PhoneCharge(Person person, Date startTime, Date endTime, Date hoursCharging) {
         this.person = person;
-        this.sessionId = sessionId;
-        this.openTime = openTime;
-        this.appName = appName;
-        this.eventType = eventType;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.hoursCharging = hoursCharging;
     }
 
     @Id
@@ -56,37 +56,30 @@ public class ApplicationUse implements Serializable {
         this.person = person;
     }
 
-    public Long getSessionId() {
-        return sessionId;
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    public Date getStartTime() {
+        return startTime;
     }
 
-    public void setSessionId(Long sessionId) {
-        this.sessionId = sessionId;
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
     }
 
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
-    public Date getOpenTime() {
-        return openTime;
+    public Date getEndTime() {
+        return endTime;
     }
 
-    public void setOpenTime(Date openTime) {
-        this.openTime = openTime;
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 
-    public String getAppName() {
-        return appName;
+    @Temporal(javax.persistence.TemporalType.TIME)
+    public Date getHoursCharging() {
+        return hoursCharging;
     }
 
-    public void setAppName(String appName) {
-        this.appName = appName;
+    public void setHoursCharging(Date hoursCharging) {
+        this.hoursCharging = hoursCharging;
     }
-
-    public String getEventType() {
-        return eventType;
-    }
-
-    public void setEventType(String eventType) {
-        this.eventType = eventType;
-    }
-    
 }
