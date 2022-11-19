@@ -9,6 +9,7 @@ import br.unisinos.model.ImportChargingActivity;
 import br.unisinos.model.ImportPSSResponse;
 import br.unisinos.model.ImportSASResponse;
 import br.unisinos.model.ImportScreenLocked;
+import br.unisinos.model.ImportSleepEMA;
 import br.unisinos.model.ImportTimeDarkEnviroment;
 import br.unisinos.pojo.Person;
 import br.unisinos.util.JPAUtil;
@@ -45,7 +46,8 @@ public class KratosModelSimulator {
 //            (new ImportScreenLocked()).importFiles();
 //            (new ImportApplicationUse()).importFiles();
 //            (new ImportSASResponse()).importFiles();
-            (new ImportPSSResponse()).importFiles();
+//            (new ImportPSSResponse()).importFiles();
+              (new ImportSleepEMA()).importFiles();
         } catch (Exception e) {
             e.printStackTrace();
         }
