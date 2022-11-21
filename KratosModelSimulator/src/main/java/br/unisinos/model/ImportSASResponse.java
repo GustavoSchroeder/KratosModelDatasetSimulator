@@ -16,6 +16,8 @@ import javax.persistence.EntityManager;
 /**
  *
  * @author gustavolazarottoschroeder
+ * https://data.mendeley.com/datasets/m6s3d8kvsm
+ * Datasets for Smartphone Addiction and Cyberbullying Prevalence in Early Adolescents
  */
 public class ImportSASResponse implements Serializable {
 
