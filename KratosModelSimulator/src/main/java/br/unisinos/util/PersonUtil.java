@@ -5,7 +5,6 @@
 package br.unisinos.util;
 
 import br.unisinos.pojo.Person;
-import br.unisinos.util.JPAUtil;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -61,7 +60,7 @@ public class PersonUtil {
 
     public List<Long> fetchListIds() {
         EntityManager em = JPAUtil.getEntityManager();
-        Query query = em.createQuery("SELECT i.id FROM Person i");
+        Query query = em.createQuery("SELECT i.id FROM Person i ORDER BY i.id");
         try {
             return query.getResultList();
         } catch (Exception e) {
@@ -69,10 +68,5 @@ public class PersonUtil {
         } finally {
             em.close();
         }
-        em.close();
-        em.close();
-        em.close();
-        em.close();
     }
-
 }

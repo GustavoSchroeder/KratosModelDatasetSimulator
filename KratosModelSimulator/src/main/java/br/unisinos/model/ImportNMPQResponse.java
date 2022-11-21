@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import javax.persistence.EntityManager;
 
 /**
@@ -130,14 +131,30 @@ public class ImportNMPQResponse implements Serializable {
         EntityManager em = JPAUtil.getEntityManager();
         em.getTransaction().begin();
 
-        Long idUser = 0L;
+        List<Long> idsPerson = this.personUtil.fetchListIds();
+        Integer max = idsPerson.size();
+        
+        List<Integer> pastNumbers = new ArrayList<>();
 
-        //Aqui depois pode ser feito um randomizador
+        Random rand = new Random();
+
+        //O usuário é randomizado
         for (int i = 0; i < nmpqList.size(); i++) {
-            Person p = this.personUtil.findPerson(idUser++, Boolean.FALSE);
-            if (null == p) {
+            
+            if(pastNumbers.size() == idsPerson.size()){
                 break;
             }
+            
+            Integer n;
+            do{
+                 n = rand.nextInt(max);
+            }while(pastNumbers.contains(n));
+            
+            pastNumbers.add(n);
+            Long idUser = idsPerson.get(n);
+            
+            Person p = this.personUtil.findPerson(idUser, Boolean.FALSE);
+           
             Object[] infoP = dictionaryPersonInfo.get(i);
             if (null == p.getAge()) {
                 p.setAge((Integer) infoP[0]);
