@@ -12,7 +12,8 @@ import java.util.Date;
  * @author gustavolazarottoschroeder
  */
 public class TimeUtil {
-      public Date diffHours(Date d1, Date d2) {
+
+    public Date diffHours(Date d1, Date d2) {
         Calendar ini = Calendar.getInstance();
         Calendar fin = Calendar.getInstance();
 
@@ -45,5 +46,11 @@ public class TimeUtil {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         return cal.getTime();
+    }
+
+    public Date convertUnixTime(Long time) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date(time * 1000));
+        return calendar.getTime();
     }
 }
