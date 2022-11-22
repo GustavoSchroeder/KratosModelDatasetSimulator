@@ -6,6 +6,7 @@ package br.unisinos.kratosmodelsimulator;
 
 import br.unisinos.model.ImportApplicationUse;
 import br.unisinos.model.ImportChargingActivity;
+import br.unisinos.model.ImportMoodEMA;
 import br.unisinos.model.ImportNMPQResponse;
 import br.unisinos.model.ImportPSSResponse;
 import br.unisinos.model.ImportSASResponse;
@@ -51,7 +52,8 @@ public class KratosModelSimulator {
 //            (new ImportPSSResponse()).importFiles();
 //              (new ImportSleepEMA()).importFiles();
 //              (new ImportNMPQResponse()).importFiles();
-              (new ImportStressEMA()).importFiles();
+//              (new ImportStressEMA()).importFiles();
+              (new ImportMoodEMA()).importFiles();
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -29,13 +29,18 @@ public class MoodEMA implements Serializable{
     private Integer sadOrNot;
     private String location;
     private Date responseTime;
-
+    private String happyDesc;
+    private String happyOrNotDesc;
+    private String sadDesc;
+    private String sadOrNotDesc;
+    
     public MoodEMA() {
     }
 
-    public MoodEMA(Person person, Integer happy, 
-            Integer happyOrNot, Integer sad, Integer sadOrNot, 
-            String location, Date responseTime) {
+    public MoodEMA(Person person, Integer happy, Integer happyOrNot, 
+            Integer sad, Integer sadOrNot, String location,
+            Date responseTime, String happyDesc, String happyOrNotDesc, 
+            String sadDesc, String sadOrNotDesc) {
         this.person = person;
         this.happy = happy;
         this.happyOrNot = happyOrNot;
@@ -43,6 +48,10 @@ public class MoodEMA implements Serializable{
         this.sadOrNot = sadOrNot;
         this.location = location;
         this.responseTime = responseTime;
+        this.happyDesc = happyDesc;
+        this.happyOrNotDesc = happyOrNotDesc;
+        this.sadDesc = sadDesc;
+        this.sadOrNotDesc = sadOrNotDesc;
     }
 
     @Id
@@ -111,6 +120,38 @@ public class MoodEMA implements Serializable{
 
     public void setResponseTime(Date responseTime) {
         this.responseTime = responseTime;
+    }
+
+    public String getHappyDesc() {
+        return happyDesc;
+    }
+
+    public void setHappyDesc(String happyDesc) {
+        this.happyDesc = happyDesc;
+    }
+
+    public String getHappyOrNotDesc() {
+        return happyOrNotDesc;
+    }
+
+    public void setHappyOrNotDesc(String happyOrNotDesc) {
+        this.happyOrNotDesc = happyOrNotDesc;
+    }
+
+    public String getSadDesc() {
+        return sadDesc;
+    }
+
+    public void setSadDesc(String sadDesc) {
+        this.sadDesc = sadDesc;
+    }
+
+    public String getSadOrNotDesc() {
+        return sadOrNotDesc;
+    }
+
+    public void setSadOrNotDesc(String sadOrNotDesc) {
+        this.sadOrNotDesc = sadOrNotDesc;
     }
 
 }
