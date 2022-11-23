@@ -52,8 +52,8 @@ public class KratosModelSimulator {
 //            (new ImportPSSResponse()).importFiles();
 //              (new ImportSleepEMA()).importFiles();
 //              (new ImportNMPQResponse()).importFiles();
-              (new ImportStressEMA()).importFiles();
-              (new ImportMoodEMA()).importFiles();
+//              (new ImportStressEMA()).importFiles();
+//              (new ImportMoodEMA()).importFiles();
 
         } catch (Exception e) {
             e.printStackTrace();
