@@ -5,6 +5,7 @@
 package br.unisinos.kratosmodelsimulator;
 
 import br.unisinos.model.ImportApplicationUse;
+import br.unisinos.model.ImportBasicSmartphoneUseInformation;
 import br.unisinos.model.ImportChargingActivity;
 import br.unisinos.model.ImportMoodEMA;
 import br.unisinos.model.ImportNMPQResponse;
@@ -47,13 +48,14 @@ public class KratosModelSimulator {
 //            (new ImportTimeDarkEnviroment()).importFiles();
 //            (new ImportChargingActivity()).importFiles();
 //            (new ImportScreenLocked()).importFiles();
-//            (new ImportApplicationUse()).importFiles();
+            (new ImportApplicationUse()).importFiles();
 //            (new ImportSASResponse()).importFiles();
 //            (new ImportPSSResponse()).importFiles();
 //              (new ImportSleepEMA()).importFiles();
 //              (new ImportNMPQResponse()).importFiles();
 //              (new ImportStressEMA()).importFiles();
 //              (new ImportMoodEMA()).importFiles();
+//            (new ImportBasicSmartphoneUseInformation()).importFiles();
 
         } catch (Exception e) {
             e.printStackTrace();
