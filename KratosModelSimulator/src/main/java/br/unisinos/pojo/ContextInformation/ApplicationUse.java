@@ -17,6 +17,7 @@ import javax.persistence.Temporal;
 /**
  *
  * @author gustavolazarottoschroeder
+ * LSApp: Large dataset of Sequential mobile App usage - https://github.com/aliannejadi/LSApp
  */
 @Entity
 public class ApplicationUse implements Serializable {

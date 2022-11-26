@@ -17,6 +17,9 @@ import javax.persistence.EntityManager;
 /**
  *
  * @author gustavolazarottoschroeder
+ * Data for: Batching Smartphone Notifications Can Improve Well-Being
+ * https://data.mendeley.com/datasets/jxzsxzt2mz
+ * https://www.sciencedirect.com/science/article/abs/pii/S0747563219302596?via%3Dihub
  */
 public class ImportBasicSmartphoneUseInformation implements Serializable {
 

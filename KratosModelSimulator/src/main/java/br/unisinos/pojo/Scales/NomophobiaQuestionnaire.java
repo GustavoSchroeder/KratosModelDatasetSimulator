@@ -15,6 +15,9 @@ import javax.persistence.OneToOne;
 /**
  *
  * @author gustavolazarottoschroeder
+ * levels of higher education students in Ghana and academic achievement
+ * https://figshare.com/articles/dataset/Descriptive_statistics_of_students_scores_with_the_NMP-Q_scale_i_N_i_670_/14793089/1
+ * https://figshare.com/articles/dataset/NMPQ_data_sav/21507951
  */
 @Entity
 public class NomophobiaQuestionnaire implements Serializable {

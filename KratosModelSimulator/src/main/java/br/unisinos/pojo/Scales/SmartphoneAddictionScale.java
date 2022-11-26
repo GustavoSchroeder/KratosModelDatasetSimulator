@@ -7,6 +7,8 @@ import javax.persistence.Id;
 /**
  *
  * @author gustavo_schroeder
+ * Datasets for Smartphone Addiction and Cyberbullying Prevalence in Early Adolescents
+ * https://data.mendeley.com/datasets/m6s3d8kvsm
  */
 
 @Entity

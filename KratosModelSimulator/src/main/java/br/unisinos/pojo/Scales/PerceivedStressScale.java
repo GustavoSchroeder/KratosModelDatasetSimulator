@@ -9,6 +9,7 @@ import javax.persistence.OneToOne;
 /**
  *
  * @author gustavo_schroeder
+ * Studentlife Dataset https://www.kaggle.com/datasets/dartweichen/student-life
  */
 @Entity
 public class PerceivedStressScale implements Serializable {

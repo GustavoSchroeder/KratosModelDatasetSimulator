@@ -6,7 +6,9 @@ package br.unisinos.util;
 
 import br.unisinos.pojo.Person;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -46,7 +48,7 @@ public class PersonUtil {
         }
     }
 
-    private Person createNewSimplePerson(Long id) {
+    public Person createNewSimplePerson(Long id) {
 
         Person p = new Person(id, "", "");
         EntityManager em = JPAUtil.getEntityManager();
@@ -91,5 +93,17 @@ public class PersonUtil {
             return 9;
         }
         return 10;
+    }
+    
+    public Map<Long, Person> findPersonList(){
+        EntityManager em = JPAUtil.getEntityManager();
+        Query query = em.createQuery("SELECT i FROM Person i");
+        List<Person> listP = query.getResultList();
+        Map<Long, Person> dictionary = new HashMap<>();
+        for (Person person : listP) {
+            dictionary.put(person.getId(), person);
+        }
+        em.close();
+        return dictionary;
     }
 }

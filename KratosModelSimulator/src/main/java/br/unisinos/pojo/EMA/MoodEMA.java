@@ -17,6 +17,7 @@ import javax.persistence.Temporal;
 /**
  *
  * @author gustavolazarottoschroeder
+ * Studentlife Dataset https://www.kaggle.com/datasets/dartweichen/student-life
  */
 
 @Entity

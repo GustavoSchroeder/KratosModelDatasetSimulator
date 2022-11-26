@@ -17,6 +17,7 @@ import javax.persistence.EntityManager;
 /**
  *
  * @author gustavolazarottoschroeder
+ * Studentlife Dataset https://www.kaggle.com/datasets/dartweichen/student-life
  */
 public class ImportPSSResponse implements Serializable {
 
