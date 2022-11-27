@@ -27,16 +27,18 @@ public class ApplicationUse implements Serializable {
     private Date openTime;
     private String appName;
     private String eventType;
+    private String appCategory;
 
     public ApplicationUse() {
     }
 
-    public ApplicationUse(Person person, Long sessionId, Date openTime, String appName, String eventType) {
+    public ApplicationUse(Person person, Long sessionId, Date openTime, String appName, String eventType, String appCategory) {
         this.person = person;
         this.sessionId = sessionId;
         this.openTime = openTime;
         this.appName = appName;
         this.eventType = eventType;
+        this.appCategory = appCategory;
     }
 
     @Id
@@ -89,6 +91,14 @@ public class ApplicationUse implements Serializable {
 
     public void setEventType(String eventType) {
         this.eventType = eventType;
+    }
+
+    public String getAppCategory() {
+        return appCategory;
+    }
+
+    public void setAppCategory(String appCategory) {
+        this.appCategory = appCategory;
     }
     
 }

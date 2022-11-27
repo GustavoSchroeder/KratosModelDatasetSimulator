@@ -49,6 +49,7 @@ public class ImportApplicationUse implements Serializable {
         Map<Long, List<ApplicationUse>> appsInUseMap = new HashMap<>();
 
         Map<Long, Person> persons = this.personUtil.findPersonList();
+        Map<String, String> appsCategory = this.personUtil.fetchAppCategory();
 
         EntityManager em = JPAUtil.getEntityManager();
         try {
@@ -67,6 +68,7 @@ public class ImportApplicationUse implements Serializable {
                     Date dateTime = sdf.parse(time);
                     String appName = values[3].trim();
                     String eventType = values[4].trim();
+                    String appCategory = appsCategory.get(appName);
 
 //                            System.out.println(idPerson + ";"
 //                                    + sessionId + ";"
@@ -90,7 +92,8 @@ public class ImportApplicationUse implements Serializable {
                             sessionId,
                             dateTime,
                             appName,
-                            eventType
+                            eventType,
+                            appCategory
                     );
                     appsInUseMap.get(idPerson).add(appInUse);
                 }
@@ -112,7 +115,7 @@ public class ImportApplicationUse implements Serializable {
             do {
                 n = rand.nextInt(max);
             } while (positionsGone.contains(n));
-            
+
             positionsGone.add(n);
             List<ApplicationUse> apps = appsInUseMap.get(ids.get(n));
 

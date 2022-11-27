@@ -8,6 +8,8 @@ import br.unisinos.pojo.Person;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
@@ -15,6 +17,8 @@ import javax.persistence.Temporal;
 /**
  *
  * @author gustavolazarottoschroeder
+ * https://github.com/komis1/ami2018-notifications
+ * ami2018-notifications
  */
 @Entity
 public class Notification implements Serializable {
@@ -39,19 +43,19 @@ public class Notification implements Serializable {
     private Integer lockScrNotifs;
     private Integer flags;
     private Person person;
+    private String packageCategory;
 
     public Notification() {
     }
 
-    public Notification(Long userId, Long id, Long nid,
+    public Notification(Long userId, Long nid,
             Integer priority, String packageName, Date timePosted,
             Date timeRemoved, Integer sound, Integer defaultSound,
             Integer led, Integer defaultLed, Integer vibrationPattern,
             Integer defaultVibration, Integer ringerMode, Integer idle,
             Integer interactive, Integer screenState, Integer lockScrNotifs,
-            Integer flags, Person person) {
+            Integer flags, Person person, String packageCategory) {
         this.userId = userId;
-        this.id = id;
         this.nid = nid;
         this.priority = priority;
         this.packageName = packageName;
@@ -70,6 +74,7 @@ public class Notification implements Serializable {
         this.lockScrNotifs = lockScrNotifs;
         this.flags = flags;
         this.person = person;
+        this.packageCategory = packageCategory;
     }
 
     public Long getUserId() {
@@ -81,6 +86,7 @@ public class Notification implements Serializable {
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -113,7 +119,7 @@ public class Notification implements Serializable {
         this.packageName = packageName;
     }
 
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(javax.persistence.TemporalType.TIME)
     public Date getTimePosted() {
         return timePosted;
     }
@@ -122,7 +128,7 @@ public class Notification implements Serializable {
         this.timePosted = timePosted;
     }
 
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(javax.persistence.TemporalType.TIME)
     public Date getTimeRemoved() {
         return timeRemoved;
     }
@@ -234,5 +240,13 @@ public class Notification implements Serializable {
 
     public void setPerson(Person person) {
         this.person = person;
+    }
+
+    public String getPackageCategory() {
+        return packageCategory;
+    }
+
+    public void setPackageCategory(String packageCategory) {
+        this.packageCategory = packageCategory;
     }
 }

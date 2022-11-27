@@ -4,6 +4,7 @@
  */
 package br.unisinos.util;
 
+import br.unisinos.pojo.ApplicationCategory;
 import br.unisinos.pojo.Person;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,8 +95,8 @@ public class PersonUtil {
         }
         return 10;
     }
-    
-    public Map<Long, Person> findPersonList(){
+
+    public Map<Long, Person> findPersonList() {
         EntityManager em = JPAUtil.getEntityManager();
         Query query = em.createQuery("SELECT i FROM Person i");
         List<Person> listP = query.getResultList();
@@ -105,5 +106,18 @@ public class PersonUtil {
         }
         em.close();
         return dictionary;
+    }
+
+    public Map<String, String> fetchAppCategory() {
+        EntityManager em = JPAUtil.getEntityManager();
+        Query query = em.createQuery("SELECT i FROM ApplicationCategory i");
+
+        List<ApplicationCategory> appsList = query.getResultList();
+        Map<String, String> outDictionary = new HashMap<>();
+        for (ApplicationCategory app : appsList) {
+            outDictionary.put(app.getApplication(), app.getCategory());
+        }
+        em.close();
+        return outDictionary;
     }
 }

@@ -9,6 +9,7 @@ import br.unisinos.model.ImportBasicSmartphoneUseInformation;
 import br.unisinos.model.ImportChargingActivity;
 import br.unisinos.model.ImportMoodEMA;
 import br.unisinos.model.ImportNMPQResponse;
+import br.unisinos.model.ImportNotification;
 import br.unisinos.model.ImportPSSResponse;
 import br.unisinos.model.ImportSASResponse;
 import br.unisinos.model.ImportScreenLocked;
@@ -29,8 +30,8 @@ import javax.persistence.EntityManager;
  */
 public class KratosModelSimulator {
 
-    public static void main(String[] args) {     
-        try {
+    public static void main(String[] args) {
+        try {     
 //            (new ImportTimeDarkEnviroment()).importFiles();
 //            (new ImportChargingActivity()).importFiles();
 //            (new ImportScreenLocked()).importFiles();
@@ -42,6 +43,7 @@ public class KratosModelSimulator {
 //            (new ImportStressEMA()).importFiles();
 //            (new ImportMoodEMA()).importFiles();
 //            (new ImportBasicSmartphoneUseInformation()).importFiles();
+            (new ImportNotification()).importFiles();
 
         } catch (Exception e) {
             e.printStackTrace();
