@@ -64,7 +64,13 @@ public class ImportStressEMA {
                         if (linha.contains("}")) {
                             if (null != stressLevel && null != person) {
                                 System.out.println(idPerson + ";" + stressLevel + ";" + location + ";" + responseTime + ";" + fetchStressDescription(stressLevel));
-                                StressEMA stressEMA = new StressEMA(stressLevel, fetchStressDescription(stressLevel), location, responseTime, person);
+                                StressEMA stressEMA = new StressEMA(
+                                        stressLevel,
+                                        fetchStressDescription(stressLevel),
+                                        location,
+                                        responseTime,
+                                        person,
+                                        responseTime);
                                 em.merge(stressEMA);
                             }
 

@@ -26,7 +26,7 @@ public class BasicSmartphoneUseInformation implements Serializable {
     private Integer gender;
     private Integer income;
     private Double unlocks;
-    private Double time;
+    private Double timeInfo;
     private Double checks;
     private Double appsOpen;
     private Double notificationDay;
@@ -35,14 +35,14 @@ public class BasicSmartphoneUseInformation implements Serializable {
     }
 
     public BasicSmartphoneUseInformation(Integer age, Integer ageGroup, 
-            Integer gender, Integer income, Double unlocks, Double time, 
+            Integer gender, Integer income, Double unlocks, Double timeInfo, 
             Double checks, Double appsOpen, Double notificationDay) {
         this.age = age;
         this.ageGroup = ageGroup;
         this.gender = gender;
         this.income = income;
         this.unlocks = unlocks;
-        this.time = time;
+        this.timeInfo = timeInfo;
         this.checks = checks;
         this.appsOpen = appsOpen;
         this.notificationDay = notificationDay;
@@ -90,12 +90,20 @@ public class BasicSmartphoneUseInformation implements Serializable {
         this.unlocks = unlocks;
     }
 
-    public Double getTime() {
-        return time;
+    public Integer getGender() {
+        return gender;
     }
 
-    public void setTime(Double time) {
-        this.time = time;
+    public void setGender(Integer gender) {
+        this.gender = gender;
+    }
+
+    public Double getTimeInfo() {
+        return timeInfo;
+    }
+
+    public void setTimeInfo(Double timeInfo) {
+        this.timeInfo = timeInfo;
     }
 
     public Double getChecks() {
@@ -120,6 +128,5 @@ public class BasicSmartphoneUseInformation implements Serializable {
 
     public void setNotificationDay(Double notificationDay) {
         this.notificationDay = notificationDay;
-    }
-    
+    }  
 }

@@ -17,7 +17,6 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -93,7 +92,8 @@ public class ImportApplicationUse implements Serializable {
                             dateTime,
                             appName,
                             eventType,
-                            appCategory
+                            appCategory,
+                            dateTime
                     );
                     appsInUseMap.get(idPerson).add(appInUse);
                 }

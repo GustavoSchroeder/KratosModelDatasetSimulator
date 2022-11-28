@@ -25,6 +25,7 @@ public class ApplicationUse implements Serializable {
     private Person person;
     private Long sessionId;
     private Date openTime;
+    private Date openDate;
     private String appName;
     private String eventType;
     private String appCategory;
@@ -32,13 +33,17 @@ public class ApplicationUse implements Serializable {
     public ApplicationUse() {
     }
 
-    public ApplicationUse(Person person, Long sessionId, Date openTime, String appName, String eventType, String appCategory) {
+    public ApplicationUse(Person person, 
+            Long sessionId, Date openTime, 
+            String appName, String eventType, 
+            String appCategory, Date openDate) {
         this.person = person;
         this.sessionId = sessionId;
         this.openTime = openTime;
         this.appName = appName;
         this.eventType = eventType;
         this.appCategory = appCategory;
+        this.openDate = openDate;
     }
 
     @Id
@@ -68,7 +73,7 @@ public class ApplicationUse implements Serializable {
         this.sessionId = sessionId;
     }
 
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(javax.persistence.TemporalType.TIME)
     public Date getOpenTime() {
         return openTime;
     }
@@ -100,5 +105,13 @@ public class ApplicationUse implements Serializable {
     public void setAppCategory(String appCategory) {
         this.appCategory = appCategory;
     }
-    
+
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    public Date getOpenDate() {
+        return openDate;
+    }
+
+    public void setOpenDate(Date openDate) {
+        this.openDate = openDate;
+    }
 }

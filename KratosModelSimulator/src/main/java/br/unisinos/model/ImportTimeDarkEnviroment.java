@@ -76,7 +76,10 @@ public class ImportTimeDarkEnviroment implements Serializable {
                         TimeDarkEnvironment tde = new TimeDarkEnvironment(
                                 person,
                                 initialDate.getTime(),
-                                finalDate.getTime(), diffHours);
+                                finalDate.getTime(),
+                                diffHours,
+                                initialDate.getTime(),
+                                finalDate.getTime());
                         em.merge(tde);
 
                     }

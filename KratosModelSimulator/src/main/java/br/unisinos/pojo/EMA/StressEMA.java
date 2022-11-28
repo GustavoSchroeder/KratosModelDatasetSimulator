@@ -16,8 +16,8 @@ import javax.persistence.Temporal;
 
 /**
  *
- * @author gustavolazarottoschroeder
- *  Studentlife Dataset https://www.kaggle.com/datasets/dartweichen/student-life
+ * @author gustavolazarottoschroeder Studentlife Dataset
+ * https://www.kaggle.com/datasets/dartweichen/student-life
  */
 @Entity
 public class StressEMA implements Serializable {
@@ -28,20 +28,21 @@ public class StressEMA implements Serializable {
     private String location;
     private Date reponseTime;
     private Person person;
+    private Date responseDate;
 
     public StressEMA() {
     }
 
-    public StressEMA(Integer stressLevel, String stressLevelDesc, 
-            String location, Date reponseTime, Person person) {
+    public StressEMA(Integer stressLevel, String stressLevelDesc,
+            String location, Date reponseTime, Person person, Date responseDate) {
         this.stressLevel = stressLevel;
         this.stressLevelDesc = stressLevelDesc;
         this.location = location;
         this.reponseTime = reponseTime;
         this.person = person;
+        this.responseDate = responseDate;
     }
 
-   
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
@@ -77,7 +78,7 @@ public class StressEMA implements Serializable {
         this.location = location;
     }
 
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(javax.persistence.TemporalType.TIME)
     public Date getReponseTime() {
         return reponseTime;
     }
@@ -94,4 +95,12 @@ public class StressEMA implements Serializable {
         this.stressLevelDesc = stressLevelDesc;
     }
 
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    public Date getResponseDate() {
+        return responseDate;
+    }
+
+    public void setResponseDate(Date responseDate) {
+        this.responseDate = responseDate;
+    }
 }

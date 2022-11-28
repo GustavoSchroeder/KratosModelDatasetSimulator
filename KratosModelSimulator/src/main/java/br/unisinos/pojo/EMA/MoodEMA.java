@@ -16,12 +16,12 @@ import javax.persistence.Temporal;
 
 /**
  *
- * @author gustavolazarottoschroeder
- * Studentlife Dataset https://www.kaggle.com/datasets/dartweichen/student-life
+ * @author gustavolazarottoschroeder Studentlife Dataset
+ * https://www.kaggle.com/datasets/dartweichen/student-life
  */
-
 @Entity
-public class MoodEMA implements Serializable{
+public class MoodEMA implements Serializable {
+
     private Long id;
     private Person person;
     private Integer happy;
@@ -30,18 +30,19 @@ public class MoodEMA implements Serializable{
     private Integer sadOrNot;
     private String location;
     private Date responseTime;
+    private Date responseDate;
     private String happyDesc;
     private String happyOrNotDesc;
     private String sadDesc;
     private String sadOrNotDesc;
-    
+
     public MoodEMA() {
     }
 
-    public MoodEMA(Person person, Integer happy, Integer happyOrNot, 
+    public MoodEMA(Person person, Integer happy, Integer happyOrNot,
             Integer sad, Integer sadOrNot, String location,
-            Date responseTime, String happyDesc, String happyOrNotDesc, 
-            String sadDesc, String sadOrNotDesc) {
+            Date responseTime, String happyDesc, String happyOrNotDesc,
+            String sadDesc, String sadOrNotDesc, Date responseDate) {
         this.person = person;
         this.happy = happy;
         this.happyOrNot = happyOrNot;
@@ -53,6 +54,7 @@ public class MoodEMA implements Serializable{
         this.happyOrNotDesc = happyOrNotDesc;
         this.sadDesc = sadDesc;
         this.sadOrNotDesc = sadOrNotDesc;
+        this.responseDate = responseDate;
     }
 
     @Id
@@ -114,7 +116,7 @@ public class MoodEMA implements Serializable{
         this.location = location;
     }
 
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(javax.persistence.TemporalType.TIME)
     public Date getResponseTime() {
         return responseTime;
     }
@@ -153,6 +155,15 @@ public class MoodEMA implements Serializable{
 
     public void setSadOrNotDesc(String sadOrNotDesc) {
         this.sadOrNotDesc = sadOrNotDesc;
+    }
+
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    public Date getResponseDate() {
+        return responseDate;
+    }
+
+    public void setResponseDate(Date responseDate) {
+        this.responseDate = responseDate;
     }
 
 }

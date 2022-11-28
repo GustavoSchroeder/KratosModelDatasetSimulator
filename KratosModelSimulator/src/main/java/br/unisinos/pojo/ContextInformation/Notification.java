@@ -17,8 +17,7 @@ import javax.persistence.Temporal;
 /**
  *
  * @author gustavolazarottoschroeder
- * https://github.com/komis1/ami2018-notifications
- * ami2018-notifications
+ * https://github.com/komis1/ami2018-notifications ami2018-notifications
  */
 @Entity
 public class Notification implements Serializable {
@@ -30,6 +29,8 @@ public class Notification implements Serializable {
     private String packageName;
     private Date timePosted;
     private Date timeRemoved;
+    private Date datePosted;
+    private Date dateRemoved;
     private Integer sound;
     private Integer defaultSound;
     private Integer led;
@@ -54,7 +55,8 @@ public class Notification implements Serializable {
             Integer led, Integer defaultLed, Integer vibrationPattern,
             Integer defaultVibration, Integer ringerMode, Integer idle,
             Integer interactive, Integer screenState, Integer lockScrNotifs,
-            Integer flags, Person person, String packageCategory) {
+            Integer flags, Person person, String packageCategory,
+            Date datePosted, Date dateRemoved) {
         this.userId = userId;
         this.nid = nid;
         this.priority = priority;
@@ -75,6 +77,8 @@ public class Notification implements Serializable {
         this.flags = flags;
         this.person = person;
         this.packageCategory = packageCategory;
+        this.datePosted = datePosted;
+        this.dateRemoved = dateRemoved;
     }
 
     public Long getUserId() {
@@ -248,5 +252,23 @@ public class Notification implements Serializable {
 
     public void setPackageCategory(String packageCategory) {
         this.packageCategory = packageCategory;
+    }
+
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    public Date getDatePosted() {
+        return datePosted;
+    }
+
+    public void setDatePosted(Date datePosted) {
+        this.datePosted = datePosted;
+    }
+
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    public Date getDateRemoved() {
+        return dateRemoved;
+    }
+
+    public void setDateRemoved(Date dateRemoved) {
+        this.dateRemoved = dateRemoved;
     }
 }

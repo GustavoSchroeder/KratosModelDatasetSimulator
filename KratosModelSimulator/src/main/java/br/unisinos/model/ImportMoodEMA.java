@@ -71,7 +71,20 @@ public class ImportMoodEMA {
                             String sadDesc = sad == 1 ? "Yes" : "No";
                             String sadOrNotDesc = fetchDescription(sad);
 
-                            MoodEMA mood = new MoodEMA(person, happy, happyOrNot, sad, sadOrNot, location, responseTime, happyDesc, happyOrNotDesc, sadDesc, sadOrNotDesc);
+                            MoodEMA mood = new MoodEMA(
+                                    person,
+                                    happy,
+                                    happyOrNot,
+                                    sad,
+                                    sadOrNot,
+                                    location,
+                                    responseTime,
+                                    happyDesc,
+                                    happyOrNotDesc,
+                                    sadDesc,
+                                    sadOrNotDesc,
+                                    responseTime
+                            );
                             em.merge(mood);
 
                             continue;

@@ -51,7 +51,7 @@ public class ImportChargingActivity implements Serializable {
         em.getTransaction().begin();
         for (String fileName : files) {
             if (fileName.contains("csv")) {
-                System.out.println("File: "+ fileName.split("_")[1].replace(".csv", "").replace("u", ""));
+                System.out.println("File: " + fileName.split("_")[1].replace(".csv", "").replace("u", ""));
                 Long idPerson = Long.parseLong(fileName.split("_")[1].replace(".csv", "").replace("u", ""));
 
                 try ( BufferedReader br = new BufferedReader(new FileReader(folder + fileName))) {
@@ -76,11 +76,15 @@ public class ImportChargingActivity implements Serializable {
 
                         Person person = this.personUtil.findPerson(idPerson);
                         PhoneCharge tde = new PhoneCharge(
-                                person, 
-                                initialDate.getTime(), 
-                                finalDate.getTime(), diffHours);
+                                person,
+                                initialDate.getTime(),
+                                finalDate.getTime(),
+                                diffHours,
+                                initialDate.getTime(),
+                                finalDate.getTime()
+                        );
                         em.merge(tde);
-                        
+
                     }
                 }
             }

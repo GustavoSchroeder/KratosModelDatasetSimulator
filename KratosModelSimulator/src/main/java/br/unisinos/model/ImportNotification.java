@@ -164,7 +164,9 @@ public class ImportNotification implements Serializable {
                             lockScrNotifs,
                             flags,
                             null,
-                            appCategory);
+                            appCategory,
+                            timePosted,
+                            timeRemoved);
 
                     if (null == mapNotifications.get(userId)) {
                         mapNotifications.put(userId, new ArrayList<>());

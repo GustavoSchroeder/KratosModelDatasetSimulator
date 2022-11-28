@@ -16,8 +16,8 @@ import javax.persistence.Temporal;
 
 /**
  *
- * @author gustavolazarottoschroeder
- * Studentlife Dataset https://www.kaggle.com/datasets/dartweichen/student-life
+ * @author gustavolazarottoschroeder Studentlife Dataset
+ * https://www.kaggle.com/datasets/dartweichen/student-life
  */
 @Entity
 public class TimeDarkEnvironment implements Serializable {
@@ -27,15 +27,25 @@ public class TimeDarkEnvironment implements Serializable {
     private Date startTime;
     private Date endTime;
     private Date hoursSpent;
+    private Date startDate;
+    private Date endDate;
 
     public TimeDarkEnvironment() {
     }
 
-    public TimeDarkEnvironment(Person person, Date startTime, Date endTime, Date hoursSpent) {
+    public TimeDarkEnvironment(
+            Person person,
+            Date startTime,
+            Date endTime,
+            Date hoursSpent,
+            Date startDate,
+            Date endDate) {
         this.person = person;
         this.startTime = startTime;
         this.endTime = endTime;
         this.hoursSpent = hoursSpent;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     @Id
@@ -57,7 +67,7 @@ public class TimeDarkEnvironment implements Serializable {
         this.person = person;
     }
 
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(javax.persistence.TemporalType.TIME)
     public Date getStartTime() {
         return startTime;
     }
@@ -66,7 +76,7 @@ public class TimeDarkEnvironment implements Serializable {
         this.startTime = startTime;
     }
 
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(javax.persistence.TemporalType.TIME)
     public Date getEndTime() {
         return endTime;
     }
@@ -84,4 +94,21 @@ public class TimeDarkEnvironment implements Serializable {
         this.hoursSpent = hoursSpent;
     }
 
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
 }

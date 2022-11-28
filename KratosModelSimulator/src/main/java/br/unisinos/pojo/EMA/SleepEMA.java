@@ -27,19 +27,27 @@ public class SleepEMA implements Serializable {
     private String location;
     private Integer rate;
     private Date responseTime;
+    private Date responseDate;
     private Integer social;
     private Person person;
 
     public SleepEMA() {
     }
 
-    public SleepEMA(Integer hours, String location, Integer rate, Date responseTime, Integer social, Person person) {
+    public SleepEMA(Integer hours, 
+            String location, 
+            Integer rate, 
+            Date responseTime, 
+            Integer social, 
+            Person person,
+            Date responseDate) {
         this.hours = hours;
         this.location = location;
         this.rate = rate;
         this.responseTime = responseTime;
         this.social = social;
         this.person = person;
+        this.responseDate = responseDate;
     }
 
     @Id
@@ -76,7 +84,7 @@ public class SleepEMA implements Serializable {
         this.rate = rate;
     }
 
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(javax.persistence.TemporalType.TIME)
     public Date getResponseTime() {
         return responseTime;
     }
@@ -102,4 +110,12 @@ public class SleepEMA implements Serializable {
         this.person = person;
     }
 
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    public Date getResponseDate() {
+        return responseDate;
+    }
+
+    public void setResponseDate(Date responseDate) {
+        this.responseDate = responseDate;
+    }
 }

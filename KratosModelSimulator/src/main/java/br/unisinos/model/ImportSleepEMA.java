@@ -9,7 +9,6 @@ import br.unisinos.pojo.Person;
 import br.unisinos.util.FileUtil;
 import br.unisinos.util.JPAUtil;
 import br.unisinos.util.PersonUtil;
-import br.unisinos.util.TimeUtil;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -26,12 +25,10 @@ import javax.persistence.EntityManager;
 public class ImportSleepEMA {
 
     private final PersonUtil personUtil;
-    private final TimeUtil timeUtil;
     private final FileUtil fileUtil;
 
     public ImportSleepEMA() {
         this.personUtil = new PersonUtil();
-        this.timeUtil = new TimeUtil();
         this.fileUtil = new FileUtil();
     }
 
@@ -64,7 +61,15 @@ public class ImportSleepEMA {
                     while ((linha = br.readLine()) != null) {
                         if (linha.contains("}")) {
                             System.out.println(idPerson + ";" + hour + ";" + location + ";" + rate + ";" + responseTime + ";" + social);
-                            SleepEMA emaSleep = new SleepEMA(hour, location, rate, dataResponse, social, person);
+                            SleepEMA emaSleep = new SleepEMA(
+                                    hour,
+                                    location,
+                                    rate,
+                                    dataResponse,
+                                    social,
+                                    person,
+                                    dataResponse
+                            );
                             em.merge(emaSleep);
                             continue;
                         }
