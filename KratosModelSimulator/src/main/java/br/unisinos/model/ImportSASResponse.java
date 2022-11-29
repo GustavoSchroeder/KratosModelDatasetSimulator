@@ -12,6 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 /**
  *
@@ -75,7 +76,21 @@ public class ImportSASResponse implements Serializable {
             }
         }
 
+        deleteDataset();
         em.getTransaction().commit();
         em.close();
+    }
+    
+     private void deleteDataset() {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Query query = em.createQuery("DELETE FROM SmartphoneAddictionScale m");
+            query.executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+        } finally {
+            em.close();
+        }
     }
 }

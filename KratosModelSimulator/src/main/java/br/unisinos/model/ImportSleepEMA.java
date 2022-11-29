@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 /**
  *
@@ -102,8 +103,22 @@ public class ImportSleepEMA {
                 }
             }
         }
+        deleteDataset();
         em.getTransaction().commit();
         em.close();
+    }
+
+    private void deleteDataset() {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Query query = em.createQuery("DELETE FROM SleepEMA m");
+            query.executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+        } finally {
+            em.close();
+        }
     }
 
 }

@@ -13,12 +13,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 /**
  *
- * @author gustavolazarottoschroeder
- * Data for: Batching Smartphone Notifications Can Improve Well-Being
- * https://data.mendeley.com/datasets/jxzsxzt2mz
+ * @author gustavolazarottoschroeder Data for: Batching Smartphone Notifications
+ * Can Improve Well-Being https://data.mendeley.com/datasets/jxzsxzt2mz
  * https://www.sciencedirect.com/science/article/abs/pii/S0747563219302596?via%3Dihub
  */
 public class ImportBasicSmartphoneUseInformation implements Serializable {
@@ -93,8 +93,21 @@ public class ImportBasicSmartphoneUseInformation implements Serializable {
                         age, ageGroup, gender, income, unlocks, time, checks, appsOpen, notificationDay);
                 em.merge(bsui);
             }
-
+            deleteDataset();
             em.getTransaction().commit();
+            em.close();
+        }
+    }
+
+    private void deleteDataset() {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Query query = em.createQuery("DELETE FROM BasicSmartphoneUseInformation m");
+            query.executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+        } finally {
             em.close();
         }
     }

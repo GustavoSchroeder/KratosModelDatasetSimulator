@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 /**
  *
@@ -211,6 +212,7 @@ public class ImportNotification implements Serializable {
                 }
             }
 
+            deleteDataset();
             em.getTransaction().commit();
 
         } catch (Exception e) {
@@ -220,4 +222,16 @@ public class ImportNotification implements Serializable {
         em.close();
     }
 
+     private void deleteDataset() {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Query query = em.createQuery("DELETE FROM Notification m");
+            query.executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+        } finally {
+            em.close();
+        }
+    }
 }

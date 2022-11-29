@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 /**
  *
@@ -133,48 +134,53 @@ public class ImportNMPQResponse implements Serializable {
 
         List<Long> idsPerson = this.personUtil.fetchListIds();
         Integer max = idsPerson.size();
-        
+
         List<Integer> pastNumbers = new ArrayList<>();
 
         Random rand = new Random();
 
         //O usuário é randomizado
         for (int i = 0; i < nmpqList.size(); i++) {
-            
-            if(pastNumbers.size() == idsPerson.size()){
+
+            if (pastNumbers.size() == idsPerson.size()) {
                 break;
             }
-            
+
             Integer n;
-            do{
-                 n = rand.nextInt(max);
-            }while(pastNumbers.contains(n));
-            
+            do {
+                n = rand.nextInt(max);
+            } while (pastNumbers.contains(n));
+
             pastNumbers.add(n);
             Long idUser = idsPerson.get(n);
-            
-            Person p = this.personUtil.findPerson(idUser, Boolean.FALSE);
-           
-            Object[] infoP = dictionaryPersonInfo.get(i);
-            if (null == p.getAge()) {
-                p.setAge((Integer) infoP[0]);
-            }
 
-            if (null == p.getGender()) {
-                Integer gen = (Integer) infoP[1];
-                p.setGender(gen == 1 ? "Male" : "Female");
-            }
+            Person p = this.personUtil.findPerson(idUser, Boolean.FALSE);
+
+            Object[] infoP = dictionaryPersonInfo.get(i);
 
             ReportedTimeSpentSmartphone rtsp = new ReportedTimeSpentSmartphone(idUser, p, (Double) infoP[3]);
 
-            em.merge(p);
             em.merge(rtsp);
 
             nmpqList.get(i).setPerson(p);
             em.merge(nmpqList.get(i));
         }
-
+        
+        deleteDataset();
         em.getTransaction().commit();
         em.close();
+    }
+
+    private void deleteDataset() {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Query query = em.createQuery("DELETE FROM NomophobiaQuestionnaire m");
+            query.executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+        } finally {
+            em.close();
+        }
     }
 }

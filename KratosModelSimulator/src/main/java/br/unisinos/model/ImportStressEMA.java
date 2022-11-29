@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 /**
  *
@@ -100,6 +101,7 @@ public class ImportStressEMA {
                 }
             }
         }
+        deleteDataset();
         em.getTransaction().commit();
         em.close();
     }
@@ -120,4 +122,16 @@ public class ImportStressEMA {
         return "-";
     }
 
+    private void deleteDataset() {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Query query = em.createQuery("DELETE FROM StressEMA m");
+            query.executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+        } finally {
+            em.close();
+        }
+    }
 }
