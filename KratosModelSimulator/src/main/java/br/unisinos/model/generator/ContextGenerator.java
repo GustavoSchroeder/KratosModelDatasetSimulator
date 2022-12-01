@@ -5,6 +5,7 @@
 package br.unisinos.model.generator;
 
 import br.unisinos.pojo.ContextInformation.ApplicationUse;
+import br.unisinos.pojo.ContextInformation.PhoneCharge;
 import br.unisinos.pojo.Person;
 import br.unisinos.util.JPAUtil;
 import br.unisinos.util.PersonUtil;
@@ -21,23 +22,28 @@ import javax.persistence.Query;
 public class ContextGenerator {
 
     private ApplicationUseGenerator applicationUseGenerator;
+    private DeviceInformationGenerator deviceInformationGenerator;
     private PersonUtil personUtil;
 
     public ContextGenerator() {
         this.applicationUseGenerator = new ApplicationUseGenerator();
+        this.deviceInformationGenerator = new DeviceInformationGenerator();
         this.personUtil = new PersonUtil();
     }
 
     public void generateContext() {
         List<Person> persons = this.personUtil.fetchPersons();
+
+        Map<Long, Map<String, Map<Integer, Map<Integer, List<PhoneCharge>>>>> dictionaryPowerEvents
+                = this.deviceInformationGenerator.organizePowerEvents(persons);
+
         Map<Long, Map<String, Map<Integer, Map<Integer, List<ApplicationUse>>>>> dictionaryApps
                 = this.applicationUseGenerator.fetchApplications(persons);
+
         for (Person person : persons) {
 
         }
     }
-
-    
 
     public ApplicationUseGenerator getApplicationUseGenerator() {
         return applicationUseGenerator;
@@ -53,6 +59,14 @@ public class ContextGenerator {
 
     public void setPersonUtil(PersonUtil personUtil) {
         this.personUtil = personUtil;
+    }
+
+    public DeviceInformationGenerator getDeviceInformationGenerator() {
+        return deviceInformationGenerator;
+    }
+
+    public void setDeviceInformationGenerator(DeviceInformationGenerator deviceInformationGenerator) {
+        this.deviceInformationGenerator = deviceInformationGenerator;
     }
 
 }

@@ -27,19 +27,19 @@ public class KratosModelSimulator {
 
     public static void main(String[] args) {
         try {
-            (new ImportTimeDarkEnviroment()).importFiles();
-            (new ImportChargingActivity()).importFiles();
-            (new ImportScreenLocked()).importFiles();
-            (new ImportApplicationUse()).importFiles();
-            (new ImportSASResponse()).importFiles();
-            (new ImportPSSResponse()).importFiles();
-            (new ImportSleepEMA()).importFiles();
-            (new ImportNMPQResponse()).importFiles();
-            (new ImportStressEMA()).importFiles();
-            (new ImportMoodEMA()).importFiles();
-            (new ImportBasicSmartphoneUseInformation()).importFiles();
-            (new ImportNotification()).importFiles();
-            (new ImportDass21()).importFiles();
+//            (new ImportTimeDarkEnviroment()).importFiles();
+//            (new ImportChargingActivity()).importFiles();
+//            (new ImportScreenLocked()).importFiles();
+//            (new ImportApplicationUse()).importFiles();
+//            (new ImportSASResponse()).importFiles();
+//            (new ImportPSSResponse()).importFiles();
+//            (new ImportSleepEMA()).importFiles();
+//            (new ImportNMPQResponse()).importFiles();
+//            (new ImportStressEMA()).importFiles();
+//            (new ImportMoodEMA()).importFiles();
+//            (new ImportBasicSmartphoneUseInformation()).importFiles();
+//            (new ImportNotification()).importFiles();
+//            (new ImportDass21()).importFiles();
             (new ContextGenerator()).generateContext();
 
         } catch (Exception e) {

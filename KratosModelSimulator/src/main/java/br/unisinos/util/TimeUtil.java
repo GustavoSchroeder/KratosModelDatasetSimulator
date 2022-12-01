@@ -53,4 +53,20 @@ public class TimeUtil {
         calendar.setTime(new Date(time * 1000));
         return calendar.getTime();
     }
+    
+     public Integer fetchHour(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal.get(Calendar.HOUR_OF_DAY);
+    }
+
+    public String checkWeekDay(Date date) {
+        Calendar c1 = Calendar.getInstance();
+        c1.setTime(date);
+        if (c1.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY
+                || c1.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+            return "Weekend";
+        }
+        return "Weekday";
+    }
 }

@@ -7,11 +7,9 @@ package br.unisinos.model.generator;
 import br.unisinos.pojo.ContextInformation.ApplicationUse;
 import br.unisinos.pojo.Person;
 import br.unisinos.util.JPAUtil;
-import br.unisinos.util.PersonUtil;
+import br.unisinos.util.TimeUtil;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +21,14 @@ import javax.persistence.Query;
  * @author gustavolazarottoschroeder
  */
 public class ApplicationUseGenerator {
+    
+    private TimeUtil timeUtil;
 
+    public ApplicationUseGenerator() {
+        this.timeUtil = new TimeUtil();
+    }
+    
+    
     public Map<Long, Map<String, Map<Integer, Map<Integer, List<ApplicationUse>>>>> fetchApplications(List<Person> persons) {
         //User -> Day (1-n) -> Hour (0 - n) -> Application;Category
         Map<Long, Map<String, Map<Integer, Map<Integer, List<ApplicationUse>>>>> dictionaryApps = new HashMap<>();
@@ -39,7 +44,7 @@ public class ApplicationUseGenerator {
 
             List<ApplicationUse> listApp = fetchApplicationUse(person.getId());
             for (ApplicationUse applicationUse : listApp) {
-                String dayType = checkWeekDay(applicationUse.getOpenDate());
+                String dayType = this.timeUtil.checkWeekDay(applicationUse.getOpenDate());
 
                 if (null == dictionaryApps.get(person.getId()).get(dayType)) {
                     dictionaryApps.get(person.getId()).put(dayType, new HashMap<>());
@@ -55,7 +60,7 @@ public class ApplicationUseGenerator {
                     dictionaryApps.get(person.getId()).get(dayType).put(iDate, new HashMap<>());
                 }
 
-                Integer hour = fetchHour(applicationUse.getOpenDate());
+                Integer hour = this.timeUtil.fetchHour(applicationUse.getOpenDate());
                 if (null == dictionaryApps.get(person.getId()).get(dayType).get(iDate).get(hour)) {
                     dictionaryApps.get(person.getId()).get(dayType).get(iDate).put(hour, new ArrayList<>());
                 }
@@ -76,22 +81,6 @@ public class ApplicationUseGenerator {
         return listApp;
     }
 
-    private Integer fetchHour(Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        return cal.get(Calendar.HOUR_OF_DAY);
-    }
-
-    private String checkWeekDay(Date date) {
-        Calendar c1 = Calendar.getInstance();
-        c1.setTime(date);
-        if (c1.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY
-                || c1.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-            return "Weekend";
-        }
-        return "Weekday";
-    }
-
     private List<String> createListAllowedEvents() {
         List<String> events = new ArrayList<>();
         events.add("User Interaction");
@@ -99,4 +88,11 @@ public class ApplicationUseGenerator {
         return events;
     }
 
+    public TimeUtil getTimeUtil() {
+        return timeUtil;
+    }
+
+    public void setTimeUtil(TimeUtil timeUtil) {
+        this.timeUtil = timeUtil;
+    }
 }
