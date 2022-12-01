@@ -120,4 +120,16 @@ public class PersonUtil {
         em.close();
         return outDictionary;
     }
+
+    public List<Person> fetchPersons() {
+        EntityManager em = JPAUtil.getEntityManager();
+        Query query = em.createQuery("SELECT i FROM Person i ORDER BY i.id");
+        try {
+            return query.getResultList();
+        } catch (Exception e) {
+            return new ArrayList<>();
+        } finally {
+            em.close();
+        }
+    }
 }
