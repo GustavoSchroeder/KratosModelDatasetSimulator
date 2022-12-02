@@ -6,6 +6,7 @@
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/Person.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/ImportNMPQResponse.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/Scales/SmartphoneAddictionScale.java
+/Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/generator/DeviceInformationGenerator.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/util/JPAUtil.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/ImportBasicSmartphoneUseInformation.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/ContextInformation/TimeDarkEnvironment.java

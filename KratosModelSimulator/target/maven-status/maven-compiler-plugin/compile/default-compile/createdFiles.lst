@@ -6,6 +6,7 @@ br/unisinos/model/generator/ContextGenerator.class
 br/unisinos/pojo/ContextInformation/ApplicationUse.class
 br/unisinos/model/ImportChargingActivity.class
 br/unisinos/model/ImportBasicSmartphoneUseInformation.class
+br/unisinos/model/generator/DeviceInformationGenerator.class
 br/unisinos/model/ImportNotification.class
 br/unisinos/model/ImportSleepEMA.class
 br/unisinos/pojo/EMA/MoodEMA.class
