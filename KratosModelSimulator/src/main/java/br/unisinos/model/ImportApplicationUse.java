@@ -9,6 +9,7 @@ import br.unisinos.pojo.Person;
 import br.unisinos.util.PersonUtil;
 import br.unisinos.util.FileUtil;
 import br.unisinos.util.JPAUtil;
+import br.unisinos.util.TimeUtil;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -17,11 +18,14 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -33,11 +37,11 @@ import javax.persistence.Query;
 public class ImportApplicationUse implements Serializable {
 
     private final PersonUtil personUtil;
-    private final FileUtil fileUtil;
+    private final TimeUtil timeUtil;
 
     public ImportApplicationUse() {
         this.personUtil = new PersonUtil();
-        this.fileUtil = new FileUtil();
+        this.timeUtil = new TimeUtil();
     }
 
     public void importFiles() throws FileNotFoundException, IOException, ParseException {
@@ -115,7 +119,9 @@ public class ImportApplicationUse implements Serializable {
             Integer n = null;
             do {
                 n = rand.nextInt(max);
-            } while (positionsGone.contains(n));
+            } while (positionsGone.contains(n)
+                    || !checkMinDays(appsInUseMap.get(ids.get(n)))
+                    || !checkTypesDay(appsInUseMap.get(ids.get(n))));
 
             positionsGone.add(n);
             List<ApplicationUse> apps = appsInUseMap.get(ids.get(n));
@@ -143,6 +149,26 @@ public class ImportApplicationUse implements Serializable {
         deleteDataset();
         em.getTransaction().commit();
         em.close();
+    }
+
+    private Boolean checkMinDays(List<ApplicationUse> applications) {
+        Set<Integer> days = new HashSet<>();
+        for (ApplicationUse application : applications) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(application.getOpenDate());
+            days.add(cal.get(Calendar.DAY_OF_MONTH));
+        }
+        return days.size() > 3;
+    }
+
+    public Boolean checkTypesDay(List<ApplicationUse> applications) {
+        Set<String> weekType = new HashSet<>();
+        for (ApplicationUse application : applications) {
+
+            weekType.add(this.timeUtil.checkWeekDay(application.getOpenDate()));
+        }
+
+        return weekType.size() == 2;
     }
 
     private void deleteDataset() {

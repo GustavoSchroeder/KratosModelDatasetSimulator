@@ -186,13 +186,29 @@ public class DeviceInformationGenerator {
         return dictionaryPhoneLock;
     }
 
-    public Map<Integer, List<PhoneLock>> randomDayPhoneLock(Map<Integer, Map<Integer, List<PhoneLock>>> dictionary) {
-        
+    public List<Integer[]> randomDayPhoneLock(Map<Integer, Map<Integer, List<PhoneLock>>> dictionary) {
+
         List<Integer> keySet = new ArrayList<>(dictionary.keySet());
         Random rand = new Random();
         Integer n = rand.nextInt((keySet.size() - 1));
+
+        List<Integer[]> hoursPhoneLock = new ArrayList<>();
         
-        return dictionary.get(keySet.get(n));
+        Map<Integer, List<PhoneLock>> dictionaryOut = dictionary.get(keySet.get(n));
+        for (Map.Entry<Integer, List<PhoneLock>> entry : dictionaryOut.entrySet()) {
+            List<PhoneLock> val = entry.getValue();
+
+            for (PhoneLock phoneLock : val) {
+                Calendar initialDate = Calendar.getInstance();
+                initialDate.setTime(phoneLock.getStartTime());
+                Calendar finalDate = Calendar.getInstance();
+                finalDate.setTime(phoneLock.getEndTime());
+                
+                Integer[] payload = {initialDate.get(Calendar.HOUR), finalDate.get(Calendar.HOUR)};
+                hoursPhoneLock.add(payload);
+            }
+        }
+        return hoursPhoneLock;
     }
 
     public List<PhoneLock> fetchScreenStatus(Long id) {

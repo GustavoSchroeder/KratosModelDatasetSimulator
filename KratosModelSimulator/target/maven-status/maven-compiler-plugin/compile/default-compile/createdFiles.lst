@@ -27,6 +27,7 @@ br/unisinos/util/JPAUtil.class
 br/unisinos/model/ImportDass21.class
 br/unisinos/model/ImportScreenLocked.class
 br/unisinos/pojo/EMA/SleepEMA.class
+br/unisinos/model/generator/ApplicationUseGenerator$1.class
 br/unisinos/model/generator/ApplicationUseGenerator.class
 br/unisinos/model/ImportApplicationUse.class
 br/unisinos/pojo/ContextInformation/PhoneCharge.class
