@@ -11,6 +11,7 @@ import br.unisinos.pojo.Person;
 import br.unisinos.util.PersonUtil;
 import br.unisinos.util.TimeUtil;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -44,11 +45,8 @@ public class ContextGenerator {
         Map<Long, Map<String, Map<Integer, Map<Integer, List<PhoneCharge>>>>> dictionaryPowerEvents
                 = this.deviceInformationGenerator.organizePowerEvents(persons);
 
-        Map<Long, Map<String, Map<Integer, Map<Integer, List<ApplicationUse>>>>> dictionaryApps
-                = this.applicationUseGenerator.fetchApplications(persons);
-
         printHeader();
-        
+
         for (Person person : persons) {
             Calendar cal = Calendar.getInstance();
 
@@ -58,33 +56,75 @@ public class ContextGenerator {
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
 
-            String dayType = this.timeUtil.checkWeekDay(cal.getTime());
-            Map<Integer, List<ApplicationUse>> appInUse
-                    = this.applicationUseGenerator.randomDayApplicationDay(dictionaryApps.get(person.getId()).get(dayType));
-            //List<Integer[]> hoursLocked = this.deviceInformationGenerator.randomDayPhoneLock(dictionaryScreenStatus.get(person.getId()).get(dayType));
-            for (int i = 0; i < 24; i++) {
-                List<ApplicationUse> applications = appInUse.get(i);
-                Map<Integer, List<String>> mapScreenStatus = this.applicationUseGenerator.analyseStringStatus(applications);
-
-                String appHighUseTime = "";
-                String applicationCategoryTopInUse = "";
-                String applicationTopTimeSpent = "";
-
-                Integer minutesLocked = this.applicationUseGenerator.minutesLocked(mapScreenStatus);
-                Integer minutesUnlocked = this.applicationUseGenerator.minutesUnlocked(mapScreenStatus);
-
-                Map<String, Long> categoryMinutes = new HashMap<>();
-                if (null != applications) {
-                    categoryMinutes = this.applicationUseGenerator.calculateCategoryTimeSpent(applications);
-
+            String lastDayTypeControl = "";
+            Map<String, List<Long>> dictionaryDatesAppIds = new HashMap<>();
+            for (int j = 0; j < 30; j++) {
+                String dayType = this.timeUtil.checkWeekDay(cal.getTime());
+                if (!lastDayTypeControl.equalsIgnoreCase(dayType + ";" + person.getId())) {
+                    dictionaryDatesAppIds = this.applicationUseGenerator.fetchApplicationsIds(dayType, person.getId());
+                    lastDayTypeControl = dayType + ";" + person.getId();
                 }
 
-                Object[] arrayObj = {person.getId(), sdf.format(cal.getTime()),
-                dayType, minutesLocked, minutesUnlocked};
+                Map<Integer, List<ApplicationUse>> appInUse = this.applicationUseGenerator.randomDayApplicationDay(dictionaryDatesAppIds);
 
-                printSb(arrayObj);
-                
-                cal.add(Calendar.HOUR_OF_DAY, 1);
+                for (int i = 0; i < 24; i++) {
+                    List<ApplicationUse> applications = appInUse.get(i);
+                    if (null == applications) {
+                        applications = new ArrayList<>();
+                    }
+
+                    Map<Integer, List<String>> mapScreenStatus
+                            = this.applicationUseGenerator.analyseScreenStatus(new ArrayList<>(applications));
+
+                    String appHighUseTime = "";
+                    Long applicationUseTime = 0L;
+
+                    String applicationCategoryTopInUse = "";
+                    Long categoryUseTime = 0L;
+
+                    Integer minutesLocked = this.applicationUseGenerator.minutesLocked(mapScreenStatus);
+                    Integer minutesUnlocked = this.applicationUseGenerator.minutesUnlocked(mapScreenStatus);
+
+                    Map<String, Long> categoryMinutes = new HashMap<>();
+                    Map<String, Long> applicationMinutes = new HashMap<>();
+                    if (null != applications && !applications.isEmpty()) {
+                        // category time spent
+                        categoryMinutes = this.applicationUseGenerator.calculateCategoryTimeSpent(new ArrayList<>(applications));
+                        Object[] categoryTopSpent = this.applicationUseGenerator.calculateTopTimeSpent(categoryMinutes);
+                        applicationCategoryTopInUse = (String) categoryTopSpent[0];
+                        try {
+                            categoryUseTime = (((Long) categoryTopSpent[1]) / 60);
+                        } catch (Exception e) {
+                        }
+
+                        // application time spent
+                        applicationMinutes = this.applicationUseGenerator.calculateApplicationTimeSpent(new ArrayList<>(applications));
+                        Object[] applicationTopSpent = this.applicationUseGenerator.calculateTopTimeSpent(applicationMinutes);
+                        appHighUseTime = (String) applicationTopSpent[0];
+                        try {
+                            applicationUseTime = (((Long) applicationTopSpent[1]) / 60);
+                        } catch (Exception e) {
+                        }
+                    }
+
+                    Object[] arrayObj = {
+                        /*0*/person.getId(),
+                        /*1*/ sdf.format(cal.getTime()),
+                        /*2*/ dayType,
+                        /*3*/ minutesLocked,
+                        /*4*/ minutesUnlocked,
+                        /*5*/ (minutesLocked == 61 ? "Not Used" : "Used"),
+                        /*6*/ applicationCategoryTopInUse,
+                        /*7*/ categoryUseTime,
+                        /*8*/ appHighUseTime,
+                        /*9*/ applicationUseTime
+                    };
+
+                    printSb(arrayObj);
+
+                    cal.add(Calendar.HOUR_OF_DAY, 1);
+                }
+                cal.add(Calendar.DAY_OF_MONTH, 1);
             }
         }
     }
@@ -112,6 +152,15 @@ public class ContextGenerator {
         sb.append(";");
         sb.append((Integer) payload[4]); //minutesUnlocked
         sb.append(";");
+        sb.append((String) payload[5]);
+        sb.append(";");
+        sb.append((String) payload[6]);
+        sb.append(";");
+        sb.append((Long) payload[7]);
+        sb.append(";");
+        sb.append((String) payload[8]);
+        sb.append(";");
+        sb.append((Long) payload[9]);
         System.out.println(sb);
     }
 

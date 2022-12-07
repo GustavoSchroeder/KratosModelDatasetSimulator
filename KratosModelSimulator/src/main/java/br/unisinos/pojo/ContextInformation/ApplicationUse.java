@@ -29,6 +29,8 @@ public class ApplicationUse implements Serializable {
     private String appName;
     private String eventType;
     private String appCategory;
+    private String dayType;
+    private Integer positionLinked;
 
     public ApplicationUse() {
     }
@@ -36,7 +38,8 @@ public class ApplicationUse implements Serializable {
     public ApplicationUse(Person person, 
             Long sessionId, Date openTime, 
             String appName, String eventType, 
-            String appCategory, Date openDate) {
+            String appCategory, Date openDate,
+            String dayType) {
         this.person = person;
         this.sessionId = sessionId;
         this.openTime = openTime;
@@ -44,6 +47,7 @@ public class ApplicationUse implements Serializable {
         this.eventType = eventType;
         this.appCategory = appCategory;
         this.openDate = openDate;
+        this.dayType = dayType;
     }
 
     @Id
@@ -113,5 +117,21 @@ public class ApplicationUse implements Serializable {
 
     public void setOpenDate(Date openDate) {
         this.openDate = openDate;
+    }
+
+    public String getDayType() {
+        return dayType;
+    }
+
+    public void setDayType(String dayType) {
+        this.dayType = dayType;
+    }
+
+    public Integer getPositionLinked() {
+        return positionLinked;
+    }
+
+    public void setPositionLinked(Integer positionLinked) {
+        this.positionLinked = positionLinked;
     }
 }

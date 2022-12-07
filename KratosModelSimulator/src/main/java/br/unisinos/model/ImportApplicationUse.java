@@ -98,7 +98,8 @@ public class ImportApplicationUse implements Serializable {
                             appName,
                             eventType,
                             appCategory,
-                            dateTime
+                            dateTime,
+                            this.timeUtil.checkWeekDay(dateTime)
                     );
                     appsInUseMap.get(idPerson).add(appInUse);
                 }
@@ -114,8 +115,10 @@ public class ImportApplicationUse implements Serializable {
         List<Long> ids = new ArrayList<>(appsInUseMap.keySet());
         Integer max = ids.size() - 1;
 
+        Integer mergeCounter = 0;
         Random rand = new Random();
         for (Integer i = 0; i < 60; i++) {
+            System.out.println(i);
             Integer n = null;
             do {
                 n = rand.nextInt(max);
@@ -143,7 +146,31 @@ public class ImportApplicationUse implements Serializable {
             for (ApplicationUse app : apps) {
                 app.setPerson(person);
                 em.merge(app);
+
+                if (mergeCounter++ == 500) {
+                    em.flush();
+                    em.clear();
+                    mergeCounter = 0;
+                }
             }
+        }
+
+        //Inser the applications not linked with users in the database
+        for (int i = 0; i < ids.size(); i++) {
+            if (positionsGone.contains(i)) {
+                List<ApplicationUse> apps = appsInUseMap.get(ids.get(i));
+                for (ApplicationUse app : apps) {
+                    app.setPositionLinked(i);
+                    em.merge(app);
+
+                    if (mergeCounter++ == 500) {
+                        em.flush();
+                        em.clear();
+                        mergeCounter = 0;
+                    }
+                }
+            }
+
         }
 
         deleteDataset();
@@ -158,7 +185,7 @@ public class ImportApplicationUse implements Serializable {
             cal.setTime(application.getOpenDate());
             days.add(cal.get(Calendar.DAY_OF_MONTH));
         }
-        return days.size() > 3;
+        return days.size() > 10;
     }
 
     public Boolean checkTypesDay(List<ApplicationUse> applications) {

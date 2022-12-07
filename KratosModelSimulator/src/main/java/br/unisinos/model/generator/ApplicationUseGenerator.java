@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -72,6 +73,7 @@ public class ApplicationUseGenerator {
                 dictionaryApps.get(person.getId()).get(dayType).get(iDate).get(hour).add(applicationUse);
             }
         }
+
         return dictionaryApps;
     }
 
@@ -91,20 +93,68 @@ public class ApplicationUseGenerator {
         return events;
     }
 
-    public Map<Integer, List<ApplicationUse>> randomDayApplicationDay(
-            Map<Integer, Map<Integer, List<ApplicationUse>>> dictionary) {
+    public Map<String, List<Long>> fetchApplicationsIds(String dayType, Long personId) {
+        EntityManager em = JPAUtil.getEntityManager();
+        Query query = em.createQuery("SELECT i.openDate, i.id FROM ApplicationUse i WHERE i.dayType = :dayType and i.person.id = :id");
+        query.setParameter("dayType", dayType);
+        query.setParameter("id", personId);
 
-        List<Integer> keySet = new ArrayList<>(dictionary.keySet());
-        Random rand = new Random();
+        List<Object[]> auxObject = query.getResultList();
 
-        Integer n;
-        if (keySet.size() > 1) {
-            n = rand.nextInt((keySet.size() - 1));
-        } else {
-            n = 0;
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+        Map<String, List<Long>> dictionaryDateIds = new HashMap<>();
+        for (Object[] obj : auxObject) {
+            if (null == dictionaryDateIds.get(sdf.format((Date) obj[0]))) {
+                dictionaryDateIds.put(sdf.format((Date) obj[0]), new ArrayList<>());
+            }
+
+            dictionaryDateIds.get(sdf.format((Date) obj[0])).add((Long) obj[1]);
+        }
+        em.close();
+        return dictionaryDateIds;
+    }
+
+    private List<ApplicationUse> fetchApplicationsById(List<Long> ids) {
+        EntityManager em = JPAUtil.getEntityManager();
+        Query query = em.createQuery("SELECT i FROM ApplicationUse i WHERE i.id in (:ids)");
+        query.setParameter("ids", ids);
+        try {
+            return query.getResultList();
+        } catch (Exception e) {
+            return new ArrayList<>();
+        } finally {
+            em.close();
         }
 
-        return dictionary.get(keySet.get(n));
+    }
+
+    public Map<Integer, List<ApplicationUse>> randomDayApplicationDay(Map<String, List<Long>> dictionaryDateIds) {
+
+        List<String> keySet = new ArrayList<>(dictionaryDateIds.keySet());
+        Random rand = new Random();
+
+        // try ten times to find valid application information
+        List<Integer> numbersExcluded = new ArrayList<>();
+        Map<Integer, List<ApplicationUse>> dictionaryOut = new HashMap<>();
+        Integer n = null;
+        do {
+            n = rand.nextInt((keySet.size()));
+        } while (numbersExcluded.contains(n) && dictionaryDateIds.get(keySet.get(n)).size() < 5);
+
+        List<Long> idsApps = dictionaryDateIds.get(keySet.get(n));
+        List<ApplicationUse> apps = fetchApplicationsById(idsApps);
+
+        for (ApplicationUse app : apps) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(app.getOpenDate());
+            if (null == dictionaryOut.get(cal.get(Calendar.HOUR_OF_DAY))) {
+                dictionaryOut.put(cal.get(Calendar.HOUR_OF_DAY), new ArrayList<>());
+            }
+            dictionaryOut.get(cal.get(Calendar.HOUR_OF_DAY)).add(app);
+        }
+
+        return dictionaryOut;
     }
 
     private List<ApplicationUse> compareAppUse(List<ApplicationUse> appsInUse) {
@@ -128,11 +178,40 @@ public class ApplicationUseGenerator {
         Long seconds = 0L;
         Date startTime = null;
         String category = null;
+        String lastEventType = "";
 
-        for (ApplicationUse applicationUse : appsInUse) {
+        for (int i = 0; i < appsInUse.size(); i++) {
+            ApplicationUse applicationUse = appsInUse.get(i);
 
             //if application was oppened save time
+            if (((lastEventType.equalsIgnoreCase("User Interaction")
+                    && !applicationUse.getEventType().equalsIgnoreCase("User Interaction")
+                    && null != startTime))
+                    || (lastEventType.equalsIgnoreCase("User Interaction") && ((i + 1) == appsInUse.size()) && appsInUse.size() > 1)) {
+
+                seconds = (applicationUse.getOpenDate().getTime() - startTime.getTime()) / 1000;
+                category = applicationUse.getAppCategory();
+
+                if (null == dictionaryCategoryMinutes.get(category)) {
+                    dictionaryCategoryMinutes.put(category, 0L);
+                }
+                dictionaryCategoryMinutes.put(category, dictionaryCategoryMinutes.get(category) + seconds);
+
+                seconds = 0L;
+                startTime = null;
+                category = null;
+            }
+
+            lastEventType = applicationUse.getEventType();
+
             if (null == startTime) {
+
+                if (applicationUse.getEventType().equalsIgnoreCase("User Interaction")) {
+                    startTime = applicationUse.getOpenDate();
+                    category = applicationUse.getAppName();
+                    continue;
+                }
+
                 if (applicationUse.getEventType().equalsIgnoreCase("Opened")) {
                     startTime = applicationUse.getOpenDate();
                     category = applicationUse.getAppName();
@@ -161,11 +240,96 @@ public class ApplicationUseGenerator {
         return dictionaryCategoryMinutes;
     }
 
-    public Map<Integer, List<String>> analyseStringStatus(List<ApplicationUse> appsInUse) {
-        // Todo
-        // Analyze Screen Status based on applications open for hour
-        // Dictionary contatins hour:time -> mm --> (Locked / Unlocked)
+    public Map<String, Long> calculateApplicationTimeSpent(List<ApplicationUse> appsInUse) {
+        appsInUse = compareAppUse(appsInUse);
 
+        Map<String, Long> dictionaryCategoryMinutes = new HashMap<>();
+        Long seconds = 0L;
+        Date startTime = null;
+        String application = null;
+        String lastEventType = "";
+
+        for (int i = 0; i < appsInUse.size(); i++) {
+            ApplicationUse applicationUse = appsInUse.get(i);
+
+            //if application was oppened save time
+            if (((lastEventType.equalsIgnoreCase("User Interaction")
+                    && !applicationUse.getEventType().equalsIgnoreCase("User Interaction")
+                    && null != startTime))
+                    || (lastEventType.equalsIgnoreCase("User Interaction") && ((i + 1) == appsInUse.size()) && appsInUse.size() > 1)) {
+
+                seconds = (applicationUse.getOpenDate().getTime() - startTime.getTime()) / 1000;
+                application = applicationUse.getAppName();
+
+                if (null == dictionaryCategoryMinutes.get(application)) {
+                    dictionaryCategoryMinutes.put(application, 0L);
+                }
+                dictionaryCategoryMinutes.put(application, dictionaryCategoryMinutes.get(application) + seconds);
+
+                seconds = 0L;
+                startTime = null;
+                application = null;
+            }
+
+            lastEventType = applicationUse.getEventType();
+
+            if (null == startTime) {
+
+                if (applicationUse.getEventType().equalsIgnoreCase("User Interaction")) {
+                    startTime = applicationUse.getOpenDate();
+                    application = applicationUse.getAppName();
+                    continue;
+                }
+
+                if (applicationUse.getEventType().equalsIgnoreCase("Opened")) {
+                    startTime = applicationUse.getOpenDate();
+                    application = applicationUse.getAppName();
+                }
+            } else {
+
+                //count how much time until close
+                if (applicationUse.getEventType().equalsIgnoreCase("Closed")
+                        && applicationUse.getAppName().equalsIgnoreCase(application)) {
+                    seconds = (applicationUse.getOpenDate().getTime() - startTime.getTime()) / 1000;
+                    //System.out.println(category + ";" + seconds);
+
+                    application = applicationUse.getAppName();
+
+                    if (null == dictionaryCategoryMinutes.get(application)) {
+                        dictionaryCategoryMinutes.put(application, 0L);
+                    }
+                    dictionaryCategoryMinutes.put(application, dictionaryCategoryMinutes.get(application) + seconds);
+
+                    seconds = 0L;
+                    startTime = null;
+                    application = null;
+                }
+            }
+        }
+
+        return dictionaryCategoryMinutes;
+    }
+
+    public Object[] calculateTopTimeSpent(Map<String, Long> dictionaryCategoryMinutes) {
+        Object[] output = new Object[2];
+        Long maxMinutes = 0L;
+        for (Map.Entry<String, Long> entry : dictionaryCategoryMinutes.entrySet()) {
+            String key = entry.getKey();
+            Long val = entry.getValue();
+
+            if (val > maxMinutes) {
+                output[0] = key;
+                output[1] = val;
+                maxMinutes = val;
+            }
+        }
+
+        return output;
+    }
+
+    public Map<Integer, List<String>> analyseScreenStatus(List<ApplicationUse> appsInUse) {
+        // Analyze Screen Status based on applications open for hour
+        // Dictionary contatins hour:time -> mm --> (Locked / Unlocked)=
         appsInUse = compareAppUse(appsInUse);
 
         Map<Integer, List<String>> outputMap = new HashMap<>();
@@ -174,21 +338,20 @@ public class ApplicationUseGenerator {
                 outputMap.put(i, new ArrayList<>());
             }
 
-            if(null == appsInUse || appsInUse.isEmpty()){
+            if (null == appsInUse || appsInUse.isEmpty()) {
                 continue;
             }
-            
+
             for (int j = 0; j < appsInUse.size(); j++) {
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(appsInUse.get(j).getOpenDate());
                 if (cal.get(Calendar.MINUTE) == i
-                        && appsInUse.get(j).getEventType().equalsIgnoreCase("Opened")) {
+                        && (appsInUse.get(j).getEventType().equalsIgnoreCase("Opened")
+                        || appsInUse.get(j).getEventType().equalsIgnoreCase("User Interaction"))) {
                     outputMap.get(i).add("Unlocked;"
                             + appsInUse.get(j).getAppCategory()
                             + appsInUse.get(j).getAppName()
                     );
-                    appsInUse.remove(j);
-                    j--;
                 }
             }
         }
@@ -200,7 +363,6 @@ public class ApplicationUseGenerator {
             if (val.isEmpty()) {
                 outputMap.get(key).add("Locked");
             }
-
         }
 
         return outputMap;

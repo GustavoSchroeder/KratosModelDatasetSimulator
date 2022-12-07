@@ -30,7 +30,7 @@ public class KratosModelSimulator {
 //            (new ImportTimeDarkEnviroment()).importFiles();
 //            (new ImportChargingActivity()).importFiles();
 //            (new ImportScreenLocked()).importFiles();
-            (new ImportApplicationUse()).importFiles();
+//            (new ImportApplicationUse()).importFiles();
 //            (new ImportSASResponse()).importFiles();
 //            (new ImportPSSResponse()).importFiles();
 //            (new ImportSleepEMA()).importFiles();
