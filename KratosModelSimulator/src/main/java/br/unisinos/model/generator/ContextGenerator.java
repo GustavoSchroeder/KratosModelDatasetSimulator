@@ -25,13 +25,15 @@ public class ContextGenerator {
 
     private ApplicationUseGenerator applicationUseGenerator;
     private DeviceInformationGenerator deviceInformationGenerator;
+    private PowerEventGeneretor powerEventGeneretor;
     private PersonUtil personUtil;
     private TimeUtil timeUtil;
 
     public ContextGenerator() {
         this.applicationUseGenerator = new ApplicationUseGenerator();
-        this.deviceInformationGenerator = new DeviceInformationGenerator();
         this.personUtil = new PersonUtil();
+        this.deviceInformationGenerator = new DeviceInformationGenerator();
+        this.powerEventGeneretor = new PowerEventGeneretor();
         this.timeUtil = new TimeUtil();
     }
 
@@ -56,6 +58,9 @@ public class ContextGenerator {
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
 
+            Map<String, Map<String, Map<Integer, String>>> mapPhoneCharge
+                    = this.powerEventGeneretor.generatePowerEventInformation(person.getId());
+
             String lastDayTypeControl = "";
             Map<String, List<Long>> dictionaryDatesAppIds = new HashMap<>();
             for (int j = 0; j < 30; j++) {
@@ -76,35 +81,25 @@ public class ContextGenerator {
                     Map<Integer, List<String>> mapScreenStatus
                             = this.applicationUseGenerator.analyseScreenStatus(new ArrayList<>(applications));
 
-                    String appHighUseTime = "";
-                    Long applicationUseTime = 0L;
-
-                    String applicationCategoryTopInUse = "";
-                    Long categoryUseTime = 0L;
-
                     Integer minutesLocked = this.applicationUseGenerator.minutesLocked(mapScreenStatus);
                     Integer minutesUnlocked = this.applicationUseGenerator.minutesUnlocked(mapScreenStatus);
 
-                    Map<String, Long> categoryMinutes = new HashMap<>();
-                    Map<String, Long> applicationMinutes = new HashMap<>();
-                    if (null != applications && !applications.isEmpty()) {
-                        // category time spent
-                        categoryMinutes = this.applicationUseGenerator.calculateCategoryTimeSpent(new ArrayList<>(applications));
-                        Object[] categoryTopSpent = this.applicationUseGenerator.calculateTopTimeSpent(categoryMinutes);
-                        applicationCategoryTopInUse = (String) categoryTopSpent[0];
-                        try {
-                            categoryUseTime = (((Long) categoryTopSpent[1]) / 60);
-                        } catch (Exception e) {
-                        }
+                    //DeviceContext
+                    String appHighUseTime = "";
+                    Long applicationUseTime = 0L;
+                    String applicationCategoryTopInUse = "";
+                    Long categoryUseTime = 0L;
+                    Double batteryLevel;
+                    //Notification
+                    String powerEvent;
+                    String useTime;
 
-                        // application time spent
-                        applicationMinutes = this.applicationUseGenerator.calculateApplicationTimeSpent(new ArrayList<>(applications));
-                        Object[] applicationTopSpent = this.applicationUseGenerator.calculateTopTimeSpent(applicationMinutes);
-                        appHighUseTime = (String) applicationTopSpent[0];
-                        try {
-                            applicationUseTime = (((Long) applicationTopSpent[1]) / 60);
-                        } catch (Exception e) {
-                        }
+                    if (null != applications && !applications.isEmpty()) {
+                        Object[] infoScreen = this.applicationUseGenerator.calculateScreeStatus(new ArrayList<>(applications));
+                        appHighUseTime = (String) infoScreen[0];
+                        applicationUseTime = (Long) infoScreen[1];
+                        applicationCategoryTopInUse = (String) infoScreen[2];
+                        categoryUseTime = (Long) infoScreen[3];
                     }
 
                     Object[] arrayObj = {
@@ -124,7 +119,6 @@ public class ContextGenerator {
 
                     cal.add(Calendar.HOUR_OF_DAY, 1);
                 }
-                cal.add(Calendar.DAY_OF_MONTH, 1);
             }
         }
     }
@@ -194,5 +188,13 @@ public class ContextGenerator {
 
     public void setTimeUtil(TimeUtil timeUtil) {
         this.timeUtil = timeUtil;
+    }
+
+    public PowerEventGeneretor getPowerEventGeneretor() {
+        return powerEventGeneretor;
+    }
+
+    public void setPowerEventGeneretor(PowerEventGeneretor powerEventGeneretor) {
+        this.powerEventGeneretor = powerEventGeneretor;
     }
 }

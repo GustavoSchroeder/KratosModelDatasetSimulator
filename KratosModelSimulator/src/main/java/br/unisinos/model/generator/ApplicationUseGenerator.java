@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -402,6 +401,44 @@ public class ApplicationUseGenerator {
         }
 
         return minutesUnlocked;
+    }
+
+    public Object[] calculateScreeStatus(List<ApplicationUse> applications) {
+        String applicationCategoryTopInUse = "";
+        Long categoryUseTime = 0L;
+        String appHighUseTime = "";
+        Long applicationUseTime = 0L;
+
+        Map<String, Long> categoryMinutes;
+        Map<String, Long> applicationMinutes;
+        // category time spent
+        categoryMinutes = calculateCategoryTimeSpent(new ArrayList<>(applications));
+        Object[] categoryTopSpent = calculateTopTimeSpent(categoryMinutes);
+        applicationCategoryTopInUse = (String) categoryTopSpent[0];
+        try {
+            categoryUseTime = (((Long) categoryTopSpent[1]) / 60);
+        } catch (Exception e) {
+        }
+
+        // application time spent
+        applicationMinutes = calculateApplicationTimeSpent(new ArrayList<>(applications));
+        Object[] applicationTopSpent = calculateTopTimeSpent(applicationMinutes);
+        appHighUseTime = (String) applicationTopSpent[0];
+        try {
+            applicationUseTime = (((Long) applicationTopSpent[1]) / 60);
+        } catch (Exception e) {
+        }
+
+        if (null == applicationCategoryTopInUse) {
+            applicationCategoryTopInUse = "";
+        }
+
+        if (null == appHighUseTime) {
+            appHighUseTime = "";
+        }
+        
+        Object[] output = {applicationCategoryTopInUse, categoryUseTime, appHighUseTime, applicationUseTime};
+        return output;
     }
 
     public TimeUtil getTimeUtil() {
