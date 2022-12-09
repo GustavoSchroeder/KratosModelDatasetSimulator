@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  *
@@ -63,12 +64,17 @@ public class ContextGenerator {
 
             String lastDayTypeControl = "";
             Map<String, List<Long>> dictionaryDatesAppIds = new HashMap<>();
+
+            Double batteryLevel = ((Integer) (new Random().nextInt(70) + 30)).doubleValue();
+            Double batteryLevelControl = batteryLevel;
             for (int j = 0; j < 30; j++) {
                 String dayType = this.timeUtil.checkWeekDay(cal.getTime());
                 if (!lastDayTypeControl.equalsIgnoreCase(dayType + ";" + person.getId())) {
                     dictionaryDatesAppIds = this.applicationUseGenerator.fetchApplicationsIds(dayType, person.getId());
                     lastDayTypeControl = dayType + ";" + person.getId();
                 }
+
+                Map<Integer, String> mapChargeBehavior = this.powerEventGeneretor.fetchRandomDayChargingBehavior(dayType, mapPhoneCharge);
 
                 Map<Integer, List<ApplicationUse>> appInUse = this.applicationUseGenerator.randomDayApplicationDay(dictionaryDatesAppIds);
 
@@ -81,25 +87,35 @@ public class ContextGenerator {
                     Map<Integer, List<String>> mapScreenStatus
                             = this.applicationUseGenerator.analyseScreenStatus(new ArrayList<>(applications));
 
-                    Integer minutesLocked = this.applicationUseGenerator.minutesLocked(mapScreenStatus);
-                    Integer minutesUnlocked = this.applicationUseGenerator.minutesUnlocked(mapScreenStatus);
-
                     //DeviceContext
                     String appHighUseTime = "";
                     Long applicationUseTime = 0L;
                     String applicationCategoryTopInUse = "";
                     Long categoryUseTime = 0L;
-                    Double batteryLevel;
                     //Notification
-                    String powerEvent;
-                    String useTime;
+                    String powerEvent = mapChargeBehavior.get(i);
+                    batteryLevel = this.powerEventGeneretor.generateBatteryLevel(batteryLevel, powerEvent);
+                    //String useTime;
+                    Integer minutesLocked = 0;
+                    Integer minutesUnlocked = 0;
 
-                    if (null != applications && !applications.isEmpty()) {
-                        Object[] infoScreen = this.applicationUseGenerator.calculateScreeStatus(new ArrayList<>(applications));
-                        appHighUseTime = (String) infoScreen[0];
-                        applicationUseTime = (Long) infoScreen[1];
-                        applicationCategoryTopInUse = (String) infoScreen[2];
-                        categoryUseTime = (Long) infoScreen[3];
+                    if ((batteryLevel == 0 && batteryLevelControl != 0) || batteryLevel > 0) {
+                        if (null != applications && !applications.isEmpty()) {
+                            Object[] infoScreen = this.applicationUseGenerator.calculateScreeStatus(new ArrayList<>(applications));
+                            appHighUseTime = (String) infoScreen[0];
+                            applicationUseTime = (Long) infoScreen[1];
+                            applicationCategoryTopInUse = (String) infoScreen[2];
+                            categoryUseTime = (Long) infoScreen[3];
+                            minutesLocked = this.applicationUseGenerator.minutesLocked(mapScreenStatus);
+                            minutesUnlocked = this.applicationUseGenerator.minutesUnlocked(mapScreenStatus);
+                        }
+                    } else {
+                        appHighUseTime = "";
+                        applicationUseTime = 0L;
+                        applicationCategoryTopInUse = "";
+                        categoryUseTime = 0L;
+                        minutesLocked = 60;
+                        minutesUnlocked = 0;
                     }
 
                     Object[] arrayObj = {
@@ -112,12 +128,15 @@ public class ContextGenerator {
                         /*6*/ applicationCategoryTopInUse,
                         /*7*/ categoryUseTime,
                         /*8*/ appHighUseTime,
-                        /*9*/ applicationUseTime
+                        /*9*/ applicationUseTime,
+                        /*10*/ powerEvent,
+                        /*11*/ batteryLevel
                     };
 
                     printSb(arrayObj);
 
                     cal.add(Calendar.HOUR_OF_DAY, 1);
+                    batteryLevelControl = batteryLevel.doubleValue();
                 }
             }
         }
@@ -155,6 +174,10 @@ public class ContextGenerator {
         sb.append((String) payload[8]);
         sb.append(";");
         sb.append((Long) payload[9]);
+        sb.append(";");
+        sb.append((String) payload[10]);
+        sb.append(";");
+        sb.append((Double) payload[11]);
         System.out.println(sb);
     }
 

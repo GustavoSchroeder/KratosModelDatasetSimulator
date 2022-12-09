@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -56,7 +57,7 @@ public class PowerEventGeneretor {
                 }
 
                 if (null == mapPhoneCharge.get(dayType).get(day).get(startDate.get(Calendar.HOUR))) {
-                    mapPhoneCharge.get(dayType).get(day).put(startDate.get(Calendar.HOUR), "Charged");
+                    mapPhoneCharge.get(dayType).get(day).put(startDate.get(Calendar.HOUR), "Charging");
                 }
 
                 startDate.add(Calendar.HOUR_OF_DAY, 1);
@@ -70,7 +71,7 @@ public class PowerEventGeneretor {
                         + endDate.get(Calendar.YEAR)
                         + endDate.get(Calendar.HOUR) + "";
 
-                System.out.println(start + ";" + end);
+                //System.out.println(start + ";" + end);
             } while (!start.equalsIgnoreCase(end));
         }
 
@@ -81,14 +82,26 @@ public class PowerEventGeneretor {
                 String key1 = entry1.getKey();
                 Map<Integer, String> value1 = entry1.getValue();
                 for (int i = 0; i < 24; i++) {
-                    if(null == mapPhoneCharge.get(key).get(key1).get(i)){
+                    if (null == mapPhoneCharge.get(key).get(key1).get(i)) {
                         mapPhoneCharge.get(key).get(key1).put(i, "Discharging");
                     }
                 }
             }
         }
-        
+
         return mapPhoneCharge;
+    }
+
+    public Map<Integer, String> fetchRandomDayChargingBehavior(String dayType,
+            Map<String, Map<String, Map<Integer, String>>> mapPhoneCharge) {
+        
+        Map<String, Map<Integer, String>> mapDays = mapPhoneCharge.get(dayType);
+
+        List<String> keySet = new ArrayList<>(mapDays.keySet());
+        Random rand = new Random();
+        Integer n = rand.nextInt((keySet.size()));
+        
+        return mapDays.get(keySet.get(n));
     }
 
     private List<PhoneCharge> fetchPhoneChargeInfo(Long idPerson) {
@@ -104,4 +117,21 @@ public class PowerEventGeneretor {
         }
     }
 
+    public Double generateBatteryLevel(Double juice, String event){
+        //battery charges 2 hours https://onsitego.com/blog/5-mistakes-people-make-charging-phone/
+        //Battery lasts 24 hours https://www.jmir.org/2018/7/e10131/
+        if(event.equals("Charging")){
+            juice += 40.0;
+            if(juice > 100.0){
+                juice = 100.0;
+            }
+        }else{
+            juice -= ((Integer) 100/24);
+            if(juice < 0 ){
+                juice = 0.0;
+            }
+        }
+        return juice;
+    }
+    
 }
