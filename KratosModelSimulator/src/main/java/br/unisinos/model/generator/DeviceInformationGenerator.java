@@ -204,7 +204,7 @@ public class DeviceInformationGenerator {
                 Calendar finalDate = Calendar.getInstance();
                 finalDate.setTime(phoneLock.getEndTime());
                 
-                Integer[] payload = {initialDate.get(Calendar.HOUR), finalDate.get(Calendar.HOUR)};
+                Integer[] payload = {initialDate.get(Calendar.HOUR_OF_DAY), finalDate.get(Calendar.HOUR_OF_DAY)};
                 hoursPhoneLock.add(payload);
             }
         }

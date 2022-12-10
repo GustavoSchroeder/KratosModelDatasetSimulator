@@ -7,7 +7,6 @@ package br.unisinos.model;
 import br.unisinos.pojo.ContextInformation.Notification;
 import br.unisinos.pojo.Person;
 import br.unisinos.util.PersonUtil;
-import br.unisinos.util.FileUtil;
 import br.unisinos.util.JPAUtil;
 import br.unisinos.util.TimeUtil;
 import java.io.BufferedReader;

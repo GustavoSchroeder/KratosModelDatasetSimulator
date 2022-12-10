@@ -41,7 +41,6 @@ public class PowerEventGeneretor {
             String end = "";
             do {
                 if (endDate.before(startDate)) {
-                    System.out.println("stop");
                     break;
                 }
 
@@ -56,20 +55,20 @@ public class PowerEventGeneretor {
                     mapPhoneCharge.get(dayType).put(day, new HashMap<>());
                 }
 
-                if (null == mapPhoneCharge.get(dayType).get(day).get(startDate.get(Calendar.HOUR))) {
-                    mapPhoneCharge.get(dayType).get(day).put(startDate.get(Calendar.HOUR), "Charging");
+                if (null == mapPhoneCharge.get(dayType).get(day).get(startDate.get(Calendar.HOUR_OF_DAY))) {
+                    mapPhoneCharge.get(dayType).get(day).put(startDate.get(Calendar.HOUR_OF_DAY), "Charging");
                 }
 
                 startDate.add(Calendar.HOUR_OF_DAY, 1);
 
                 start = (startDate.get(Calendar.DAY_OF_MONTH) + ""
                         + startDate.get(Calendar.MONTH)
-                        + startDate.get(Calendar.YEAR) + startDate.get(Calendar.HOUR)
+                        + startDate.get(Calendar.YEAR) + startDate.get(Calendar.HOUR_OF_DAY)
                         + "");
                 end = endDate.get(Calendar.DAY_OF_MONTH) + ""
                         + endDate.get(Calendar.MONTH)
                         + endDate.get(Calendar.YEAR)
-                        + endDate.get(Calendar.HOUR) + "";
+                        + endDate.get(Calendar.HOUR_OF_DAY) + "";
 
                 //System.out.println(start + ";" + end);
             } while (!start.equalsIgnoreCase(end));

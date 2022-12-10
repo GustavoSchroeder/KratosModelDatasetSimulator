@@ -5,6 +5,7 @@
 package br.unisinos.model.generator;
 
 import br.unisinos.pojo.ContextInformation.ApplicationUse;
+import br.unisinos.pojo.ContextInformation.Notification;
 import br.unisinos.pojo.ContextInformation.PhoneCharge;
 import br.unisinos.pojo.ContextInformation.PhoneLock;
 import br.unisinos.pojo.Person;
@@ -27,6 +28,7 @@ public class ContextGenerator {
     private ApplicationUseGenerator applicationUseGenerator;
     private DeviceInformationGenerator deviceInformationGenerator;
     private PowerEventGeneretor powerEventGeneretor;
+    private NotificationContextGenerator notificationContextGenerator;
     private PersonUtil personUtil;
     private TimeUtil timeUtil;
 
@@ -35,6 +37,7 @@ public class ContextGenerator {
         this.personUtil = new PersonUtil();
         this.deviceInformationGenerator = new DeviceInformationGenerator();
         this.powerEventGeneretor = new PowerEventGeneretor();
+        this.notificationContextGenerator = new NotificationContextGenerator();
         this.timeUtil = new TimeUtil();
     }
 
@@ -58,6 +61,9 @@ public class ContextGenerator {
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
+
+            Map<String, Map<String, Map<Integer, List<Notification>>>> mapNotification
+                    = this.notificationContextGenerator.generatePowerEventInformation(person.getId());
 
             Map<String, Map<String, Map<Integer, String>>> mapPhoneCharge
                     = this.powerEventGeneretor.generatePowerEventInformation(person.getId());
@@ -92,7 +98,13 @@ public class ContextGenerator {
                     Long applicationUseTime = 0L;
                     String applicationCategoryTopInUse = "";
                     Long categoryUseTime = 0L;
+
                     //Notification
+                    Object[] notificationInfo = this.notificationContextGenerator.buildNotificationInfo(dayType, i, mapNotification);
+                    Integer notificationQuantity = (Integer) notificationInfo[0];
+                    String categoryMaxNotifications = (String) notificationInfo[1];
+                    Integer categoryNotificationsNumb = (Integer) notificationInfo[2];
+
                     String powerEvent = mapChargeBehavior.get(i);
                     batteryLevel = this.powerEventGeneretor.generateBatteryLevel(batteryLevel, powerEvent);
                     //String useTime;
@@ -130,7 +142,10 @@ public class ContextGenerator {
                         /*8*/ appHighUseTime,
                         /*9*/ applicationUseTime,
                         /*10*/ powerEvent,
-                        /*11*/ batteryLevel
+                        /*11*/ batteryLevel,
+                        /*12*/ notificationQuantity,
+                        /*13*/ categoryMaxNotifications,
+                        /*14*/ categoryNotificationsNumb
                     };
 
                     printSb(arrayObj);
@@ -147,8 +162,16 @@ public class ContextGenerator {
         sb.append("person;");
         sb.append("datetime;");
         sb.append("daytype;");
+        sb.append("minutesUnlocked;");
         sb.append("minuteslocked;");
-        sb.append("minutesunlocked;");
+        sb.append("applicationCategoryTopInUse;");
+        sb.append("categoryUseTime;");
+        sb.append("appHighUseTime;");
+        sb.append("applicationUseTime;");
+        sb.append("batteryLevel;");
+        sb.append("notificationQuantity;");
+        sb.append("categoryMaxNotifications;");
+        sb.append("categoryNotificationsNumb;");
         System.out.println(sb);
     }
 
@@ -178,6 +201,12 @@ public class ContextGenerator {
         sb.append((String) payload[10]);
         sb.append(";");
         sb.append((Double) payload[11]);
+        sb.append(";");
+        sb.append((Integer) payload[12]);
+        sb.append(";");
+        sb.append((String) payload[13]);
+        sb.append(";");
+        sb.append((Integer) payload[14]);
         System.out.println(sb);
     }
 
