@@ -29,6 +29,7 @@ public class ContextGenerator {
     private DeviceInformationGenerator deviceInformationGenerator;
     private PowerEventGeneretor powerEventGeneretor;
     private NotificationContextGenerator notificationContextGenerator;
+    private AmbientLightGenerator ambientLightGenerator;
     private PersonUtil personUtil;
     private TimeUtil timeUtil;
 
@@ -38,18 +39,13 @@ public class ContextGenerator {
         this.deviceInformationGenerator = new DeviceInformationGenerator();
         this.powerEventGeneretor = new PowerEventGeneretor();
         this.notificationContextGenerator = new NotificationContextGenerator();
+        this.ambientLightGenerator = new AmbientLightGenerator();
         this.timeUtil = new TimeUtil();
     }
 
     public void generateContext() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         List<Person> persons = this.personUtil.fetchPersons();
-
-        Map<Long, Map<String, Map<Integer, Map<Integer, List<PhoneLock>>>>> dictionaryScreenStatus
-                = this.deviceInformationGenerator.organizeScreenStatus(persons);
-
-        Map<Long, Map<String, Map<Integer, Map<Integer, List<PhoneCharge>>>>> dictionaryPowerEvents
-                = this.deviceInformationGenerator.organizePowerEvents(persons);
 
         printHeader();
 
@@ -68,6 +64,9 @@ public class ContextGenerator {
             Map<String, Map<String, Map<Integer, String>>> mapPhoneCharge
                     = this.powerEventGeneretor.generatePowerEventInformation(person.getId());
 
+            Map<String, Map<String, Map<Integer, String>>> mapAmbientLight
+                    = this.ambientLightGenerator.generateLightInfo(person.getId());
+
             String lastDayTypeControl = "";
             Map<String, List<Long>> dictionaryDatesAppIds = new HashMap<>();
 
@@ -83,6 +82,8 @@ public class ContextGenerator {
                 Map<Integer, String> mapChargeBehavior = this.powerEventGeneretor.fetchRandomDayChargingBehavior(dayType, mapPhoneCharge);
 
                 Map<Integer, List<ApplicationUse>> appInUse = this.applicationUseGenerator.randomDayApplicationDay(dictionaryDatesAppIds);
+
+                Map<Integer, String> ambientLightDictionary = this.ambientLightGenerator.fetchRandomDayAmbientLight(dayType, mapAmbientLight);
 
                 for (int i = 0; i < 24; i++) {
                     List<ApplicationUse> applications = appInUse.get(i);
@@ -130,22 +131,27 @@ public class ContextGenerator {
                         minutesUnlocked = 0;
                     }
 
+                    //General Context
+                    String ambientLight = ambientLightDictionary.get(i);
+
                     Object[] arrayObj = {
-                        /*0*/person.getId(),
-                        /*1*/ sdf.format(cal.getTime()),
-                        /*2*/ dayType,
-                        /*3*/ minutesLocked,
-                        /*4*/ minutesUnlocked,
-                        /*5*/ (minutesLocked == 61 ? "Not Used" : "Used"),
-                        /*6*/ applicationCategoryTopInUse,
-                        /*7*/ categoryUseTime,
-                        /*8*/ appHighUseTime,
-                        /*9*/ applicationUseTime,
-                        /*10*/ powerEvent,
-                        /*11*/ batteryLevel,
-                        /*12*/ notificationQuantity,
-                        /*13*/ categoryMaxNotifications,
-                        /*14*/ categoryNotificationsNumb
+                        /*0*/ person.getId(),
+                        /*1*/ sdf.format(cal.getTime()), //DateTime
+                        /*2*/ defineDayShift(cal),
+                        /*3*/ dayType,
+                        /*4*/ minutesLocked, //UseTime
+                        /*5*/ minutesUnlocked,
+                        /*6*/ (minutesLocked == 61 ? "Not Used" : "Used"),
+                        /*7*/ applicationCategoryTopInUse, //ApplicationCategoryTopInUse
+                        /*8*/ categoryUseTime, //ApplicationTopTimeSpent
+                        /*9*/ appHighUseTime, //AppHighUseTime
+                        /*10*/ applicationUseTime, //AppHighTimeSpent
+                        /*11*/ powerEvent, //PowerEvent
+                        /*12*/ batteryLevel, //BatteryLevel
+                        /*13*/ notificationQuantity, //Notification
+                        /*14*/ categoryMaxNotifications, //Notification
+                        /*15*/ categoryNotificationsNumb, //Notification
+                        /*16*/ ambientLight
                     };
 
                     printSb(arrayObj);
@@ -157,9 +163,24 @@ public class ContextGenerator {
         }
     }
 
+    private String defineDayShift(Calendar cal) {
+        Integer hour = cal.get(Calendar.HOUR_OF_DAY);
+
+        if (hour >= 6 && hour < 12) {
+            return "Morning";
+        } else if (hour >= 12 && hour < 17) {
+            return "Afternoon";
+        } else if (hour >= 17 && hour < 20) {
+            return "Evening";
+        } else {
+            return "Night";
+        }
+    }
+
     private void printHeader() {
         StringBuilder sb = new StringBuilder();
         sb.append("person;");
+        sb.append("DayShift;");
         sb.append("datetime;");
         sb.append("daytype;");
         sb.append("minutesUnlocked;");
@@ -172,41 +193,47 @@ public class ContextGenerator {
         sb.append("notificationQuantity;");
         sb.append("categoryMaxNotifications;");
         sb.append("categoryNotificationsNumb;");
+        sb.append("ambientLight;");
         System.out.println(sb);
     }
 
     private void printSb(Object[] payload) {
         StringBuilder sb = new StringBuilder();
         sb = new StringBuilder();
-        sb.append((Long) payload[0]);
+        Integer index = 0;
+        sb.append((Long) payload[index++]);
         sb.append(";");
-        sb.append((String) payload[1]); //sdf.format(cal.getTime())
+        sb.append((String) payload[index++]); //sdf.format(cal.getTime())
         sb.append(";");
-        sb.append((String) payload[2]); //dayType
+        sb.append((String) payload[index++]); //sdf.format(cal.getTime())
         sb.append(";");
-        sb.append((Integer) payload[3]); //minutesLocked
+        sb.append((String) payload[index++]); //dayType
         sb.append(";");
-        sb.append((Integer) payload[4]); //minutesUnlocked
+        sb.append((Integer) payload[index++]); //minutesLocked
         sb.append(";");
-        sb.append((String) payload[5]);
+        sb.append((Integer) payload[index++]); //minutesUnlocked
         sb.append(";");
-        sb.append((String) payload[6]);
+        sb.append((String) payload[index++]);
         sb.append(";");
-        sb.append((Long) payload[7]);
+        sb.append((String) payload[index++]);
         sb.append(";");
-        sb.append((String) payload[8]);
+        sb.append((Long) payload[index++]);
         sb.append(";");
-        sb.append((Long) payload[9]);
+        sb.append((String) payload[index++]);
         sb.append(";");
-        sb.append((String) payload[10]);
+        sb.append((Long) payload[index++]);
         sb.append(";");
-        sb.append((Double) payload[11]);
+        sb.append((String) payload[index++]);
         sb.append(";");
-        sb.append((Integer) payload[12]);
+        sb.append((Double) payload[index++]);
         sb.append(";");
-        sb.append((String) payload[13]);
+        sb.append((Integer) payload[index++]);
         sb.append(";");
-        sb.append((Integer) payload[14]);
+        sb.append((String) payload[index++]);
+        sb.append(";");
+        sb.append((Integer) payload[index++]);
+        sb.append(";");
+        sb.append((String) payload[index++]);
         System.out.println(sb);
     }
 
@@ -248,5 +275,21 @@ public class ContextGenerator {
 
     public void setPowerEventGeneretor(PowerEventGeneretor powerEventGeneretor) {
         this.powerEventGeneretor = powerEventGeneretor;
+    }
+
+    public NotificationContextGenerator getNotificationContextGenerator() {
+        return notificationContextGenerator;
+    }
+
+    public void setNotificationContextGenerator(NotificationContextGenerator notificationContextGenerator) {
+        this.notificationContextGenerator = notificationContextGenerator;
+    }
+
+    public AmbientLightGenerator getAmbientLightGenerator() {
+        return ambientLightGenerator;
+    }
+
+    public void setAmbientLightGenerator(AmbientLightGenerator ambientLightGenerator) {
+        this.ambientLightGenerator = ambientLightGenerator;
     }
 }

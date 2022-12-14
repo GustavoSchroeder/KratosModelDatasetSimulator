@@ -4,7 +4,6 @@
  */
 package br.unisinos.model;
 
-import br.unisinos.pojo.ContextInformation.ReportedTimeSpentSmartphone;
 import br.unisinos.pojo.Person;
 import br.unisinos.pojo.Scales.DepressionAnxietyScale;
 import br.unisinos.util.JPAUtil;
