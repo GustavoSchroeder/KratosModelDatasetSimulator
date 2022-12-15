@@ -6,8 +6,6 @@ package br.unisinos.model.generator;
 
 import br.unisinos.pojo.ContextInformation.ApplicationUse;
 import br.unisinos.pojo.ContextInformation.Notification;
-import br.unisinos.pojo.ContextInformation.PhoneCharge;
-import br.unisinos.pojo.ContextInformation.PhoneLock;
 import br.unisinos.pojo.Person;
 import br.unisinos.util.PersonUtil;
 import br.unisinos.util.TimeUtil;
@@ -30,6 +28,7 @@ public class ContextGenerator {
     private PowerEventGeneretor powerEventGeneretor;
     private NotificationContextGenerator notificationContextGenerator;
     private AmbientLightGenerator ambientLightGenerator;
+    private EMAGenerator emaGenerator;
     private PersonUtil personUtil;
     private TimeUtil timeUtil;
 
@@ -40,6 +39,7 @@ public class ContextGenerator {
         this.powerEventGeneretor = new PowerEventGeneretor();
         this.notificationContextGenerator = new NotificationContextGenerator();
         this.ambientLightGenerator = new AmbientLightGenerator();
+        this.emaGenerator = new EMAGenerator();
         this.timeUtil = new TimeUtil();
     }
 
@@ -48,6 +48,8 @@ public class ContextGenerator {
         List<Person> persons = this.personUtil.fetchPersons();
 
         printHeader();
+
+        Map<String, List<Integer>> dictionaryMoodEMA = this.emaGenerator.createDictionaryMood();
 
         for (Person person : persons) {
             Calendar cal = Calendar.getInstance();
@@ -72,6 +74,9 @@ public class ContextGenerator {
 
             Double batteryLevel = ((Integer) (new Random().nextInt(70) + 30)).doubleValue();
             Double batteryLevelControl = batteryLevel;
+
+            //EMA
+            Integer moodEMA = null;
             for (int j = 0; j < 30; j++) {
                 String dayType = this.timeUtil.checkWeekDay(cal.getTime());
                 if (!lastDayTypeControl.equalsIgnoreCase(dayType + ";" + person.getId())) {
@@ -133,25 +138,37 @@ public class ContextGenerator {
 
                     //General Context
                     String ambientLight = ambientLightDictionary.get(i);
+                    String dayShift = this.timeUtil.defineDayShift(cal);
+
+                    //EMA
+                    
+                    //The value change each time the DayShift changes or when the value is null
+                    if (i == 6 || i == 12 || i == 17 || i == 20 || null == moodEMA) {
+                        moodEMA = this.emaGenerator.fetchRandomEMA(dayType, dictionaryMoodEMA);
+                    }
 
                     Object[] arrayObj = {
-                        /*0*/ person.getId(),
-                        /*1*/ sdf.format(cal.getTime()), //DateTime
-                        /*2*/ defineDayShift(cal),
-                        /*3*/ dayType,
-                        /*4*/ minutesLocked, //UseTime
-                        /*5*/ minutesUnlocked,
-                        /*6*/ (minutesLocked == 61 ? "Not Used" : "Used"),
-                        /*7*/ applicationCategoryTopInUse, //ApplicationCategoryTopInUse
-                        /*8*/ categoryUseTime, //ApplicationTopTimeSpent
-                        /*9*/ appHighUseTime, //AppHighUseTime
-                        /*10*/ applicationUseTime, //AppHighTimeSpent
-                        /*11*/ powerEvent, //PowerEvent
-                        /*12*/ batteryLevel, //BatteryLevel
-                        /*13*/ notificationQuantity, //Notification
-                        /*14*/ categoryMaxNotifications, //Notification
-                        /*15*/ categoryNotificationsNumb, //Notification
-                        /*16*/ ambientLight
+                        /*0*/person.getId(),
+                        /*1*/ person.getAge(),
+                        /*2*/ person.getEducationalLevel(),
+                        /*3*/ person.getGender(),
+                        /*4*/ sdf.format(cal.getTime()), //DateTime
+                        /*5*/ dayShift,
+                        /*6*/ dayType,
+                        /*7*/ minutesLocked, //UseTime
+                        /*8*/ minutesUnlocked,
+                        /*9*/ (minutesLocked == 61 ? "Not Used" : "Used"),
+                        /*10*/ applicationCategoryTopInUse, //ApplicationCategoryTopInUse
+                        /*11*/ categoryUseTime, //ApplicationTopTimeSpent
+                        /*12*/ appHighUseTime, //AppHighUseTime
+                        /*13*/ applicationUseTime, //AppHighTimeSpent
+                        /*14*/ powerEvent, //PowerEvent
+                        /*15*/ batteryLevel, //BatteryLevel
+                        /*16*/ notificationQuantity, //Notification
+                        /*17*/ categoryMaxNotifications, //Notification
+                        /*18*/ categoryNotificationsNumb, //Notification
+                        /*19*/ ambientLight,
+                        /*20*/ moodEMA
                     };
 
                     printSb(arrayObj);
@@ -163,23 +180,12 @@ public class ContextGenerator {
         }
     }
 
-    private String defineDayShift(Calendar cal) {
-        Integer hour = cal.get(Calendar.HOUR_OF_DAY);
-
-        if (hour >= 6 && hour < 12) {
-            return "Morning";
-        } else if (hour >= 12 && hour < 17) {
-            return "Afternoon";
-        } else if (hour >= 17 && hour < 20) {
-            return "Evening";
-        } else {
-            return "Night";
-        }
-    }
-
     private void printHeader() {
         StringBuilder sb = new StringBuilder();
         sb.append("person;");
+        sb.append("age;");
+        sb.append("educationLevel;");
+        sb.append("gender;");
         sb.append("DayShift;");
         sb.append("datetime;");
         sb.append("daytype;");
@@ -194,6 +200,7 @@ public class ContextGenerator {
         sb.append("categoryMaxNotifications;");
         sb.append("categoryNotificationsNumb;");
         sb.append("ambientLight;");
+        sb.append("moodEMA;");
         System.out.println(sb);
     }
 
@@ -202,6 +209,12 @@ public class ContextGenerator {
         sb = new StringBuilder();
         Integer index = 0;
         sb.append((Long) payload[index++]);
+        sb.append(";");
+        sb.append((Integer) payload[index++]);
+        sb.append(";");
+        sb.append((Integer) payload[index++]);
+        sb.append(";");
+        sb.append((String) payload[index++]);
         sb.append(";");
         sb.append((String) payload[index++]); //sdf.format(cal.getTime())
         sb.append(";");
@@ -234,6 +247,8 @@ public class ContextGenerator {
         sb.append((Integer) payload[index++]);
         sb.append(";");
         sb.append((String) payload[index++]);
+        sb.append(";");
+        sb.append((Integer) payload[index++]);
         System.out.println(sb);
     }
 
