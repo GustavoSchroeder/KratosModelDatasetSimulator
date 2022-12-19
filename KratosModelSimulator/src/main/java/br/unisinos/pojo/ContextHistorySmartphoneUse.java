@@ -28,18 +28,20 @@ public class ContextHistorySmartphoneUse implements Serializable {
     private Integer appMostUsedTimeInUse;
     private String appCategoryTopUse;
     private String applicationTopUse;
-    private Integer meanUseTimeApplications;
+    private Integer applicationUseTime;
 
     //Device Information
+    private Integer minutesUnlocked;
+    private Integer minutesLocked;
+    private String deviceStatus;
     private Double batteryLevel;
     private String powerEvent;
     private String screenStatus;
 
     //Notification
     private Integer quantityNotifications;
-    private String appTopNotify;
-    private Integer notificationIntervals;
-    private String categoryTopNotifications;
+    private String categoryMaxNotifications;
+    private Integer categoryNotificationsNumb;
 
     //Mood
     private Integer sleepHoursEMA;
@@ -49,9 +51,9 @@ public class ContextHistorySmartphoneUse implements Serializable {
 
     //General Context
     private String ambientLight;
-    private Integer timeSpentDark;
     private Date dateTime;
     private String dayShift;
+    private String dayType;
     private String place;
 
     //Problematic Smartphone Use
@@ -72,58 +74,30 @@ public class ContextHistorySmartphoneUse implements Serializable {
 
     public ContextHistorySmartphoneUse() {
     }
-    
-    public ContextHistorySmartphoneUse(Person person,
-            Integer appMostUsedTimeInUse,
-            String appCategoryTopUse,
-            String applicationTopUse,
-            Integer meanUseTimeApplications,
-            Double batteryLevel,
-            String powerEvent,
-            String screenStatus,
-            Integer quantityNotifications,
-            String appTopNotify,
-            Integer notificationIntervals,
-            String categoryTopNotifications,
-            Integer sleepHoursEMA,
-            Integer sleepRateEMA,
-            Integer stressLevelEMA,
-            Integer moodEMA,
-            String ambientLight,
-            Integer timeSpentDark,
-            Date dateTime,
-            String dayShift,
-            String place,
-            Integer totalResultSAS,
-            Boolean smartphoneAddicted,
-            Integer totalResultNomophobia,
-            String nomophobiaLevel,
-            Integer stressScore,
-            Integer anxietyScore,
-            Integer depressionScore,
-            String stressStatus,
-            String anxietyStatus,
-            String depressionStatus) {
+
+    public ContextHistorySmartphoneUse(Person person, Integer appMostUsedTimeInUse, String appCategoryTopUse, String applicationTopUse, Integer applicationUseTime, Integer minutesUnlocked, Integer minutesLocked, String deviceStatus, Double batteryLevel, String powerEvent, String screenStatus, Integer quantityNotifications, String categoryMaxNotifications, Integer categoryNotificationsNumb, Integer sleepHoursEMA, Integer sleepRateEMA, Integer stressLevelEMA, Integer moodEMA, String ambientLight, Date dateTime, String dayShift, String dayType, String place, Integer totalResultSAS, Boolean smartphoneAddicted, Integer totalResultNomophobia, String nomophobiaLevel, Integer stressScore, Integer anxietyScore, Integer depressionScore, String stressStatus, String anxietyStatus, String depressionStatus) {
         this.person = person;
         this.appMostUsedTimeInUse = appMostUsedTimeInUse;
         this.appCategoryTopUse = appCategoryTopUse;
         this.applicationTopUse = applicationTopUse;
-        this.meanUseTimeApplications = meanUseTimeApplications;
+        this.applicationUseTime = applicationUseTime;
+        this.minutesUnlocked = minutesUnlocked;
+        this.minutesLocked = minutesLocked;
+        this.deviceStatus = deviceStatus;
         this.batteryLevel = batteryLevel;
         this.powerEvent = powerEvent;
         this.screenStatus = screenStatus;
         this.quantityNotifications = quantityNotifications;
-        this.appTopNotify = appTopNotify;
-        this.notificationIntervals = notificationIntervals;
-        this.categoryTopNotifications = categoryTopNotifications;
+        this.categoryMaxNotifications = categoryMaxNotifications;
+        this.categoryNotificationsNumb = categoryNotificationsNumb;
         this.sleepHoursEMA = sleepHoursEMA;
         this.sleepRateEMA = sleepRateEMA;
         this.stressLevelEMA = stressLevelEMA;
         this.moodEMA = moodEMA;
         this.ambientLight = ambientLight;
-        this.timeSpentDark = timeSpentDark;
         this.dateTime = dateTime;
         this.dayShift = dayShift;
+        this.dayType = dayType;
         this.place = place;
         this.totalResultSAS = totalResultSAS;
         this.smartphoneAddicted = smartphoneAddicted;
@@ -180,12 +154,36 @@ public class ContextHistorySmartphoneUse implements Serializable {
         this.applicationTopUse = applicationTopUse;
     }
 
-    public Integer getMeanUseTimeApplications() {
-        return meanUseTimeApplications;
+    public Integer getApplicationUseTime() {
+        return applicationUseTime;
     }
 
-    public void setMeanUseTimeApplications(Integer meanUseTimeApplications) {
-        this.meanUseTimeApplications = meanUseTimeApplications;
+    public void setApplicationUseTime(Integer applicationUseTime) {
+        this.applicationUseTime = applicationUseTime;
+    }
+
+    public Integer getMinutesUnlocked() {
+        return minutesUnlocked;
+    }
+
+    public void setMinutesUnlocked(Integer minutesUnlocked) {
+        this.minutesUnlocked = minutesUnlocked;
+    }
+
+    public Integer getMinutesLocked() {
+        return minutesLocked;
+    }
+
+    public void setMinutesLocked(Integer minutesLocked) {
+        this.minutesLocked = minutesLocked;
+    }
+
+    public String getDeviceStatus() {
+        return deviceStatus;
+    }
+
+    public void setDeviceStatus(String deviceStatus) {
+        this.deviceStatus = deviceStatus;
     }
 
     public Double getBatteryLevel() {
@@ -220,28 +218,20 @@ public class ContextHistorySmartphoneUse implements Serializable {
         this.quantityNotifications = quantityNotifications;
     }
 
-    public String getAppTopNotify() {
-        return appTopNotify;
+    public String getCategoryMaxNotifications() {
+        return categoryMaxNotifications;
     }
 
-    public void setAppTopNotify(String appTopNotify) {
-        this.appTopNotify = appTopNotify;
+    public void setCategoryMaxNotifications(String categoryMaxNotifications) {
+        this.categoryMaxNotifications = categoryMaxNotifications;
     }
 
-    public Integer getNotificationIntervals() {
-        return notificationIntervals;
+    public Integer getCategoryNotificationsNumb() {
+        return categoryNotificationsNumb;
     }
 
-    public void setNotificationIntervals(Integer notificationIntervals) {
-        this.notificationIntervals = notificationIntervals;
-    }
-
-    public String getCategoryTopNotifications() {
-        return categoryTopNotifications;
-    }
-
-    public void setCategoryTopNotifications(String categoryTopNotifications) {
-        this.categoryTopNotifications = categoryTopNotifications;
+    public void setCategoryNotificationsNumb(Integer categoryNotificationsNumb) {
+        this.categoryNotificationsNumb = categoryNotificationsNumb;
     }
 
     public Integer getSleepHoursEMA() {
@@ -284,15 +274,7 @@ public class ContextHistorySmartphoneUse implements Serializable {
         this.ambientLight = ambientLight;
     }
 
-    public Integer getTimeSpentDark() {
-        return timeSpentDark;
-    }
-
-    public void setTimeSpentDark(Integer timeSpentDark) {
-        this.timeSpentDark = timeSpentDark;
-    }
-
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(javax.persistence.TemporalType.DATE)
     public Date getDateTime() {
         return dateTime;
     }
@@ -307,6 +289,14 @@ public class ContextHistorySmartphoneUse implements Serializable {
 
     public void setDayShift(String dayShift) {
         this.dayShift = dayShift;
+    }
+
+    public String getDayType() {
+        return dayType;
+    }
+
+    public void setDayType(String dayType) {
+        this.dayType = dayType;
     }
 
     public String getPlace() {

@@ -4,9 +4,11 @@
  */
 package br.unisinos.model.generator;
 
+import br.unisinos.pojo.ContextHistorySmartphoneUse;
 import br.unisinos.pojo.ContextInformation.ApplicationUse;
 import br.unisinos.pojo.ContextInformation.Notification;
 import br.unisinos.pojo.Person;
+import br.unisinos.util.JPAUtil;
 import br.unisinos.util.PersonUtil;
 import br.unisinos.util.TimeUtil;
 import java.text.SimpleDateFormat;
@@ -16,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 /**
  *
@@ -50,7 +54,12 @@ public class ContextGenerator {
         printHeader();
 
         Map<String, List<Integer>> dictionaryMoodEMA = this.emaGenerator.createDictionaryMood();
+        Map<String, List<Integer>> dictionaryStress = this.emaGenerator.createDictionaryStress();
+        Object[] dictionariesSleep = this.emaGenerator.createDictionarySleep();
+        Map<String, List<Integer>> dictionarySleepHours = (Map<String, List<Integer>>) dictionariesSleep[0];
+        Map<String, List<Integer>> dictionarySleepRate = (Map<String, List<Integer>>) dictionariesSleep[1];
 
+        List<ContextHistorySmartphoneUse> listContextHistory = new ArrayList<>();
         for (Person person : persons) {
             Calendar cal = Calendar.getInstance();
 
@@ -77,6 +86,9 @@ public class ContextGenerator {
 
             //EMA
             Integer moodEMA = null;
+            Integer stressEMA = null;
+            Integer sleepHoursEMA = null;
+            Integer sleepRate = null;
             for (int j = 0; j < 30; j++) {
                 String dayType = this.timeUtil.checkWeekDay(cal.getTime());
                 if (!lastDayTypeControl.equalsIgnoreCase(dayType + ";" + person.getId())) {
@@ -95,9 +107,6 @@ public class ContextGenerator {
                     if (null == applications) {
                         applications = new ArrayList<>();
                     }
-
-                    Map<Integer, List<String>> mapScreenStatus
-                            = this.applicationUseGenerator.analyseScreenStatus(new ArrayList<>(applications));
 
                     //DeviceContext
                     String appHighUseTime = "";
@@ -124,8 +133,9 @@ public class ContextGenerator {
                             applicationUseTime = (Long) infoScreen[1];
                             applicationCategoryTopInUse = (String) infoScreen[2];
                             categoryUseTime = (Long) infoScreen[3];
-                            minutesLocked = this.applicationUseGenerator.minutesLocked(mapScreenStatus);
-                            minutesUnlocked = this.applicationUseGenerator.minutesUnlocked(mapScreenStatus);
+                            Integer[] minutesLockedUnlocked = this.applicationUseGenerator.calculateApplications(new ArrayList<>(applications));
+                            minutesLocked = minutesLockedUnlocked[1];
+                            minutesUnlocked = minutesLockedUnlocked[0];
                         }
                     } else {
                         appHighUseTime = "";
@@ -141,10 +151,15 @@ public class ContextGenerator {
                     String dayShift = this.timeUtil.defineDayShift(cal);
 
                     //EMA
-                    
                     //The value change each time the DayShift changes or when the value is null
                     if (i == 6 || i == 12 || i == 17 || i == 20 || null == moodEMA) {
                         moodEMA = this.emaGenerator.fetchRandomEMA(dayType, dictionaryMoodEMA);
+                        stressEMA = this.emaGenerator.fetchRandomEMA(dayType, dictionaryStress);
+                    }
+
+                    if (i == 6 || null == sleepHoursEMA || null == sleepRate) {
+                        sleepHoursEMA = this.emaGenerator.fetchRandomEMA(dayType, dictionarySleepHours);
+                        sleepRate = this.emaGenerator.fetchRandomEMA(dayType, dictionarySleepRate);
                     }
 
                     Object[] arrayObj = {
@@ -155,9 +170,9 @@ public class ContextGenerator {
                         /*4*/ sdf.format(cal.getTime()), //DateTime
                         /*5*/ dayShift,
                         /*6*/ dayType,
-                        /*7*/ minutesLocked, //UseTime
-                        /*8*/ minutesUnlocked,
-                        /*9*/ (minutesLocked == 61 ? "Not Used" : "Used"),
+                        /*7*/ minutesUnlocked, //UseTime
+                        /*8*/ minutesLocked,
+                        /*9*/ ((minutesLocked == 61 || minutesLocked == 60) ? "Not Used" : "Used"),
                         /*10*/ applicationCategoryTopInUse, //ApplicationCategoryTopInUse
                         /*11*/ categoryUseTime, //ApplicationTopTimeSpent
                         /*12*/ appHighUseTime, //AppHighUseTime
@@ -168,11 +183,23 @@ public class ContextGenerator {
                         /*17*/ categoryMaxNotifications, //Notification
                         /*18*/ categoryNotificationsNumb, //Notification
                         /*19*/ ambientLight,
-                        /*20*/ moodEMA
+                        /*20*/ moodEMA,
+                        /*21*/ stressEMA,
+                        /*22*/ sleepHoursEMA,
+                        /*23*/ sleepRate
                     };
 
+                    ContextHistorySmartphoneUse ch = new ContextHistorySmartphoneUse();
+                    ch.setPerson(person);
+                    ch.setAppMostUsedTimeInUse(categoryUseTime);
+                    
+                    
                     printSb(arrayObj);
 
+                    //persistir no banco
+                    // ordernar maiores utilizadores de smartphone
+                    // adicionar SAS aos maiores utilizadores de forma randomica
+                    // 
                     cal.add(Calendar.HOUR_OF_DAY, 1);
                     batteryLevelControl = batteryLevel.doubleValue();
                 }
@@ -182,25 +209,30 @@ public class ContextGenerator {
 
     private void printHeader() {
         StringBuilder sb = new StringBuilder();
-        sb.append("person;");
-        sb.append("age;");
-        sb.append("educationLevel;");
-        sb.append("gender;");
-        sb.append("DayShift;");
-        sb.append("datetime;");
-        sb.append("daytype;");
-        sb.append("minutesUnlocked;");
-        sb.append("minuteslocked;");
-        sb.append("applicationCategoryTopInUse;");
-        sb.append("categoryUseTime;");
-        sb.append("appHighUseTime;");
-        sb.append("applicationUseTime;");
-        sb.append("batteryLevel;");
-        sb.append("notificationQuantity;");
-        sb.append("categoryMaxNotifications;");
-        sb.append("categoryNotificationsNumb;");
-        sb.append("ambientLight;");
-        sb.append("moodEMA;");
+        /*0*/ sb.append("person;");
+        /*1*/ sb.append("age;");
+        /*2*/ sb.append("educationLevel;");
+        /*3*/ sb.append("gender;");
+        /*4*/ sb.append("datetime;");
+        /*5*/ sb.append("DayShift;");
+        /*6*/ sb.append("daytype;");
+        /*7*/ sb.append("minutesUnlocked;");
+        /*8*/ sb.append("minuteslocked;");
+        /*9*/ sb.append("SmartphoneStatus;");
+        /*10*/ sb.append("applicationCategoryTopInUse;");
+        /*11*/ sb.append("categoryUseTime;");
+        /*12*/ sb.append("appHighUseTime;");
+        /*13*/ sb.append("applicationUseTime;");
+        /*14*/ sb.append("powerEvent;");
+        /*15*/ sb.append("batteryLevel;");
+        /*16*/ sb.append("notificationQuantity;");
+        /*17*/ sb.append("categoryMaxNotifications;");
+        /*18*/ sb.append("categoryNotificationsNumb;");
+        /*19*/ sb.append("ambientLight;");
+        /*20*/ sb.append("moodEMA;");
+        /*21*/ sb.append("stressEMA;");
+        /*22*/ sb.append("SleepHours;");
+        /*23*/ sb.append("SleepRate;");
         System.out.println(sb);
     }
 
@@ -249,8 +281,29 @@ public class ContextGenerator {
         sb.append((String) payload[index++]);
         sb.append(";");
         sb.append((Integer) payload[index++]);
+        sb.append(";");
+        sb.append((Integer) payload[index++]);
+        sb.append(";");
+        sb.append((Integer) payload[index++]);
+        sb.append(";");
+        sb.append((Integer) payload[index++]);
         System.out.println(sb);
     }
+
+    private void deleteContextBase() {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Query query = em.createQuery("DELETE FROM ContextHistorySmartphoneUse m");
+            query.executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+        } finally {
+            em.close();
+        }
+    }
+    
+    
 
     public ApplicationUseGenerator getApplicationUseGenerator() {
         return applicationUseGenerator;

@@ -30,6 +30,11 @@ public class AmbientLightGenerator {
 
     public Map<String, Map<String, Map<Integer, String>>> generateLightInfo(Long idPerson) {
         List<TimeDarkEnvironment> listDark = fetchTimeDarkEnvironment(idPerson);
+
+        if (listDark.isEmpty()) {
+            listDark = fetchRandomTimeDarkEnvironment();
+        }
+
         Map<String, Map<String, Map<Integer, String>>> mapLight = new HashMap<>();
 
         for (TimeDarkEnvironment dark : listDark) {
@@ -116,6 +121,21 @@ public class AmbientLightGenerator {
         query.setParameter("idPerson", idPerson);
         try {
             return query.getResultList();
+        } catch (Exception e) {
+            return new ArrayList<>();
+        } finally {
+            em.close();
+        }
+    }
+
+    private List<TimeDarkEnvironment> fetchRandomTimeDarkEnvironment() {
+        EntityManager em = JPAUtil.getEntityManager();
+        Query query = em.createQuery("SELECT DISTINCT(i.person.id) FROM TimeDarkEnvironment i");
+        try {
+            List<Long> ids = query.getResultList();
+            Random rand = new Random();
+            Integer n = rand.nextInt((ids.size()));
+            return fetchTimeDarkEnvironment(ids.get(n));
         } catch (Exception e) {
             return new ArrayList<>();
         } finally {

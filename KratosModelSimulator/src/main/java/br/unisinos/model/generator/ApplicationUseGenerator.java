@@ -309,6 +309,70 @@ public class ApplicationUseGenerator {
         return dictionaryCategoryMinutes;
     }
 
+    public Integer[] calculateApplications(List<ApplicationUse> appsInUse) {
+        appsInUse = compareAppUse(appsInUse);
+
+        Long seconds = 0L;
+        Date startTime = null;
+        String application = null;
+        String lastEventType = "";
+        Long useTime = 0L;
+
+        for (int i = 0; i < appsInUse.size(); i++) {
+            ApplicationUse applicationUse = appsInUse.get(i);
+
+            //if application was oppened save time
+            if (((lastEventType.equalsIgnoreCase("User Interaction")
+                    && !applicationUse.getEventType().equalsIgnoreCase("User Interaction")
+                    && null != startTime))
+                    || (lastEventType.equalsIgnoreCase("User Interaction") && ((i + 1) == appsInUse.size()) && appsInUse.size() > 1)) {
+
+                seconds = (applicationUse.getOpenDate().getTime() - startTime.getTime()) / 1000;
+
+                useTime += seconds;
+
+                seconds = 0L;
+                startTime = null;
+                application = null;
+            }
+
+            lastEventType = applicationUse.getEventType();
+
+            if (null == startTime) {
+
+                if (applicationUse.getEventType().equalsIgnoreCase("User Interaction")) {
+                    startTime = applicationUse.getOpenDate();
+                    application = applicationUse.getAppName();
+                    continue;
+                }
+
+                if (applicationUse.getEventType().equalsIgnoreCase("Opened")) {
+                    startTime = applicationUse.getOpenDate();
+                    application = applicationUse.getAppName();
+                }
+            } else {
+
+                //count how much time until close
+                if (applicationUse.getEventType().equalsIgnoreCase("Closed")
+                        && applicationUse.getAppName().equalsIgnoreCase(application)) {
+                    seconds = (applicationUse.getOpenDate().getTime() - startTime.getTime()) / 1000;
+                    //System.out.println(category + ";" + seconds);
+
+                    useTime += seconds;
+
+                    seconds = 0L;
+                    startTime = null;
+                    application = null;
+                }
+            }
+        }
+
+        Integer minutesUsing = (int) (useTime / 60);
+        Integer minutesNotUsing = 60 - minutesUsing;
+        Integer[] minutes = {minutesUsing, minutesNotUsing};
+        return minutes;
+    }
+
     public Object[] calculateTopTimeSpent(Map<String, Long> dictionaryCategoryMinutes) {
         Object[] output = new Object[2];
         Long maxMinutes = 0L;
@@ -436,7 +500,7 @@ public class ApplicationUseGenerator {
         if (null == appHighUseTime) {
             appHighUseTime = "";
         }
-        
+
         Object[] output = {applicationCategoryTopInUse, categoryUseTime, appHighUseTime, applicationUseTime};
         return output;
     }

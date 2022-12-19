@@ -27,6 +27,10 @@ public class PowerEventGeneretor {
     public Map<String, Map<String, Map<Integer, String>>> generatePowerEventInformation(Long idPerson) {
         List<PhoneCharge> phoneChargeList = fetchPhoneChargeInfo(idPerson);
 
+        if (phoneChargeList.isEmpty()) {
+            phoneChargeList = fetchRandomPhoneChargeInfo();
+        }
+
         //TypeDay -> Day -> Hour -> phoneCharge
         Map<String, Map<String, Map<Integer, String>>> mapPhoneCharge = new HashMap<>();
         for (PhoneCharge phoneCharge : phoneChargeList) {
@@ -93,13 +97,12 @@ public class PowerEventGeneretor {
 
     public Map<Integer, String> fetchRandomDayChargingBehavior(String dayType,
             Map<String, Map<String, Map<Integer, String>>> mapPhoneCharge) {
-        
         Map<String, Map<Integer, String>> mapDays = mapPhoneCharge.get(dayType);
 
         List<String> keySet = new ArrayList<>(mapDays.keySet());
         Random rand = new Random();
         Integer n = rand.nextInt((keySet.size()));
-        
+
         return mapDays.get(keySet.get(n));
     }
 
@@ -116,21 +119,36 @@ public class PowerEventGeneretor {
         }
     }
 
-    public Double generateBatteryLevel(Double juice, String event){
+    private List<PhoneCharge> fetchRandomPhoneChargeInfo() {
+        EntityManager em = JPAUtil.getEntityManager();
+        Query query = em.createQuery("SELECT DISTINCT(i.person.id) FROM PhoneCharge i");
+        try {
+            List<Long> ids = query.getResultList();
+            Random rand = new Random();
+            Integer n = rand.nextInt((ids.size()));
+            return fetchPhoneChargeInfo(ids.get(n));
+        } catch (Exception e) {
+            return new ArrayList<>();
+        } finally {
+            em.close();
+        }
+    }
+
+    public Double generateBatteryLevel(Double juice, String event) {
         //battery charges 2 hours https://onsitego.com/blog/5-mistakes-people-make-charging-phone/
         //Battery lasts 24 hours https://www.jmir.org/2018/7/e10131/
-        if(event.equals("Charging")){
+        if (event.equals("Charging")) {
             juice += 40.0;
-            if(juice > 100.0){
+            if (juice > 100.0) {
                 juice = 100.0;
             }
-        }else{
-            juice -= ((Integer) 100/24);
-            if(juice < 0 ){
+        } else {
+            juice -= ((Integer) 100 / 24);
+            if (juice < 0) {
                 juice = 0.0;
             }
         }
         return juice;
     }
-    
+
 }
