@@ -34,6 +34,11 @@ public class ImportDass21 {
         String folder = "./src/main/java/files/survey_dass21/data.csv";
 
         List<DepressionAnxietyScale> listDass21 = new ArrayList<>();
+        
+        deleteDataset();
+
+        EntityManager em = JPAUtil.getEntityManager();
+        em.getTransaction().begin();
 
         Integer counter = 0;
         try ( BufferedReader br = new BufferedReader(new FileReader(folder))) {
@@ -139,12 +144,13 @@ public class ImportDass21 {
                         question16, question17, question18, question19, question20,
                         question21, stressScore, anxietyScore, depressionScore, stressStatus,
                         anxietyStatus, depressionStatus, age, gender, education);
+                em.persist(dass);
                 listDass21.add(dass);
 
             }
         }
+        em.getTransaction().commit();
 
-        EntityManager em = JPAUtil.getEntityManager();
         em.getTransaction().begin();
 
         List<Long> idsPerson = this.personUtil.fetchListIds();
@@ -207,7 +213,6 @@ public class ImportDass21 {
             em.merge(dass);
         }
 
-        deleteDataset();
         em.getTransaction().commit();
         em.close();
     }

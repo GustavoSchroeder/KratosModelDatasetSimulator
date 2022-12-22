@@ -40,8 +40,13 @@ public class ImportNMPQResponse implements Serializable {
     public void importFiles() throws FileNotFoundException, IOException {
         String folder = "./src/main/java/files/survey_nmpq/from_sav_data.csv";
 
+        deleteDataset();
+
         List<NomophobiaQuestionnaire> nmpqList = new ArrayList<>();
         Map<Integer, Object[]> dictionaryPersonInfo = new HashMap<>();
+
+        EntityManager em = JPAUtil.getEntityManager();
+        em.getTransaction().begin();
 
         Integer counter = 0;
         try ( BufferedReader br = new BufferedReader(new FileReader(folder))) {
@@ -124,12 +129,14 @@ public class ImportNMPQResponse implements Serializable {
                         response3, response4, response5, response6, response7, response8, response9, response10,
                         response11, response12, response13, response14, response15, response16, response17,
                         response18, response19, response20, category);
+                em.persist(nmpq);
                 nmpqList.add(nmpq);
                 dictionaryPersonInfo.put(counter++, personObjArray);
             }
         }
 
-        EntityManager em = JPAUtil.getEntityManager();
+        em.getTransaction().commit();
+
         em.getTransaction().begin();
 
         List<Long> idsPerson = this.personUtil.fetchListIds();
@@ -142,31 +149,29 @@ public class ImportNMPQResponse implements Serializable {
         //O usuário é randomizado
         for (int i = 0; i < nmpqList.size(); i++) {
 
+            Person p;
+
             if (pastNumbers.size() == idsPerson.size()) {
-                break;
+                p = null;
+            } else {
+                Integer n;
+                do {
+                    n = rand.nextInt(max);
+                } while (pastNumbers.contains(n));
+
+                pastNumbers.add(n);
+                Long idUser = idsPerson.get(n);
+                p = this.personUtil.findPerson(idUser, Boolean.FALSE);
+                Object[] infoP = dictionaryPersonInfo.get(i);
+
+                ReportedTimeSpentSmartphone rtsp = new ReportedTimeSpentSmartphone(idUser, p, (Double) infoP[3]);
+                em.merge(rtsp);
+                nmpqList.get(i).setPerson(p);
+                em.merge(nmpqList.get(i));
             }
 
-            Integer n;
-            do {
-                n = rand.nextInt(max);
-            } while (pastNumbers.contains(n));
-
-            pastNumbers.add(n);
-            Long idUser = idsPerson.get(n);
-
-            Person p = this.personUtil.findPerson(idUser, Boolean.FALSE);
-
-            Object[] infoP = dictionaryPersonInfo.get(i);
-
-            ReportedTimeSpentSmartphone rtsp = new ReportedTimeSpentSmartphone(idUser, p, (Double) infoP[3]);
-
-            em.merge(rtsp);
-
-            nmpqList.get(i).setPerson(p);
-            em.merge(nmpqList.get(i));
         }
-        
-        deleteDataset();
+
         em.getTransaction().commit();
         em.close();
     }

@@ -8,6 +8,7 @@ import br.unisinos.pojo.ContextHistorySmartphoneUse;
 import br.unisinos.pojo.ContextInformation.ApplicationUse;
 import br.unisinos.pojo.ContextInformation.Notification;
 import br.unisinos.pojo.Person;
+import br.unisinos.pojo.Scales.DepressionAnxietyScale;
 import br.unisinos.util.JPAUtil;
 import br.unisinos.util.PersonUtil;
 import br.unisinos.util.TimeUtil;
@@ -33,6 +34,7 @@ public class ContextGenerator {
     private NotificationContextGenerator notificationContextGenerator;
     private AmbientLightGenerator ambientLightGenerator;
     private EMAGenerator emaGenerator;
+    private QuestionnaireSimulator questionnaireSimulator;
     private PersonUtil personUtil;
     private TimeUtil timeUtil;
 
@@ -45,6 +47,7 @@ public class ContextGenerator {
         this.ambientLightGenerator = new AmbientLightGenerator();
         this.emaGenerator = new EMAGenerator();
         this.timeUtil = new TimeUtil();
+        this.questionnaireSimulator = new QuestionnaireSimulator();
     }
 
     public void generateContext() {
@@ -83,6 +86,9 @@ public class ContextGenerator {
 
             Double batteryLevel = ((Integer) (new Random().nextInt(70) + 30)).doubleValue();
             Double batteryLevelControl = batteryLevel;
+
+            //Questionnaries
+            DepressionAnxietyScale dass = this.questionnaireSimulator.fetchDASS21(person.getId());
 
             //EMA
             Integer moodEMA = null;
@@ -190,10 +196,49 @@ public class ContextGenerator {
                     };
 
                     ContextHistorySmartphoneUse ch = new ContextHistorySmartphoneUse();
+
                     ch.setPerson(person);
-                    ch.setAppMostUsedTimeInUse(categoryUseTime);
-                    
-                    
+                    //App
+                    ch.setAppMostUsedTimeInUse(categoryUseTime.intValue());
+                    ch.setAppCategoryTopUse(applicationCategoryTopInUse);
+                    ch.setApplicationTopUse(appHighUseTime);
+                    ch.setApplicationUseTime(applicationUseTime.intValue());
+
+                    ch.setAmbientLight(ambientLight);
+                    ch.setBatteryLevel(batteryLevel);
+                    ch.setCategoryMaxNotifications(categoryMaxNotifications);
+                    ch.setCategoryNotificationsNumb(categoryNotificationsNumb);
+                    ch.setDateTime(cal.getTime());
+                    ch.setDayShift(dayShift);
+                    ch.setDayType(dayType);
+                    ch.setMinutesLocked(minutesLocked);
+                    ch.setMinutesUnlocked(minutesUnlocked);
+                    ch.setPowerEvent(powerEvent);
+                    ch.setQuantityNotifications(notificationQuantity);
+
+                    //EMA
+                    ch.setMoodEMA(moodEMA);
+                    ch.setSleepHoursEMA(sleepHoursEMA);
+                    ch.setSleepRateEMA(sleepRate);
+                    ch.setStressLevelEMA(stressEMA);
+                    ch.setStressLevelEMA(stressEMA);
+
+                    //Questionaries
+                    ch.setAnxietyScore(dass.getAnxietyScore());
+                    ch.setAnxietyStatus(dass.getAnxietyStatus());
+                    ch.setDepressionScore(dass.getDepressionScore());
+                    ch.setDepressionStatus(dass.getDepressionStatus());
+                    ch.setStressScore(dass.getStressScore());
+                    ch.setStressStatus(dass.getStressStatus());
+//                    ch.setNomophobiaLevel();
+//                    ch.setTotalResultNomophobia();
+//                    ch.setSmartphoneAddicted();
+//                    ch.setTotalResultSAS();
+//                    
+                    //Disabled
+                    ch.setScreenStatus(null);
+                    ch.setPlace(null);
+
                     printSb(arrayObj);
 
                     //persistir no banco
@@ -302,8 +347,6 @@ public class ContextGenerator {
             em.close();
         }
     }
-    
-    
 
     public ApplicationUseGenerator getApplicationUseGenerator() {
         return applicationUseGenerator;
