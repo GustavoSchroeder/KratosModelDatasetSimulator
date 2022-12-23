@@ -124,7 +124,7 @@ public class PersonUtil {
     public List<Person> fetchPersons() {
         EntityManager em = JPAUtil.getEntityManager();
 //        Query query = em.createQuery("SELECT i FROM Person i WHERE i.id = 40 ORDER BY i.id");
-        Query query = em.createQuery("SELECT i FROM Person i");
+        Query query = em.createQuery("SELECT i FROM Person i ORDER BY i.id");
         try {
             return query.getResultList();
         } catch (Exception e) {

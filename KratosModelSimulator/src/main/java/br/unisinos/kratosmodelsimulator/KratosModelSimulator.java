@@ -34,13 +34,13 @@ public class KratosModelSimulator {
 //            (new ImportSASResponse()).importFiles();
 //            (new ImportPSSResponse()).importFiles();
 //            (new ImportSleepEMA()).importFiles();
-            (new ImportNMPQResponse()).importFiles();
+//            (new ImportNMPQResponse()).importFiles();
 //            (new ImportStressEMA()).importFiles();
 //            (new ImportMoodEMA()).importFiles();
 //            (new ImportBasicSmartphoneUseInformation()).importFiles();
 //            (new ImportNotification()).importFiles();
 //            (new ImportDass21()).importFiles();
-//            (new ContextGenerator()).generateContext();
+            (new ContextGenerator()).generateContext();
 
         } catch (Exception e) {
             e.printStackTrace();

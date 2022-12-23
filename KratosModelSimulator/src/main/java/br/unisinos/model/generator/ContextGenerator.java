@@ -9,6 +9,8 @@ import br.unisinos.pojo.ContextInformation.ApplicationUse;
 import br.unisinos.pojo.ContextInformation.Notification;
 import br.unisinos.pojo.Person;
 import br.unisinos.pojo.Scales.DepressionAnxietyScale;
+import br.unisinos.pojo.Scales.NomophobiaQuestionnaire;
+import br.unisinos.pojo.Scales.SmartphoneAddictionScale;
 import br.unisinos.util.JPAUtil;
 import br.unisinos.util.PersonUtil;
 import br.unisinos.util.TimeUtil;
@@ -54,7 +56,10 @@ public class ContextGenerator {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         List<Person> persons = this.personUtil.fetchPersons();
 
+        EntityManager em = JPAUtil.getEntityManager();
+
         printHeader();
+        deleteContextBase();
 
         Map<String, List<Integer>> dictionaryMoodEMA = this.emaGenerator.createDictionaryMood();
         Map<String, List<Integer>> dictionaryStress = this.emaGenerator.createDictionaryStress();
@@ -63,7 +68,12 @@ public class ContextGenerator {
         Map<String, List<Integer>> dictionarySleepRate = (Map<String, List<Integer>>) dictionariesSleep[1];
 
         List<ContextHistorySmartphoneUse> listContextHistory = new ArrayList<>();
+
+        Map<String, Map<Long, NomophobiaQuestionnaire>> nomophobiaMap = this.questionnaireSimulator.fetchNomophobia();
+        Map<Boolean, Map<Long, SmartphoneAddictionScale>> sasMap = this.questionnaireSimulator.fetchSAS();
+
         for (Person person : persons) {
+            em.getTransaction().begin();
             Calendar cal = Calendar.getInstance();
 
             cal.add(Calendar.DAY_OF_MONTH, 1);
@@ -230,6 +240,9 @@ public class ContextGenerator {
                     ch.setDepressionStatus(dass.getDepressionStatus());
                     ch.setStressScore(dass.getStressScore());
                     ch.setStressStatus(dass.getStressStatus());
+
+                    //Entender usuarios que utilizam bastante smartphone
+                    // Entender usuarios que nao podem ficar Smarpthone
 //                    ch.setNomophobiaLevel();
 //                    ch.setTotalResultNomophobia();
 //                    ch.setSmartphoneAddicted();
@@ -239,17 +252,20 @@ public class ContextGenerator {
                     ch.setScreenStatus(null);
                     ch.setPlace(null);
 
-                    printSb(arrayObj);
-
+                    //printSb(arrayObj);
                     //persistir no banco
                     // ordernar maiores utilizadores de smartphone
-                    // adicionar SAS aos maiores utilizadores de forma randomica
-                    // 
+                    em.merge(ch);
+
                     cal.add(Calendar.HOUR_OF_DAY, 1);
                     batteryLevelControl = batteryLevel.doubleValue();
                 }
             }
+            System.out.println(person.getId());
+            em.getTransaction().commit();
         }
+
+        em.close();
     }
 
     private void printHeader() {

@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
+import javax.persistence.Transient;
 
 /**
  *
@@ -178,6 +179,7 @@ public class ContextHistorySmartphoneUse implements Serializable {
         this.minutesLocked = minutesLocked;
     }
 
+    @Transient
     public String getDeviceStatus() {
         return deviceStatus;
     }
@@ -202,6 +204,7 @@ public class ContextHistorySmartphoneUse implements Serializable {
         this.powerEvent = powerEvent;
     }
 
+    @Transient
     public String getScreenStatus() {
         return screenStatus;
     }
@@ -299,6 +302,7 @@ public class ContextHistorySmartphoneUse implements Serializable {
         this.dayType = dayType;
     }
 
+    @Transient
     public String getPlace() {
         return place;
     }
