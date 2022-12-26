@@ -2,6 +2,7 @@ package br.unisinos.model.generator;
 
 import br.unisinos.pojo.ContextInformation.PhoneCharge;
 import br.unisinos.util.JPAUtil;
+import br.unisinos.util.PersonUtil;
 import br.unisinos.util.TimeUtil;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -19,16 +20,18 @@ import javax.persistence.Query;
 public class PowerEventGeneretor {
 
     private TimeUtil timeUtil;
+    private PersonUtil personUtil;
 
     public PowerEventGeneretor() {
         this.timeUtil = new TimeUtil();
+        this.personUtil = new PersonUtil();
     }
-
+    
     public Map<String, Map<String, Map<Integer, String>>> generatePowerEventInformation(Long idPerson) {
         List<PhoneCharge> phoneChargeList = fetchPhoneChargeInfo(idPerson);
 
-        if (phoneChargeList.isEmpty()) {
-            phoneChargeList = fetchRandomPhoneChargeInfo();
+        if (phoneChargeList.isEmpty() || phoneChargeList.size() < 5) {
+            phoneChargeList = fetchRandomPhoneChargeInfo(idPerson);
         }
 
         //TypeDay -> Day -> Hour -> phoneCharge
@@ -119,9 +122,10 @@ public class PowerEventGeneretor {
         }
     }
 
-    private List<PhoneCharge> fetchRandomPhoneChargeInfo() {
+    private List<PhoneCharge> fetchRandomPhoneChargeInfo(Long idDifferent) {
         EntityManager em = JPAUtil.getEntityManager();
-        Query query = em.createQuery("SELECT DISTINCT(i.person.id) FROM PhoneCharge i");
+        Query query = em.createQuery("SELECT DISTINCT(i.person.id) FROM PhoneCharge i WHERE i.id <> :idDifferent");
+        query.setParameter("idDifferent", idDifferent);
         try {
             List<Long> ids = query.getResultList();
             Random rand = new Random();

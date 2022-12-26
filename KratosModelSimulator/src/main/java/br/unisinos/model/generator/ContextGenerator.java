@@ -87,6 +87,10 @@ public class ContextGenerator {
 
             Map<String, Map<String, Map<Integer, String>>> mapPhoneCharge
                     = this.powerEventGeneretor.generatePowerEventInformation(person.getId());
+            
+            if(mapPhoneCharge.isEmpty()){
+                
+            }
 
             Map<String, Map<String, Map<Integer, String>>> mapAmbientLight
                     = this.ambientLightGenerator.generateLightInfo(person.getId());
