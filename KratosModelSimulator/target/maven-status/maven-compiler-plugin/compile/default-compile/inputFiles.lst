@@ -1,8 +1,11 @@
+/Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/generator/PowerEventGeneretor.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/ContextHistorySmartphoneUse.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/ImportSASResponse.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/generator/ApplicationUseGenerator.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/Scales/DepressionAnxietyScale.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/ImportPSSResponse.java
+/Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/generator/AmbientLightGenerator.java
+/Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/generator/EMAGenerator.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/Person.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/ImportNMPQResponse.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/Scales/SmartphoneAddictionScale.java
@@ -11,6 +14,7 @@
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/ImportBasicSmartphoneUseInformation.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/ContextInformation/TimeDarkEnvironment.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/ImportTimeDarkEnviroment.java
+/Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/generator/NotificationContextGenerator.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/ContextInformation/PhoneCharge.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/ImportScreenLocked.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/ApplicationCategory.java
@@ -27,6 +31,7 @@
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/BasicSmartphoneUseInformation.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/ContextInformation/ReportedTimeSpentSmartphone.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/ContextInformation/PhoneLock.java
+/Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/generator/QuestionnaireSimulator.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/ImportChargingActivity.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/util/PersonUtil.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/kratosmodelsimulator/KratosModelSimulator.java

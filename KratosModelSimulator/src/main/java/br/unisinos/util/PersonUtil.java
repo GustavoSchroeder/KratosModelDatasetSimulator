@@ -133,4 +133,17 @@ public class PersonUtil {
             em.close();
         }
     }
+
+    public String fetchGender(Long userId) {
+        EntityManager em = JPAUtil.getEntityManager();
+        Query query = em.createQuery("SELECT i.gender FROM Person i WHERE i.id = :id");
+        query.setParameter("id", userId);
+        try {
+            return (String) query.getResultList().get(0);
+        } catch (Exception e) {
+            return "";
+        } finally {
+            em.close();
+        }
+    }
 }

@@ -42,7 +42,8 @@ public class KratosModelSimulator {
 //            (new ImportNotification()).importFiles();
 //            (new ImportDass21()).importFiles();
 //            (new ContextGenerator()).generateContext();
-              (new QuestionnaireSimulator()).fetchPeopleEligibleNomophobia();
+            (new QuestionnaireSimulator()).fetchPeopleEligibleNomophobia();
+ //             (new QuestionnaireSimulator()).fetchPeopleEligibleSAS();
 
         } catch (Exception e) {
             e.printStackTrace();
