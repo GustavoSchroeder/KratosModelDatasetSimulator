@@ -2,6 +2,7 @@
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/ContextHistorySmartphoneUse.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/ImportSASResponse.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/generator/ApplicationUseGenerator.java
+/Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/generator/GeneratePersonas.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/Scales/DepressionAnxietyScale.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/ImportPSSResponse.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/generator/AmbientLightGenerator.java
@@ -24,6 +25,7 @@
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/ContextInformation/ApplicationUse.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/ContextInformation/Notification.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/EMA/MoodEMA.java
+/Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/pojo/PersonaSmartphoneAddiction.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/model/ImportSleepEMA.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/util/FileUtil.java
 /Users/gustavolazarottoschroeder/Documents/GitHub/KratosModelDatasetSimulator/KratosModelSimulator/src/main/java/br/unisinos/util/TimeUtil.java

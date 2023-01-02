@@ -14,6 +14,7 @@ br/unisinos/pojo/Scales/PerceivedStressScale.class
 br/unisinos/pojo/ContextInformation/TimeDarkEnvironment.class
 br/unisinos/pojo/Scales/DepressionAnxietyScale.class
 br/unisinos/pojo/ApplicationCategory.class
+br/unisinos/pojo/PersonaSmartphoneAddiction.class
 br/unisinos/util/FileUtil.class
 br/unisinos/model/generator/EMAGenerator.class
 br/unisinos/model/ImportStressEMA.class
@@ -33,6 +34,7 @@ br/unisinos/model/generator/ApplicationUseGenerator$1.class
 br/unisinos/model/generator/ApplicationUseGenerator.class
 br/unisinos/model/generator/NotificationContextGenerator.class
 br/unisinos/model/generator/AmbientLightGenerator.class
+br/unisinos/model/generator/GeneratePersonas.class
 br/unisinos/model/ImportApplicationUse.class
 br/unisinos/pojo/ContextInformation/PhoneCharge.class
 br/unisinos/util/TimeUtil.class
