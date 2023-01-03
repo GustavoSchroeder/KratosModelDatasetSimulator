@@ -108,6 +108,38 @@ public class PersonUtil {
         return dictionary;
     }
 
+    public List<Long> findPersonIdList() {
+        EntityManager em = JPAUtil.getEntityManager();
+        Query query = em.createQuery("SELECT i.id FROM Person i ORDER BY i.id");
+        try {
+            return query.getResultList();
+        } catch (Exception e) {
+            return new ArrayList<>();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Long> fetchUserIdsBasedStress(EntityManager em) {
+        Query query = em.createQuery("SELECT DISTINCT(i.person.id), AVG(i.stressLevel) "
+                + "FROM StressEMA i GROUP BY i.person.id ORDER BY AVG(i.stressLevel) DESC");
+        List<Object[]> outputList = query.getResultList();
+        List<Long> userIds = new ArrayList<>();
+        List<Long> userIdsOfficial = findPersonIdList();
+        
+        for (Object[] obj : outputList) {
+            userIds.add((Long) obj[0]);
+        }
+
+        for (int i = 0; i < userIdsOfficial.size(); i++) {
+            if (!userIds.contains(userIdsOfficial.get(i))) {
+                userIds.add(userIdsOfficial.get(i));
+            }
+        }
+
+        return userIds;
+    }
+
     public Map<String, String> fetchAppCategory() {
         EntityManager em = JPAUtil.getEntityManager();
         Query query = em.createQuery("SELECT i FROM ApplicationCategory i");

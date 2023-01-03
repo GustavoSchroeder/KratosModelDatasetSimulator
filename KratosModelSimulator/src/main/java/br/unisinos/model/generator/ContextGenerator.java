@@ -58,7 +58,7 @@ public class ContextGenerator {
 
         EntityManager em = JPAUtil.getEntityManager();
 
-        printHeader();
+        //printHeader();
         deleteContextBase();
 
         Map<String, List<Integer>> dictionaryMoodEMA = this.emaGenerator.createDictionaryMood();
@@ -75,6 +75,11 @@ public class ContextGenerator {
         for (Person person : persons) {
             em.getTransaction().begin();
             Calendar cal = Calendar.getInstance();
+            
+            System.out.println(person.getId());
+            if(person.getId() == 1){
+                System.out.println("");
+            }
 
             cal.add(Calendar.DAY_OF_MONTH, 1);
             cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -87,10 +92,6 @@ public class ContextGenerator {
 
             Map<String, Map<String, Map<Integer, String>>> mapPhoneCharge
                     = this.powerEventGeneretor.generatePowerEventInformation(person.getId());
-            
-            if(mapPhoneCharge.isEmpty()){
-                
-            }
 
             Map<String, Map<String, Map<Integer, String>>> mapAmbientLight
                     = this.ambientLightGenerator.generateLightInfo(person.getId());

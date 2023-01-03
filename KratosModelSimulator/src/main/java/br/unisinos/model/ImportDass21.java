@@ -13,7 +13,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -34,7 +36,7 @@ public class ImportDass21 {
         String folder = "./src/main/java/files/survey_dass21/data.csv";
 
         List<DepressionAnxietyScale> listDass21 = new ArrayList<>();
-        
+
         deleteDataset();
 
         EntityManager em = JPAUtil.getEntityManager();
@@ -151,6 +153,13 @@ public class ImportDass21 {
         }
         em.getTransaction().commit();
 
+        //mergeInformationContext(em, listDass21);
+        mergeInformationContext(em);
+
+        em.close();
+    }
+
+    private void mergeInformationContext(EntityManager em, List<DepressionAnxietyScale> listDass21) {
         em.getTransaction().begin();
 
         List<Long> idsPerson = this.personUtil.fetchListIds();
@@ -214,7 +223,75 @@ public class ImportDass21 {
         }
 
         em.getTransaction().commit();
-        em.close();
+    }
+
+    private List<DepressionAnxietyScale> fetchDass21List(EntityManager em) {
+        Query query = em.createQuery("SELECT i FROM DepressionAnxietyScale i ORDER BY i.stressScore DESC, i.anxietyScore DESC, i.depressionScore DESC");
+        try {
+            return query.getResultList();
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    private void mergeInformationContext(EntityManager em) {
+
+        List<DepressionAnxietyScale> listDass21 = fetchDass21List(em);
+        List<Long> idsUser = this.personUtil.fetchUserIdsBasedStress(em);
+
+        em.getTransaction().begin();
+
+        List<Integer> positionsGone = new ArrayList<>();
+        Integer max = listDass21.size();
+        Random rand = new Random();
+
+        for (int i = 0; i < idsUser.size(); i++) {
+
+            DepressionAnxietyScale dass;
+            if (i <= 10) {
+                dass = listDass21.get(i);
+                positionsGone.add(i);
+            } else {
+                Integer n = null;
+                do {
+                    n = rand.nextInt(max);
+                } while (positionsGone.contains(n));
+                
+                dass = listDass21.get(n);
+                positionsGone.add(n);
+            }
+
+            Long idUser = idsUser.get(i);
+
+            Person p = this.personUtil.findPerson(idUser, Boolean.FALSE);
+            p.setAge(dass.getAge());
+
+            if (null != dass.getGender()) {
+                switch (dass.getGender()) {
+                    case 1:
+                        p.setGender("Male");
+                        break;
+                    case 2:
+                        p.setGender("Female");
+                        break;
+                    case 3:
+                        System.out.println("Other");
+                        p.setGender("Male");
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            p.setEducationalLevel(dass.getEducation());
+
+            em.merge(p);
+
+            dass.setPerson(p);
+            em.merge(dass);
+        }
+
+        em.getTransaction().commit();
     }
 
     private void deleteDataset() {

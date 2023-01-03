@@ -33,22 +33,21 @@ public class KratosModelSimulator {
 //            (new ImportTimeDarkEnviroment()).importFiles();
 //            (new ImportChargingActivity()).importFiles();
 //            (new ImportScreenLocked()).importFiles();
-//            (new ImportApplicationUse()).importFiles();
 //            (new ImportSASResponse()).importFiles();
 //            (new ImportPSSResponse()).importFiles();
 //            (new ImportSleepEMA()).importFiles();
 //            (new ImportNMPQResponse()).importFiles();
 //            (new ImportStressEMA()).importFiles();
+//            (new ImportDass21()).importFiles();
+            (new ImportApplicationUse()).importFiles();
 //            (new ImportMoodEMA()).importFiles();
 //            (new ImportBasicSmartphoneUseInformation()).importFiles();
 //            (new ImportNotification()).importFiles();
-//            (new ImportDass21()).importFiles();
 
 //Context Generation
 //            (new ContextGenerator()).generateContext();
 //            (new QuestionnaireSimulator()).fetchPeopleEligibleNomophobia();
-//             (new QuestionnaireSimulator()).fetchPeopleEligibleSAS();
-
+//            (new QuestionnaireSimulator()).fetchPeopleEligibleSAS();
 //Manhattan Distance
             (new GeneratePersonas()).generatePersonas();
         } catch (Exception e) {

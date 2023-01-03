@@ -31,7 +31,7 @@ public class GeneratePersonas {
         Set<String> dayType = new HashSet<>();
         Set<String> ageCategory = new HashSet<>();
 
-        Map<Boolean, Map<String, Map<Integer, Map<String, Map<String, Map<String, List<ContextHistorySmartphoneUse>>>>>>> map = new HashMap<>();
+        Map<Boolean, Map<String, Map<String, Map<String, Map<String, List<ContextHistorySmartphoneUse>>>>>> map = new HashMap<>();
 
         for (ContextHistorySmartphoneUse context : listContext) {
             String ageCat = categorizeAge(context.getPerson().getAge());
@@ -55,43 +55,29 @@ public class GeneratePersonas {
 
             if (null == map.get(context.getSmartphoneAddicted())
                     .get(context.getPerson().getGender())
-                    .get(context.getPerson().getEducationalLevel())) {
-                map.get(context.getSmartphoneAddicted())
-                        .get(context.getPerson().getGender())
-                        .put(context.getPerson().getEducationalLevel(), new HashMap<>());
-            }
-
-            if (null == map.get(context.getSmartphoneAddicted())
-                    .get(context.getPerson().getGender())
-                    .get(context.getPerson().getEducationalLevel())
                     .get(context.getDayShift())) {
                 map.get(context.getSmartphoneAddicted())
                         .get(context.getPerson().getGender())
-                        .get(context.getPerson().getEducationalLevel())
                         .put(context.getDayShift(), new HashMap<>());
             }
 
             if (null == map.get(context.getSmartphoneAddicted())
                     .get(context.getPerson().getGender())
-                    .get(context.getPerson().getEducationalLevel())
                     .get(context.getDayShift())
                     .get(context.getDayType())) {
                 map.get(context.getSmartphoneAddicted())
                         .get(context.getPerson().getGender())
-                        .get(context.getPerson().getEducationalLevel())
                         .get(context.getDayShift())
                         .put(context.getDayType(), new HashMap<>());
             }
 
             if (null == map.get(context.getSmartphoneAddicted())
                     .get(context.getPerson().getGender())
-                    .get(context.getPerson().getEducationalLevel())
                     .get(context.getDayShift())
                     .get(context.getDayType())
                     .get(ageCat)) {
                 map.get(context.getSmartphoneAddicted())
                         .get(context.getPerson().getGender())
-                        .get(context.getPerson().getEducationalLevel())
                         .get(context.getDayShift())
                         .get(context.getDayType())
                         .put(ageCat, new ArrayList<>());
@@ -99,7 +85,6 @@ public class GeneratePersonas {
 
             map.get(context.getSmartphoneAddicted())
                     .get(context.getPerson().getGender())
-                    .get(context.getPerson().getEducationalLevel())
                     .get(context.getDayShift())
                     .get(context.getDayType())
                     .get(ageCat).add(context);
@@ -114,22 +99,23 @@ public class GeneratePersonas {
                     for (String shift : dayShift) {
                         for (String type : dayType) {
                             for (String ageCat : ageCategory) {
+                                String id = addicted + ";" + gender + ";" + shift + ";" + type + ";" + ageCat;
+                                
                                 PersonaSmartphoneAddiction p = new PersonaSmartphoneAddiction();
+                                p.setId(id);
                                 p.setTypeUser(addicted ? "Smartphone Addicted" : "Normal User");
                                 p.setGender(gender);
                                 p.setAgeCategory(ageCat);
-                                p.setEducationLevel(education);
+                                //p.setEducationLevel(education);
                                 p.setDayShift(shift);
                                 p.setDayType(type);
 
-                                String test = addicted + ";" + gender + ";" + education + ";" + shift + ";" + type + ";" + ageCat;
-                                System.out.println(test);
+                                System.out.println(id);
 
                                 List<ContextHistorySmartphoneUse> contextList = null;
                                 try {
                                     contextList = map.get(addicted)
                                             .get(gender)
-                                            .get(education)
                                             .get(shift)
                                             .get(type)
                                             .get(ageCat);

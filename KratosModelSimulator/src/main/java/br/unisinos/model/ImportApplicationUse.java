@@ -4,6 +4,7 @@
  */
 package br.unisinos.model;
 
+import br.unisinos.model.generator.ApplicationUseGenerator;
 import br.unisinos.pojo.ContextInformation.ApplicationUse;
 import br.unisinos.pojo.Person;
 import br.unisinos.util.PersonUtil;
@@ -18,11 +19,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import javax.persistence.EntityManager;
@@ -37,10 +41,12 @@ public class ImportApplicationUse implements Serializable {
 
     private final PersonUtil personUtil;
     private final TimeUtil timeUtil;
+    private ApplicationUseGenerator applicationUseGenerator;
 
     public ImportApplicationUse() {
         this.personUtil = new PersonUtil();
         this.timeUtil = new TimeUtil();
+        this.applicationUseGenerator = new ApplicationUseGenerator();
     }
 
     public void importFiles() throws FileNotFoundException, IOException, ParseException {
@@ -51,7 +57,7 @@ public class ImportApplicationUse implements Serializable {
         Map<Long, Integer> counter = new HashMap<>();
         Map<Long, List<ApplicationUse>> appsInUseMap = new HashMap<>();
 
-        Map<Long, Person> persons = this.personUtil.findPersonList();
+        Map<Long, Person> personList = this.personUtil.findPersonList();
         Map<String, String> appsCategory = this.personUtil.fetchAppCategory();
 
         EntityManager em = JPAUtil.getEntityManager();
@@ -109,6 +115,15 @@ public class ImportApplicationUse implements Serializable {
 
         em.getTransaction().begin();
 
+        //mergeInformation(em, appsInUseMap, personList);
+        mergeInformation(em, appsInUseMap);
+
+        deleteDataset();
+        em.getTransaction().commit();
+        em.close();
+    }
+
+    private void mergeInformation(EntityManager em, Map<Long, List<ApplicationUse>> appsInUseMap, Map<Long, Person> personList) {
         List<Integer> positionsGone = new ArrayList<>();
 
         List<Long> ids = new ArrayList<>(appsInUseMap.keySet());
@@ -129,14 +144,14 @@ public class ImportApplicationUse implements Serializable {
             List<ApplicationUse> apps = appsInUseMap.get(ids.get(n));
 
             Long idPerson = i.longValue();
-            Person person = persons.get(idPerson);
+            Person person = personList.get(idPerson);
 
             if (null == person) {
                 System.out.println(idPerson);
                 if (idPerson <= 60L) {
                     this.personUtil.createNewSimplePerson(idPerson);
-                    persons = this.personUtil.findPersonList();
-                    person = persons.get(idPerson);
+                    personList = this.personUtil.findPersonList();
+                    person = personList.get(idPerson);
                 } else {
                     continue;
                 }
@@ -171,10 +186,94 @@ public class ImportApplicationUse implements Serializable {
             }
 
         }
+    }
 
-        deleteDataset();
-        em.getTransaction().commit();
-        em.close();
+    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+        List<Entry<K, V>> list = new ArrayList<>(map.entrySet());
+        list.sort(Entry.comparingByValue());
+
+        Map<K, V> result = new LinkedHashMap<>();
+        for (Entry<K, V> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+
+        return result;
+    }
+
+    private List<Long> createListIdsBySize(Map<Long, List<ApplicationUse>> dictionaryApps) {
+        Map<Long, Integer> quantityMap = new HashMap<>();
+        for (Map.Entry<Long, List<ApplicationUse>> entry : dictionaryApps.entrySet()) {
+            Long key = entry.getKey();
+            List<ApplicationUse> val = entry.getValue();
+            Integer[] minutesLockedUnlocked = this.applicationUseGenerator.calculateApplications(new ArrayList<>(val));
+            Integer minutesUnlocked = minutesLockedUnlocked[0];
+            quantityMap.put(key, minutesUnlocked);
+        }
+
+        quantityMap = sortByValue(quantityMap);
+        return (new ArrayList<>(quantityMap.keySet()));
+    }
+
+    private void mergeInformation(EntityManager em, Map<Long, List<ApplicationUse>> appsInUseMap) {
+        List<Long> appsSize = createListIdsBySize(appsInUseMap);
+        Collections.reverse(appsSize);
+        List<Long> personList = this.personUtil.fetchUserIdsBasedStress(em);
+
+        List<Integer> positionsGone = new ArrayList<>();
+
+        Random rand = new Random();
+
+        Integer mergeCounter = 0;
+        //Inser the applications not linked with users in the database
+        Integer counter = 0;
+        for (int i = 0; i < personList.size(); i++) {
+            Integer n;
+            if (i <= 20) {
+                do {
+                    n = counter++;
+                } while (!containsWeekAndWeekend(appsInUseMap.get(appsSize.get(n))));
+
+            } else {
+                do {
+                    n = rand.nextInt(appsSize.size());
+                } while (positionsGone.contains(n) || (appsInUseMap.get(appsSize.get(n)).size() < 500) || !containsWeekAndWeekend(appsInUseMap.get(appsSize.get(n))));
+            }
+
+            positionsGone.add(n);
+
+            if (positionsGone.contains(n)) {
+                List<ApplicationUse> apps = appsInUseMap.get(appsSize.get(n));
+                Person p = em.find(Person.class, personList.get(i));
+                System.out.println(p.getId() + ";" + p.getGender() + ";" + apps.size());
+                for (ApplicationUse app : apps) {
+                    app.setPositionLinked(i);
+                    app.setPerson(p);
+                    em.merge(app);
+
+                    if (mergeCounter++ == 1500) {
+                        em.flush();
+                        em.clear();
+                        mergeCounter = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    private Boolean containsWeekAndWeekend(List<ApplicationUse> apps) {
+        Boolean containsWeekDay = Boolean.FALSE;
+        Boolean containsWeekend = Boolean.FALSE;
+
+        for (ApplicationUse app : apps) {
+            String dayType = this.timeUtil.checkWeekDay(app.getOpenDate());
+            if (dayType.equalsIgnoreCase("Weekend")) {
+                containsWeekend = Boolean.TRUE;
+            } else {
+                containsWeekDay = Boolean.TRUE;
+            }
+        }
+
+        return containsWeekDay && containsWeekend;
     }
 
     private Boolean checkMinDays(List<ApplicationUse> applications) {

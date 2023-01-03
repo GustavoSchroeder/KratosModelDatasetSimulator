@@ -13,7 +13,7 @@ import javax.persistence.Id;
 @Entity
 public class PersonaSmartphoneAddiction implements Serializable {
 
-    private Long id;
+    private String id;
     private String typeUser;
     private String gender;
     private String ageCategory;
@@ -42,15 +42,14 @@ public class PersonaSmartphoneAddiction implements Serializable {
     private Integer depressionScore;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
-
+    
     public String getTypeUser() {
         return typeUser;
     }
