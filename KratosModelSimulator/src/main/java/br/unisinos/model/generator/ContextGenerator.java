@@ -75,9 +75,9 @@ public class ContextGenerator {
         for (Person person : persons) {
             em.getTransaction().begin();
             Calendar cal = Calendar.getInstance();
-            
+
             System.out.println(person.getId());
-            if(person.getId() == 1){
+            if (person.getId() == 1) {
                 System.out.println("");
             }
 
@@ -364,6 +364,18 @@ public class ContextGenerator {
             query.executeUpdate();
             em.getTransaction().commit();
         } catch (Exception e) {
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<ContextHistorySmartphoneUse> fetchContextHistories() {
+        EntityManager em = JPAUtil.getEntityManager();
+        Query query = em.createQuery("SELECT i FROM ContextHistorySmartphoneUse i ORDER BY i.person.id, i.dateTime");
+        try {
+            return query.getResultList();
+        } catch (Exception e) {
+            return new ArrayList<>();
         } finally {
             em.close();
         }

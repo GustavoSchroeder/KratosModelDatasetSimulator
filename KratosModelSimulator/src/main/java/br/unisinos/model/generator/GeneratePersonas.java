@@ -103,7 +103,7 @@ public class GeneratePersonas {
                                 
                                 PersonaSmartphoneAddiction p = new PersonaSmartphoneAddiction();
                                 p.setId(id);
-                                p.setTypeUser(addicted ? "Smartphone Addicted" : "Normal User");
+                                p.setTypeUser(addicted ? "Smartphone Addicted Behavior" : "Normal Behavior");
                                 p.setGender(gender);
                                 p.setAgeCategory(ageCat);
                                 //p.setEducationLevel(education);
@@ -211,7 +211,7 @@ public class GeneratePersonas {
         em.close();
     }
 
-    private String categorizeAge(Integer age) {
+    public String categorizeAge(Integer age) {
         if (age <= 1) {
             return "Infant";
         } else if (age >= 2 && age <= 4) {
@@ -236,5 +236,25 @@ public class GeneratePersonas {
         List<ContextHistorySmartphoneUse> list = query.getResultList();
         em.close();
         return list;
+    }
+    
+    public Map<String, List<PersonaSmartphoneAddiction>> fetchProfiles(){
+        EntityManager em = JPAUtil.getEntityManager();
+        Query query = em.createQuery("SELECT i FROM PersonaSmartphoneAddiction i");
+        List<PersonaSmartphoneAddiction> personas = query.getResultList();
+        Map<String, List<PersonaSmartphoneAddiction>> dictionary = new HashMap<>();
+        for (PersonaSmartphoneAddiction persona : personas) {
+            String key = persona.getGender() 
+                    + ";" + persona.getDayShift() 
+                    + ";" + persona.getAgeCategory();
+            
+            if(null ==dictionary.get(key)){
+                dictionary.put(key, new ArrayList<>());
+            }
+            dictionary.get(key).add(persona);
+        }
+        
+        em.close();
+        return dictionary;
     }
 }

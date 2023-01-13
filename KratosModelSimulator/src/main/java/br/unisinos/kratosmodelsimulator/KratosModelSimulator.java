@@ -17,6 +17,7 @@ import br.unisinos.model.ImportScreenLocked;
 import br.unisinos.model.ImportSleepEMA;
 import br.unisinos.model.ImportStressEMA;
 import br.unisinos.model.ImportTimeDarkEnviroment;
+import br.unisinos.model.NearestNeighborAnalysis;
 import br.unisinos.model.generator.ContextGenerator;
 import br.unisinos.model.generator.GeneratePersonas;
 import br.unisinos.model.generator.QuestionnaireSimulator;
@@ -39,7 +40,7 @@ public class KratosModelSimulator {
 //            (new ImportNMPQResponse()).importFiles();
 //            (new ImportStressEMA()).importFiles();
 //            (new ImportDass21()).importFiles();
-            (new ImportApplicationUse()).importFiles();
+//            (new ImportApplicationUse()).importFiles();
 //            (new ImportMoodEMA()).importFiles();
 //            (new ImportBasicSmartphoneUseInformation()).importFiles();
 //            (new ImportNotification()).importFiles();
@@ -49,7 +50,8 @@ public class KratosModelSimulator {
 //            (new QuestionnaireSimulator()).fetchPeopleEligibleNomophobia();
 //            (new QuestionnaireSimulator()).fetchPeopleEligibleSAS();
 //Manhattan Distance
-            (new GeneratePersonas()).generatePersonas();
+//            (new GeneratePersonas()).generatePersonas();
+            (new NearestNeighborAnalysis()).calcularManhattan();;
         } catch (Exception e) {
             e.printStackTrace();
         }

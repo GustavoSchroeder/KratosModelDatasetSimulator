@@ -72,6 +72,10 @@ public class ContextHistorySmartphoneUse implements Serializable {
     private String stressStatus;
     private String anxietyStatus;
     private String depressionStatus;
+    
+    private String knnPrediction;
+    private Double knnPredictionRating;
+    private PersonaSmartphoneAddiction knnPredictionProfile;
 
     public ContextHistorySmartphoneUse() {
     }
@@ -389,5 +393,29 @@ public class ContextHistorySmartphoneUse implements Serializable {
 
     public void setDepressionStatus(String depressionStatus) {
         this.depressionStatus = depressionStatus;
+    }
+
+    public String getKnnPrediction() {
+        return knnPrediction;
+    }
+
+    public void setKnnPrediction(String knnPrediction) {
+        this.knnPrediction = knnPrediction;
+    }
+
+    public Double getKnnPredictionRating() {
+        return knnPredictionRating;
+    }
+
+    public void setKnnPredictionRating(Double knnPredictionRating) {
+        this.knnPredictionRating = knnPredictionRating;
+    }
+
+    public PersonaSmartphoneAddiction getKnnPredictionProfile() {
+        return knnPredictionProfile;
+    }
+
+    public void setKnnPredictionProfile(PersonaSmartphoneAddiction knnPredictionProfile) {
+        this.knnPredictionProfile = knnPredictionProfile;
     }
 }
