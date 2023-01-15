@@ -85,7 +85,9 @@ public class QuestionnaireSimulator {
                 + "avg(i.quantityNotifications), "
                 + "avg(i.anxietyScore), "
                 + "avg(i.stressScore), "
-                + "i.id FROM ContextHistorySmartphoneUse i group by i.person.id, i.id order by avg(i.applicationUseTime) desc, avg(i.batteryLevel) desc, avg(i.quantityNotifications) desc, avg(i.anxietyScore) desc, avg(i.stressScore) desc");
+                + "i.id FROM ContextHistorySmartphoneUse i group by i.person.id, i.id "
+                + "order by avg(i.applicationUseTime) desc, avg(i.batteryLevel) desc, "
+                + "avg(i.quantityNotifications) desc, avg(i.stressScore) desc, avg(i.anxietyScore) desc");
         List<Object[]> auxList = query.getResultList();
 
         List<Long> idsOrdered = new ArrayList<>();
@@ -217,8 +219,8 @@ public class QuestionnaireSimulator {
                 + "group by i.person.id, i.id "
                 + "order by avg(i.applicationUseTime) desc, "
                 + "avg(i.quantityNotifications) desc, "
-                + "avg(i.anxietyScore) desc, "
                 + "avg(i.stressScore) desc, "
+                + "avg(i.anxietyScore) desc, "
                 + "avg(i.depressionScore) desc");
         List<Object[]> listSAS = query.getResultList();
         em.close();

@@ -42,7 +42,6 @@ public class ImportDass21 {
         EntityManager em = JPAUtil.getEntityManager();
         em.getTransaction().begin();
 
-        Integer counter = 0;
         try ( BufferedReader br = new BufferedReader(new FileReader(folder))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -154,7 +153,8 @@ public class ImportDass21 {
         em.getTransaction().commit();
 
         //mergeInformationContext(em, listDass21);
-        mergeInformationContext(em);
+        //mergeInformationContext(em);
+        mergeInformationContextByStress(em);
 
         em.close();
     }
@@ -234,6 +234,81 @@ public class ImportDass21 {
         }
     }
 
+    private Map<Long, Long> fetchDistribution(List<Long> idsPerson) {
+        EntityManager em = JPAUtil.getEntityManager();
+        Query query = em.createQuery("SELECT i.stressStatus, i.stressScore, i.id FROM DepressionAnxietyScale i GROUP BY i.stressStatus, i.stressScore, i.id ORDER BY i.stressScore DESC");
+        List<Object[]> outputQuery = query.getResultList();
+
+        Double limitES = 0.0;
+        Double limitS = 0.0;
+        Double limitMo = 0.0;
+        Double limitMi = 0.0;
+
+        List<Long> esList = new ArrayList<>();
+        List<Long> sList = new ArrayList<>();
+        List<Long> moList = new ArrayList<>();
+        List<Long> miList = new ArrayList<>();
+
+        for (Object[] object : outputQuery) {
+            switch ((String) object[0]) {
+                case "Extremely Severe":
+                    limitES++;
+                    esList.add((Long) object[2]);
+                    break;
+                case "Severe":
+                    limitS++;
+                    sList.add((Long) object[2]);
+                    break;
+                case "Moderate":
+                    limitMo++;
+                    moList.add((Long) object[2]);
+                    break;
+                case "Mild":
+                    limitMi++;
+                    miList.add((Long) object[2]);
+                    break;
+            }
+        }
+
+        limitES = limitES / outputQuery.size();
+        limitS = limitS / outputQuery.size();
+        limitMo = limitMo / outputQuery.size();
+        limitMi = limitMi / outputQuery.size();
+
+        limitES = idsPerson.size() * limitES;
+        limitS = idsPerson.size() * limitS;
+        limitMo = idsPerson.size() * limitMo;
+        limitMi = idsPerson.size() * limitMi;
+
+        // colocar em um hashmap contando a quantidade de pessoas que ja passou e seu estado de stress
+        //pegar ao inves do estado de stress, o ID, para adicionar depois as demais informacoes
+        Integer counterEs = 0;
+        Integer counterS = 0;
+        Integer counterMo = 0;
+        Integer counterMi = 0;
+
+        Map<Long, Long> outputDictionary = new HashMap<>();
+        for (Long id : idsPerson) {
+            if (counterEs <= limitES.intValue()) {
+                System.out.println(em.find(DepressionAnxietyScale.class, esList.get(counterEs)).getStressStatus());
+                outputDictionary.put(id, esList.get(counterEs++));
+            } else if (counterS <= limitS.intValue()) {
+                System.out.println(em.find(DepressionAnxietyScale.class, sList.get(counterS)).getStressStatus());
+                outputDictionary.put(id, sList.get(counterS++));
+            } else if (counterMo <= limitMo.intValue()) {
+                System.out.println(em.find(DepressionAnxietyScale.class, moList.get(counterMo)).getStressStatus());
+                outputDictionary.put(id, moList.get(counterMo++));
+            } else {
+                System.out.println(em.find(DepressionAnxietyScale.class, miList.get(counterMi)).getStressStatus());
+                outputDictionary.put(id, miList.get(counterMi++));
+            }
+        }
+
+        em.close();
+
+        return outputDictionary;
+    }
+
     private void mergeInformationContext(EntityManager em) {
 
         List<DepressionAnxietyScale> listDass21 = fetchDass21List(em);
@@ -256,12 +331,56 @@ public class ImportDass21 {
                 do {
                     n = rand.nextInt(max);
                 } while (positionsGone.contains(n));
-                
+
                 dass = listDass21.get(n);
                 positionsGone.add(n);
             }
 
             Long idUser = idsUser.get(i);
+
+            Person p = this.personUtil.findPerson(idUser, Boolean.FALSE);
+            p.setAge(dass.getAge());
+
+            if (null != dass.getGender()) {
+                switch (dass.getGender()) {
+                    case 1:
+                        p.setGender("Male");
+                        break;
+                    case 2:
+                        p.setGender("Female");
+                        break;
+                    case 3:
+                        System.out.println("Other");
+                        p.setGender("Male");
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            p.setEducationalLevel(dass.getEducation());
+
+            em.merge(p);
+
+            dass.setPerson(p);
+            em.merge(dass);
+        }
+
+        em.getTransaction().commit();
+    }
+
+    private void mergeInformationContextByStress(EntityManager em) {
+
+        List<Long> idsUser = this.personUtil.fetchUserIdsBasedStress(em);
+        Map<Long, Long> dictionaryPersonDass = fetchDistribution(idsUser);
+        em.getTransaction().begin();
+
+        for (int i = 0; i < idsUser.size(); i++) {
+
+            Long idUser = idsUser.get(i);
+            Long idDass = dictionaryPersonDass.get(idUser);
+            DepressionAnxietyScale dass = em.find(DepressionAnxietyScale.class, idDass);
+            System.out.println(dass.getStressStatus());
 
             Person p = this.personUtil.findPerson(idUser, Boolean.FALSE);
             p.setAge(dass.getAge());

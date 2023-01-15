@@ -7,7 +7,9 @@ package br.unisinos.util;
 import br.unisinos.pojo.ApplicationCategory;
 import br.unisinos.pojo.Person;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
@@ -121,23 +123,72 @@ public class PersonUtil {
     }
 
     public List<Long> fetchUserIdsBasedStress(EntityManager em) {
-        Query query = em.createQuery("SELECT DISTINCT(i.person.id), AVG(i.stressLevel) "
-                + "FROM StressEMA i GROUP BY i.person.id ORDER BY AVG(i.stressLevel) DESC");
-        List<Object[]> outputList = query.getResultList();
-        List<Long> userIds = new ArrayList<>();
-        List<Long> userIdsOfficial = findPersonIdList();
-        
-        for (Object[] obj : outputList) {
-            userIds.add((Long) obj[0]);
+        Query query = em.createQuery("SELECT i.person.id, i.stressLevel FROM StressEMA i");
+        List<Object[]> queryOutput = query.getResultList();
+
+        List<Object[]> listCorrected = new ArrayList<>();
+        for (Object[] obj : queryOutput) {
+            Integer value = (Integer) obj[1];
+            if (value == 3) {
+                value = 5;
+            }
+            if (value == 2) {
+                value = 4;
+            }
+            if (value == 1) {
+                value = 3;
+            }
+            if (value == 4) {
+                value = 2;
+            }
+            if (value == 5) {
+                value = 1;
+            }
+            obj[1] = value;
+            listCorrected.add(obj);
         }
 
-        for (int i = 0; i < userIdsOfficial.size(); i++) {
-            if (!userIds.contains(userIdsOfficial.get(i))) {
-                userIds.add(userIdsOfficial.get(i));
+        Map<Long, Integer> totalStress = new HashMap<>();
+        Map<Long, Integer> totalResponses = new HashMap<>();
+        for (Object[] obj : listCorrected) {
+            Long idPerson = (Long) obj[0];
+            if (null == totalStress.get(idPerson)) {
+                totalStress.put(idPerson, 0);
+            }
+            if (null == totalResponses.get(idPerson)) {
+                totalResponses.put(idPerson, 0);
+            }
+
+            totalStress.put(idPerson, totalStress.get(idPerson) + (Integer) obj[1]);
+            totalResponses.put(idPerson, totalResponses.get(idPerson) + 1);
+        }
+
+        Map<Long, Double> stressAvg = new HashMap<>();
+        for (Map.Entry<Long, Integer> entry : totalStress.entrySet()) {
+            Long key = entry.getKey();
+            Integer val = entry.getValue();
+            Integer quantity = totalResponses.get(key);
+            stressAvg.put(key, (val / quantity.doubleValue()));
+        }
+
+        stressAvg = sortByValue(stressAvg);
+
+//        for (Map.Entry<Long, Double> entry : stressAvg.entrySet()) {
+//            Long key = entry.getKey();
+//            Double val = entry.getValue();
+//            System.out.println(key + ";" + val);
+//        }
+        List<Long> personIdListComplete = findPersonIdList();
+
+        List<Long> personIdList = new ArrayList(stressAvg.keySet());
+        Collections.reverse(personIdList);
+
+        for (Long id : personIdListComplete) {
+            if (!personIdList.contains(id)) {
+                personIdList.add(id);
             }
         }
-
-        return userIds;
+        return personIdList;
     }
 
     public Map<String, String> fetchAppCategory() {
@@ -177,5 +228,17 @@ public class PersonUtil {
         } finally {
             em.close();
         }
+    }
+
+    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+        List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
+        list.sort(Map.Entry.comparingByValue());
+
+        Map<K, V> result = new LinkedHashMap<>();
+        for (Map.Entry<K, V> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+
+        return result;
     }
 }

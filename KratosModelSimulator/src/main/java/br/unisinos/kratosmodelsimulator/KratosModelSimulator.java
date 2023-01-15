@@ -50,8 +50,8 @@ public class KratosModelSimulator {
 //            (new QuestionnaireSimulator()).fetchPeopleEligibleNomophobia();
 //            (new QuestionnaireSimulator()).fetchPeopleEligibleSAS();
 //Manhattan Distance
-//            (new GeneratePersonas()).generatePersonas();
-            (new NearestNeighborAnalysis()).calcularManhattan();;
+            (new GeneratePersonas()).generatePersonas();
+//            (new NearestNeighborAnalysis()).calcularManhattan();
         } catch (Exception e) {
             e.printStackTrace();
         }

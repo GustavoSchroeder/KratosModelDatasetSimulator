@@ -67,19 +67,14 @@ public class ContextGenerator {
         Map<String, List<Integer>> dictionarySleepHours = (Map<String, List<Integer>>) dictionariesSleep[0];
         Map<String, List<Integer>> dictionarySleepRate = (Map<String, List<Integer>>) dictionariesSleep[1];
 
-        List<ContextHistorySmartphoneUse> listContextHistory = new ArrayList<>();
-
-        Map<String, Map<Long, NomophobiaQuestionnaire>> nomophobiaMap = this.questionnaireSimulator.fetchNomophobia();
-        Map<Boolean, Map<Long, SmartphoneAddictionScale>> sasMap = this.questionnaireSimulator.fetchSAS();
+        //Map<String, Map<Long, NomophobiaQuestionnaire>> nomophobiaMap = this.questionnaireSimulator.fetchNomophobia();
+        //Map<Boolean, Map<Long, SmartphoneAddictionScale>> sasMap = this.questionnaireSimulator.fetchSAS();
 
         for (Person person : persons) {
             em.getTransaction().begin();
             Calendar cal = Calendar.getInstance();
 
             System.out.println(person.getId());
-            if (person.getId() == 1) {
-                System.out.println("");
-            }
 
             cal.add(Calendar.DAY_OF_MONTH, 1);
             cal.set(Calendar.HOUR_OF_DAY, 0);

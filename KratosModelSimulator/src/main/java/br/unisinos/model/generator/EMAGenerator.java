@@ -52,9 +52,8 @@ public class EMAGenerator {
             }
 
             if (null != moodEMA.getHappyOrNot()) {
-
+                dictionary.get(dayType).add(moodEMA.getHappyOrNot());
             }
-            dictionary.get(dayType).add(moodEMA.getHappyOrNot());
         }
 
         return dictionary;

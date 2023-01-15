@@ -281,7 +281,7 @@ public class ContextHistorySmartphoneUse implements Serializable {
         this.ambientLight = ambientLight;
     }
 
-    @Temporal(javax.persistence.TemporalType.DATE)
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     public Date getDateTime() {
         return dateTime;
     }
@@ -411,6 +411,7 @@ public class ContextHistorySmartphoneUse implements Serializable {
         this.knnPredictionRating = knnPredictionRating;
     }
 
+    @OneToOne
     public PersonaSmartphoneAddiction getKnnPredictionProfile() {
         return knnPredictionProfile;
     }
