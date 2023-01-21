@@ -75,12 +75,30 @@ public class ContextHistorySmartphoneUse implements Serializable {
     
     private String knnPrediction;
     private Double knnPredictionRating;
-    private PersonaSmartphoneAddiction knnPredictionProfile;
+    private Double knnDistance;
+    
+    private Double distanceAddicted;
+    private Double distanceNormal;
+    
+    private String suggestedIntervention;
 
     public ContextHistorySmartphoneUse() {
     }
 
-    public ContextHistorySmartphoneUse(Person person, Integer appMostUsedTimeInUse, String appCategoryTopUse, String applicationTopUse, Integer applicationUseTime, Integer minutesUnlocked, Integer minutesLocked, String deviceStatus, Double batteryLevel, String powerEvent, String screenStatus, Integer quantityNotifications, String categoryMaxNotifications, Integer categoryNotificationsNumb, Integer sleepHoursEMA, Integer sleepRateEMA, Integer stressLevelEMA, Integer moodEMA, String ambientLight, Date dateTime, String dayShift, String dayType, String place, Integer totalResultSAS, Boolean smartphoneAddicted, Integer totalResultNomophobia, String nomophobiaLevel, Integer stressScore, Integer anxietyScore, Integer depressionScore, String stressStatus, String anxietyStatus, String depressionStatus) {
+    public ContextHistorySmartphoneUse(Person person, 
+            Integer appMostUsedTimeInUse, String appCategoryTopUse, 
+            String applicationTopUse, Integer applicationUseTime, 
+            Integer minutesUnlocked, Integer minutesLocked, 
+            String deviceStatus, Double batteryLevel, String powerEvent, 
+            String screenStatus, Integer quantityNotifications, 
+            String categoryMaxNotifications, Integer categoryNotificationsNumb, 
+            Integer sleepHoursEMA, Integer sleepRateEMA, Integer stressLevelEMA,
+            Integer moodEMA, String ambientLight, Date dateTime, String dayShift, 
+            String dayType, String place, Integer totalResultSAS,
+            Boolean smartphoneAddicted, Integer totalResultNomophobia,
+            String nomophobiaLevel, Integer stressScore, Integer anxietyScore, 
+            Integer depressionScore, String stressStatus, String anxietyStatus, 
+            String depressionStatus) {
         this.person = person;
         this.appMostUsedTimeInUse = appMostUsedTimeInUse;
         this.appCategoryTopUse = appCategoryTopUse;
@@ -411,12 +429,35 @@ public class ContextHistorySmartphoneUse implements Serializable {
         this.knnPredictionRating = knnPredictionRating;
     }
 
-    @OneToOne
-    public PersonaSmartphoneAddiction getKnnPredictionProfile() {
-        return knnPredictionProfile;
+    public Double getKnnDistance() {
+        return knnDistance;
     }
 
-    public void setKnnPredictionProfile(PersonaSmartphoneAddiction knnPredictionProfile) {
-        this.knnPredictionProfile = knnPredictionProfile;
+    public void setKnnDistance(Double knnDistance) {
+        this.knnDistance = knnDistance;
+    }
+
+    public Double getDistanceAddicted() {
+        return distanceAddicted;
+    }
+
+    public void setDistanceAddicted(Double distanceAddicted) {
+        this.distanceAddicted = distanceAddicted;
+    }
+
+    public Double getDistanceNormal() {
+        return distanceNormal;
+    }
+
+    public void setDistanceNormal(Double distanceNormal) {
+        this.distanceNormal = distanceNormal;
+    }
+
+    public String getSuggestedIntervention() {
+        return suggestedIntervention;
+    }
+
+    public void setSuggestedIntervention(String suggestedIntervention) {
+        this.suggestedIntervention = suggestedIntervention;
     }
 }

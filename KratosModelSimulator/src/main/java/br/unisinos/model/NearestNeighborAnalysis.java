@@ -5,7 +5,10 @@ import br.unisinos.model.generator.GeneratePersonas;
 import br.unisinos.pojo.ContextHistorySmartphoneUse;
 import br.unisinos.pojo.PersonaSmartphoneAddiction;
 import br.unisinos.util.JPAUtil;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -13,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Random;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -31,18 +35,48 @@ public class NearestNeighborAnalysis {
     }
 
     public void calcularManhattan() {
-        Map<String, List<PersonaSmartphoneAddiction>> profiles = this.personasGenerator.fetchProfiles();
+        Map<String, List<PersonaSmartphoneAddiction>> profiles = null;
         List<ContextHistorySmartphoneUse> contextHistories = this.contextGenerator.fetchContextHistories();
 
         String distance = "";
         String finalCalc = "";
+        String personasInfo = "";
 
         Integer[] maxValues = fetchMaxValues();
 
         EntityManager em = JPAUtil.getEntityManager();
         em.getTransaction().begin();
 
+        Integer day = 0;
+        Integer dayOfMonth = 0;
+        List<ContextHistorySmartphoneUse> contextHistoryAcumulute = new ArrayList<>();
+        DecimalFormat df = new DecimalFormat("0.00");
+        
+        Integer counter = 0;
         for (ContextHistorySmartphoneUse contextHistory : contextHistories) {
+
+            System.out.println(counter++ + "/" + contextHistories.size());
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(contextHistory.getDateTime());
+            if (dayOfMonth == 0) {
+                dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+            }
+
+            if (cal.get(Calendar.DAY_OF_MONTH) != dayOfMonth) {
+                dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+                day++;
+                personasInfo += (new SimpleDateFormat("dd/MM/yyyy hh:mm:ss")).format(contextHistory.getDateTime()) + ";" + contextHistoryAcumulute.size() + ";" + this.personasGenerator.generatePersonas(contextHistoryAcumulute);
+                //System.out.println((new SimpleDateFormat("dd/MM/yyyy hh:mm:ss")).format(contextHistory.getDateTime()) + ";" + contextHistoryAcumulute.size());
+                //System.out.println("----------------------------");
+                profiles = this.personasGenerator.fetchProfiles();
+            }
+
+            contextHistoryAcumulute.add(contextHistory);
+
+            if (null == profiles) {
+                continue;
+            }
+
             Integer appMostUsedTimeInUse = contextHistory.getAppMostUsedTimeInUse();
             Integer applicationUseTime = contextHistory.getApplicationUseTime();
             Integer minutesUnlocked = contextHistory.getMinutesUnlocked();
@@ -64,11 +98,13 @@ public class NearestNeighborAnalysis {
 
             String keyAux = contextHistory.getPerson().getGender()
                     + ";" + contextHistory.getDayShift()
+                    + ";" + contextHistory.getDayType()
                     + ";" + this.personasGenerator.categorizeAge(contextHistory.getPerson().getAge());
 
             List<PersonaSmartphoneAddiction> personas = profiles.get(keyAux);
 
             Map<PersonaSmartphoneAddiction, Double> dictionary = new HashMap<>();
+            Map<PersonaSmartphoneAddiction, String> distances = new HashMap<>();
 
             for (PersonaSmartphoneAddiction persona : personas) {
                 Double appsMostUsedTimeDistance = calcDistanceBack(appMostUsedTimeInUse,
@@ -143,13 +179,34 @@ public class NearestNeighborAnalysis {
                 Double total = 0.0;
                 for (int i = 0; i < dist.length; i++) {
                     //System.out.println(distancia[i]);
-                    distance += dist[i] + ";";
+                    //distance += dist[i] + ";";
                     total += dist[i];
                 }
                 dictionary.put(persona, total);
+
+                String distAux = "";
+                for (int i = 0; i < dist.length; i++) {
+                    distAux += df.format(dist[i]);
+                    if ((i + 1) < dist.length) {
+                        distAux += "; ";
+                    }
+                }
+
+                distances.put(persona, distAux);
             }
 
             dictionary = sortByValue(dictionary);
+
+            for (Entry<PersonaSmartphoneAddiction, Double> entry : dictionary.entrySet()) {
+                PersonaSmartphoneAddiction key = entry.getKey();
+                Double value = entry.getValue();
+                if (key.getTypeUser().equalsIgnoreCase("Smartphone Addicted Behavior")) {
+                    contextHistory.setDistanceAddicted(value);
+                } else {
+                    contextHistory.setDistanceNormal(value);
+                }
+            }
+
             Map<PersonaSmartphoneAddiction, Double> output = analyzeTargetObj(dictionary);
             List<Map.Entry<PersonaSmartphoneAddiction, Double>> list = new ArrayList<>(output.entrySet());
             String max = "";
@@ -157,6 +214,13 @@ public class NearestNeighborAnalysis {
             for (Entry<PersonaSmartphoneAddiction, Double> entry : output.entrySet()) {
                 PersonaSmartphoneAddiction key = entry.getKey();
                 Double value = entry.getValue();
+
+                try {
+                    distance += distances.get(key) + "\n";
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
+
                 //finalCalc += (contextHistory.getId() + ";" + contextHistory.getDateTime() + ";" + contextHistory.getSmartphoneAddicted() + ";" + key.getTypeUser() + ";" + value + "\n");
                 if (trigger++ == 0) {
                     max = key.getTypeUser() + ";" + value.toString().replace(".", ",");
@@ -166,14 +230,24 @@ public class NearestNeighborAnalysis {
 //                            + ";" + key.getTypeUser() + ";" + ";" + value);
                     contextHistory.setKnnPrediction(key.getTypeUser());
                     contextHistory.setKnnPredictionRating(value);
-                    contextHistory.setKnnPredictionProfile(key);
-                    em.merge(contextHistory);
+
+                    if (key.getTypeUser().equalsIgnoreCase("Smartphone Addicted Behavior")) {
+                        contextHistory.setSuggestedIntervention(suggestIntervention(contextHistory));
+                    }
 
                     finalCalc += contextHistory.getId()
                             + ";" + contextHistory.getDateTime()
                             + ";" + contextHistory.getSmartphoneAddicted()
                             + ";" + key.getTypeUser() + ";" + ";" + value + "\n";
                 }
+
+                em.merge(contextHistory);
+
+                if (counter % 1000 == 0) {
+                    em.flush();
+                    em.clear();
+                }
+
 //                System.out.println(contextHistory.getId()
 //                        + ";" + contextHistory.getDateTime()
 //                        + ";" + contextHistory.getSmartphoneAddicted()
@@ -182,9 +256,66 @@ public class NearestNeighborAnalysis {
         }
         System.out.println("---------------------------");
         System.out.println(finalCalc);
+        System.out.println("---------------------------");
+        System.out.println(personasInfo);
+        System.out.println("---------------------------");
+        System.out.println(distance);
 
         em.getTransaction().commit();
         em.close();
+    }
+
+    private String suggestIntervention(ContextHistorySmartphoneUse context) {
+        //Preventive
+        // Mindfulness
+        // PhysicalExercises
+        // SleepProcedures
+        //Reactive
+        // AppDelay
+        // GreyScaleDisplay
+        // NotificationDisable
+        // SocialMediaDisabling
+
+        List<String> inverventions = new ArrayList<>();
+
+        if (context.getDayShift().equalsIgnoreCase("Night")) {
+            //Sleep Procedures
+            // Mindfulness
+            inverventions.add("Sleep Procedures");
+            inverventions.add("Mindfulness");
+        }
+
+        if (!context.getDayShift().equalsIgnoreCase("Night") && context.getDayType().equalsIgnoreCase("Weekend")) {
+            // PhysicalExercises
+            inverventions.add("Physical Exercises");
+        }
+
+        if (context.getDayShift().equalsIgnoreCase("Evening") && context.getDayType().equalsIgnoreCase("Weekday")) {
+            // PhysicalExercises
+            inverventions.add("Physical Exercises");
+        }
+
+        if (context.getCategoryNotificationsNumb() > 40) {
+            //NotificationDisable
+            inverventions.add("Notification Disable");
+        }
+
+        if (context.getApplicationTopUse().equalsIgnoreCase("Social")) {
+            //SocialMediaDisabling
+            inverventions.add("Social Media Disabling");
+        }
+
+        //AppDelay
+        inverventions.add("App Delay");
+
+        //GreyScaleDisplay
+        inverventions.add("Grey Scale Display");
+
+        Random rand = new Random();
+        Integer max = inverventions.size() - 1;
+
+        Integer n = rand.nextInt(max);
+        return inverventions.get(n);
     }
 
     private Double calcDistanceBack(Integer a, Integer b, Integer c) {
@@ -250,9 +381,9 @@ public class NearestNeighborAnalysis {
         }
 
         outputMap = sortByValue(outputMap);
-        for (Entry<PersonaSmartphoneAddiction, Double> entry : outputMap.entrySet()) {
-            PersonaSmartphoneAddiction key = entry.getKey();
-        }
+//        for (Entry<PersonaSmartphoneAddiction, Double> entry : outputMap.entrySet()) {
+//            PersonaSmartphoneAddiction key = entry.getKey();
+//        }
         //System.out.println(documento + out + number);
         return outputMap;
     }

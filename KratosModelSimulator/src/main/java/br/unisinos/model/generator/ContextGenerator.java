@@ -366,7 +366,7 @@ public class ContextGenerator {
 
     public List<ContextHistorySmartphoneUse> fetchContextHistories() {
         EntityManager em = JPAUtil.getEntityManager();
-        Query query = em.createQuery("SELECT i FROM ContextHistorySmartphoneUse i ORDER BY i.person.id, i.dateTime");
+        Query query = em.createQuery("SELECT i FROM ContextHistorySmartphoneUse i ORDER BY i.dateTime");
         try {
             return query.getResultList();
         } catch (Exception e) {
