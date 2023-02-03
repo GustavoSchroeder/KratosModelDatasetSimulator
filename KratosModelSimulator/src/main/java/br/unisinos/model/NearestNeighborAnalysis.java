@@ -34,6 +34,10 @@ public class NearestNeighborAnalysis {
         this.contextGenerator = new ContextGenerator();
     }
 
+    private Double normalize(double value, double min, double max) {
+        return ((value - min) / (max - min));
+    }
+
     public void calcularManhattan() {
         Map<String, List<PersonaSmartphoneAddiction>> profiles = null;
         List<ContextHistorySmartphoneUse> contextHistories = this.contextGenerator.fetchContextHistories();
@@ -42,8 +46,6 @@ public class NearestNeighborAnalysis {
         String finalCalc = "";
         String personasInfo = "";
 
-        Integer[] maxValues = fetchMaxValues();
-
         EntityManager em = JPAUtil.getEntityManager();
         em.getTransaction().begin();
 
@@ -51,10 +53,12 @@ public class NearestNeighborAnalysis {
         Integer dayOfMonth = 0;
         List<ContextHistorySmartphoneUse> contextHistoryAcumulute = new ArrayList<>();
         DecimalFormat df = new DecimalFormat("0.00");
-        
+
+        Double[] arrayMax = null;
+        Double[] arrayMin = null;
+
         Integer counter = 0;
         for (ContextHistorySmartphoneUse contextHistory : contextHistories) {
-
             System.out.println(counter++ + "/" + contextHistories.size());
             Calendar cal = Calendar.getInstance();
             cal.setTime(contextHistory.getDateTime());
@@ -65,10 +69,14 @@ public class NearestNeighborAnalysis {
             if (cal.get(Calendar.DAY_OF_MONTH) != dayOfMonth) {
                 dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
                 day++;
-                personasInfo += (new SimpleDateFormat("dd/MM/yyyy hh:mm:ss")).format(contextHistory.getDateTime()) + ";" + contextHistoryAcumulute.size() + ";" + this.personasGenerator.generatePersonas(contextHistoryAcumulute);
+                personasInfo += (new SimpleDateFormat("dd/MM/yyyy hh:mm:ss")).
+                        format(contextHistory.getDateTime()) + ";" + contextHistoryAcumulute.size() + ";" 
+                        + this.personasGenerator.generatePersonas(contextHistoryAcumulute);
                 //System.out.println((new SimpleDateFormat("dd/MM/yyyy hh:mm:ss")).format(contextHistory.getDateTime()) + ";" + contextHistoryAcumulute.size());
                 //System.out.println("----------------------------");
                 profiles = this.personasGenerator.fetchProfiles();
+                arrayMax = fetchMaxValues();
+                arrayMin = fetchMinValues();
             }
 
             contextHistoryAcumulute.add(contextHistory);
@@ -77,31 +85,67 @@ public class NearestNeighborAnalysis {
                 continue;
             }
 
-            Integer appMostUsedTimeInUse = contextHistory.getAppMostUsedTimeInUse();
-            Integer applicationUseTime = contextHistory.getApplicationUseTime();
-            Integer minutesUnlocked = contextHistory.getMinutesUnlocked();
-            Integer minutesLocked = contextHistory.getMinutesLocked();
+            Double appMostUsedTimeInUse = contextHistory.getAppMostUsedTimeInUse().doubleValue();
+            Double applicationUseTime = contextHistory.getApplicationUseTime().doubleValue();
+            Double minutesUnlocked = contextHistory.getMinutesUnlocked().doubleValue();
+            Double minutesLocked = contextHistory.getMinutesLocked().doubleValue();
             Double batteryLevel = contextHistory.getBatteryLevel();
             //powerEvent
-            Integer quantityNotifications = contextHistory.getQuantityNotifications();
-            Integer categoryNotificationsNumb = contextHistory.getCategoryNotificationsNumb();
+            Double quantityNotifications = contextHistory.getQuantityNotifications().doubleValue();
+            Double categoryNotificationsNumb = contextHistory.getCategoryNotificationsNumb().doubleValue();
             //mood
-            Integer sleepHoursEMA = contextHistory.getSleepHoursEMA();
-            Integer sleepRateEMA = contextHistory.getSleepRateEMA();
-            Integer stressLevelEMA = contextHistory.getStressLevelEMA();
-            Integer moodEMA = contextHistory.getMoodEMA();
+            Double sleepHoursEMA = contextHistory.getSleepHoursEMA().doubleValue();
+            Double sleepRateEMA = contextHistory.getSleepRateEMA().doubleValue();
+            Double stressLevelEMA = contextHistory.getStressLevelEMA().doubleValue();
+            Double moodEMA = contextHistory.getMoodEMA().doubleValue();
 
             //DASS21
-            Integer stressScore = contextHistory.getStressScore();
-            Integer anxietyScore = contextHistory.getAnxietyScore();
-            Integer depressionScore = contextHistory.getDepressionScore();
+            Double stressScore = contextHistory.getStressScore().doubleValue();
+            Double anxietyScore = contextHistory.getAnxietyScore().doubleValue();
+            Double depressionScore = contextHistory.getDepressionScore().doubleValue();
+
+            //Normalize Values
+            Integer counterIndex = 0;
+            anxietyScore = normalize(anxietyScore, arrayMin[counterIndex], arrayMax[counterIndex]);
+            counterIndex++;
+            appMostUsedTimeInUse = normalize(appMostUsedTimeInUse, arrayMin[counterIndex], arrayMax[counterIndex]);
+            counterIndex++;
+            applicationUseTime = normalize(applicationUseTime, arrayMin[counterIndex], arrayMax[counterIndex]);
+            counterIndex++;
+            batteryLevel = normalize(batteryLevel, arrayMin[counterIndex], arrayMax[counterIndex]);
+            counterIndex++;
+            categoryNotificationsNumb = normalize(categoryNotificationsNumb, arrayMin[counterIndex], arrayMax[counterIndex]);
+            counterIndex++;
+            depressionScore = normalize(depressionScore, arrayMin[counterIndex], arrayMax[counterIndex]);
+            counterIndex++;
+            minutesLocked = normalize(minutesLocked, arrayMin[counterIndex], arrayMax[counterIndex]);
+            counterIndex++;
+            minutesUnlocked = normalize(minutesUnlocked, arrayMin[counterIndex], arrayMax[counterIndex]);
+            counterIndex++;
+            moodEMA = normalize(moodEMA, arrayMin[counterIndex], arrayMax[counterIndex]);
+            counterIndex++;
+            quantityNotifications = normalize(quantityNotifications, arrayMin[counterIndex], arrayMax[counterIndex]);
+            counterIndex++;
+            sleepHoursEMA = normalize(sleepHoursEMA, arrayMin[counterIndex], arrayMax[counterIndex]);
+            counterIndex++;
+            sleepRateEMA = normalize(sleepRateEMA, arrayMin[counterIndex], arrayMax[counterIndex]);
+            counterIndex++;
+            stressLevelEMA = normalize(stressLevelEMA, arrayMin[counterIndex], arrayMax[counterIndex]);
+            counterIndex++;
+            stressScore = normalize(stressScore, arrayMin[counterIndex], arrayMax[counterIndex]);
 
             String keyAux = contextHistory.getPerson().getGender()
-                    + ";" + contextHistory.getDayShift()
+                    //+ ";" + contextHistory.getDayShift()
                     + ";" + contextHistory.getDayType()
                     + ";" + this.personasGenerator.categorizeAge(contextHistory.getPerson().getAge());
 
             List<PersonaSmartphoneAddiction> personas = profiles.get(keyAux);
+            if (null == personas) {
+                System.out.println(keyAux);
+                personas = this.personasGenerator.fetchPersonas(
+                        contextHistory.getPerson().getGender(),
+                        this.personasGenerator.categorizeAge(contextHistory.getPerson().getAge()));
+            }
 
             Map<PersonaSmartphoneAddiction, Double> dictionary = new HashMap<>();
             Map<PersonaSmartphoneAddiction, String> distances = new HashMap<>();
@@ -115,7 +159,7 @@ public class NearestNeighborAnalysis {
                         persona.getMinutesUnlocked(), persona.getMinutesUnlocked());
                 Double minutesLockedDistance = calcDistanceBack(minutesLocked,
                         persona.getMinutesLocked(), persona.getMinutesLocked());
-                Double batteryLevelDistance = calcDistanceBack(batteryLevel.intValue(),
+                Double batteryLevelDistance = calcDistanceBack(batteryLevel,
                         persona.getBatteryLevel(), persona.getBatteryLevel());
 
                 Double quantityNotificationsDistance = calcDistanceBack(quantityNotifications,
@@ -159,22 +203,36 @@ public class NearestNeighborAnalysis {
 //                        + sleepRateEMADistance + ";"
 //                        + stressLevelEMADistance + ";"
 //                        + stressScoreDistance);
-                Integer counterIndex = 0;
+//                Double[] dist = {
+//                    anxietyScoreDistance / maxValues[counterIndex++],
+//                    applicationUseTimeDistance / maxValues[counterIndex++],
+//                    appsMostUsedTimeDistance / maxValues[counterIndex++],
+//                    batteryLevelDistance / maxValues[counterIndex++],
+//                    categoryNotificationsNumbDistance / maxValues[counterIndex++],
+//                    depressionScoreDistance / maxValues[counterIndex++],
+//                    minutesLockedDistance / maxValues[counterIndex++],
+//                    minutesUnlockedDistance / maxValues[counterIndex++],
+//                    //moodEMADistance / maxValues[counterIndex++],
+//                    quantityNotificationsDistance / maxValues[counterIndex++],
+//                    sleepHoursEMADistance / maxValues[counterIndex++],
+//                    //sleepRateEMADistance / maxValues[counterIndex++],
+//                    //stressLevelEMADistance / maxValues[counterIndex++],
+//                    stressScoreDistance / maxValues[counterIndex++]};
                 Double[] dist = {
-                    anxietyScoreDistance / maxValues[counterIndex++],
-                    applicationUseTimeDistance / maxValues[counterIndex++],
-                    appsMostUsedTimeDistance / maxValues[counterIndex++],
-                    batteryLevelDistance / maxValues[counterIndex++],
-                    categoryNotificationsNumbDistance / maxValues[counterIndex++],
-                    depressionScoreDistance / maxValues[counterIndex++],
-                    minutesLockedDistance / maxValues[counterIndex++],
-                    minutesUnlockedDistance / maxValues[counterIndex++],
-                    moodEMADistance / maxValues[counterIndex++],
-                    quantityNotificationsDistance / maxValues[counterIndex++],
-                    sleepHoursEMADistance / maxValues[counterIndex++],
-                    sleepRateEMADistance / maxValues[counterIndex++],
-                    stressLevelEMADistance / maxValues[counterIndex++],
-                    stressScoreDistance / maxValues[counterIndex++]};
+                    anxietyScoreDistance,
+                    applicationUseTimeDistance,
+                    appsMostUsedTimeDistance,
+                    batteryLevelDistance,
+                    categoryNotificationsNumbDistance,
+                    depressionScoreDistance,
+                    minutesLockedDistance,
+                    minutesUnlockedDistance,
+                    moodEMADistance,
+                    quantityNotificationsDistance,
+                    sleepHoursEMADistance,
+                    sleepRateEMADistance,
+                    stressLevelEMADistance,
+                    stressScoreDistance};
 
                 Double total = 0.0;
                 for (int i = 0; i < dist.length; i++) {
@@ -318,7 +376,7 @@ public class NearestNeighborAnalysis {
         return inverventions.get(n);
     }
 
-    private Double calcDistanceBack(Integer a, Integer b, Integer c) {
+    private Double calcDistanceBack(Double a, Double b, Double c) {
         Double d;
         if (a > c) {
             d = a.doubleValue() - c;
@@ -396,7 +454,7 @@ public class NearestNeighborAnalysis {
         return output;
     }
 
-    private Integer[] fetchMaxValues() {
+    private Double[] fetchMaxValues() {
         EntityManager em = JPAUtil.getEntityManager();
         Query query = em.createQuery(
                 /*0*/"SELECT MAX(i.anxietyScore), "
@@ -412,19 +470,63 @@ public class NearestNeighborAnalysis {
                 /*10*/ + "MAX(i.sleepHoursEMA), "
                 /*11*/ + "MAX(i.sleepRateEMA), "
                 /*12*/ + "MAX(i.stressLevelEMA), "
-                /*13*/ + "MAX(i.stressScore) FROM ContextHistorySmartphoneUse i");
+                /*13*/ + "MAX(i.stressScore) "
+                + "FROM ContextHistorySmartphoneUse i");
         Object[] maxValues = (Object[]) query.getResultList().get(0);
         em.close();
-        Integer[] outputMaxValues = new Integer[maxValues.length];
+        Double[] outputMaxValues = new Double[maxValues.length];
         for (int i = 0; i < maxValues.length; i++) {
             if (maxValues[i] instanceof Double) {
-                outputMaxValues[i] = ((Double) maxValues[i]).intValue();
+                outputMaxValues[i] = ((Double) maxValues[i]);
             } else {
-                outputMaxValues[i] = ((Integer) maxValues[i]);
+                outputMaxValues[i] = ((Integer) maxValues[i]).doubleValue();
             }
-
         }
         return outputMaxValues;
+    }
+
+    private Double[] fetchMinValues() {
+        EntityManager em = JPAUtil.getEntityManager();
+        Query query = em.createQuery(
+                /*0*/"SELECT MIN(i.anxietyScore), "
+                /*1*/ + "MIN(i.appMostUsedTimeInUse), "
+                /*2*/ + "MIN(i.applicationUseTime), "
+                /*3*/ + "MIN(i.batteryLevel), "
+                /*4*/ + "MIN(i.categoryNotificationsNumb), "
+                /*5*/ + "MIN(i.depressionScore), "
+                /*6*/ + "MIN(i.minutesLocked), "
+                /*7*/ + "MIN(i.minutesUnlocked), "
+                /*8*/ + "MIN(i.moodEMA), "
+                /*9*/ + "MIN(i.quantityNotifications), "
+                /*10*/ + "MIN(i.sleepHoursEMA), "
+                /*11*/ + "MIN(i.sleepRateEMA), "
+                /*12*/ + "MIN(i.stressLevelEMA), "
+                /*13*/ + "MIN(i.stressScore) "
+                + "FROM ContextHistorySmartphoneUse i");
+        Object[] maxValues = (Object[]) query.getResultList().get(0);
+        em.close();
+        Double[] outputMaxValues = new Double[maxValues.length];
+        for (int i = 0; i < maxValues.length; i++) {
+            if (maxValues[i] instanceof Double) {
+                outputMaxValues[i] = ((Double) maxValues[i]);
+            } else {
+                outputMaxValues[i] = ((Integer) maxValues[i]).doubleValue();
+            }
+        }
+        return outputMaxValues;
+    }
+    
+    public void categorizeAge(){
+        List<ContextHistorySmartphoneUse> contextHistories = this.contextGenerator.fetchContextHistories();
+        
+        EntityManager em = JPAUtil.getEntityManager();
+        em.getTransaction().begin();
+        for (ContextHistorySmartphoneUse contextHistory : contextHistories) {
+            contextHistory.setAgeCategory(this.personasGenerator.categorizeAge(contextHistory.getPerson().getAge()));
+            em.merge(contextHistory);
+        }
+        em.getTransaction().commit();
+        em.close();
     }
 
 }

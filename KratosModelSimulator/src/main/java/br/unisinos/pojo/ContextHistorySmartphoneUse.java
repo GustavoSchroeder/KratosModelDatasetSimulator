@@ -81,6 +81,8 @@ public class ContextHistorySmartphoneUse implements Serializable {
     private Double distanceNormal;
     
     private String suggestedIntervention;
+    
+    private String ageCategory;
 
     public ContextHistorySmartphoneUse() {
     }
@@ -459,5 +461,13 @@ public class ContextHistorySmartphoneUse implements Serializable {
 
     public void setSuggestedIntervention(String suggestedIntervention) {
         this.suggestedIntervention = suggestedIntervention;
+    }
+
+    public String getAgeCategory() {
+        return ageCategory;
+    }
+
+    public void setAgeCategory(String ageCategory) {
+        this.ageCategory = ageCategory;
     }
 }

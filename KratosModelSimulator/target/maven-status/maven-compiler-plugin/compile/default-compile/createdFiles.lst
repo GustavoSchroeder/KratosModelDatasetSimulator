@@ -2,6 +2,7 @@ br/unisinos/model/ImportSASResponse.class
 br/unisinos/pojo/ContextInformation/PhoneLock.class
 br/unisinos/pojo/ContextInformation/Notification.class
 br/unisinos/pojo/BasicSmartphoneUseInformation.class
+br/unisinos/model/NearestNeighborAnalysis.class
 br/unisinos/model/generator/ContextGenerator.class
 br/unisinos/pojo/ContextInformation/ApplicationUse.class
 br/unisinos/model/ImportChargingActivity.class

@@ -2,8 +2,6 @@ package br.unisinos.pojo;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
@@ -21,25 +19,25 @@ public class PersonaSmartphoneAddiction implements Serializable {
     private String dayShift;
     private String dayType;
 
-    private Integer appMostUsedTimeInUse;
-    private Integer applicationUseTime;
-    private Integer minutesUnlocked;
-    private Integer minutesLocked;
-    private Integer batteryLevel;
+    private Double appMostUsedTimeInUse;
+    private Double applicationUseTime;
+    private Double minutesUnlocked;
+    private Double minutesLocked;
+    private Double batteryLevel;
     //powerEvent
-    private Integer quantityNotifications;
-    private Integer categoryNotificationsNumb;
+    private Double quantityNotifications;
+    private Double categoryNotificationsNumb;
 
     //mood
-    private Integer sleepHoursEMA;
-    private Integer sleepRateEMA;
-    private Integer stressLevelEMA;
-    private Integer moodEMA;
+    private Double sleepHoursEMA;
+    private Double sleepRateEMA;
+    private Double stressLevelEMA;
+    private Double moodEMA;
 
     //DASS21
-    private Integer stressScore;
-    private Integer anxietyScore;
-    private Integer depressionScore;
+    private Double stressScore;
+    private Double anxietyScore;
+    private Double depressionScore;
 
     @Id
     public String getId() {
@@ -49,7 +47,7 @@ public class PersonaSmartphoneAddiction implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
-    
+
     public String getTypeUser() {
         return typeUser;
     }
@@ -98,115 +96,115 @@ public class PersonaSmartphoneAddiction implements Serializable {
         this.dayType = dayType;
     }
 
-    public Integer getAppMostUsedTimeInUse() {
+    public Double getAppMostUsedTimeInUse() {
         return appMostUsedTimeInUse;
     }
 
-    public void setAppMostUsedTimeInUse(Integer appMostUsedTimeInUse) {
+    public void setAppMostUsedTimeInUse(Double appMostUsedTimeInUse) {
         this.appMostUsedTimeInUse = appMostUsedTimeInUse;
     }
 
-    public Integer getApplicationUseTime() {
+    public Double getApplicationUseTime() {
         return applicationUseTime;
     }
 
-    public void setApplicationUseTime(Integer applicationUseTime) {
+    public void setApplicationUseTime(Double applicationUseTime) {
         this.applicationUseTime = applicationUseTime;
     }
 
-    public Integer getMinutesUnlocked() {
+    public Double getMinutesUnlocked() {
         return minutesUnlocked;
     }
 
-    public void setMinutesUnlocked(Integer minutesUnlocked) {
+    public void setMinutesUnlocked(Double minutesUnlocked) {
         this.minutesUnlocked = minutesUnlocked;
     }
 
-    public Integer getMinutesLocked() {
+    public Double getMinutesLocked() {
         return minutesLocked;
     }
 
-    public void setMinutesLocked(Integer minutesLocked) {
+    public void setMinutesLocked(Double minutesLocked) {
         this.minutesLocked = minutesLocked;
     }
 
-    public Integer getBatteryLevel() {
+    public Double getBatteryLevel() {
         return batteryLevel;
     }
 
-    public void setBatteryLevel(Integer batteryLevel) {
+    public void setBatteryLevel(Double batteryLevel) {
         this.batteryLevel = batteryLevel;
     }
 
-    public Integer getQuantityNotifications() {
+    public Double getQuantityNotifications() {
         return quantityNotifications;
     }
 
-    public void setQuantityNotifications(Integer quantityNotifications) {
+    public void setQuantityNotifications(Double quantityNotifications) {
         this.quantityNotifications = quantityNotifications;
     }
 
-    public Integer getCategoryNotificationsNumb() {
+    public Double getCategoryNotificationsNumb() {
         return categoryNotificationsNumb;
     }
 
-    public void setCategoryNotificationsNumb(Integer categoryNotificationsNumb) {
+    public void setCategoryNotificationsNumb(Double categoryNotificationsNumb) {
         this.categoryNotificationsNumb = categoryNotificationsNumb;
     }
 
-    public Integer getSleepHoursEMA() {
+    public Double getSleepHoursEMA() {
         return sleepHoursEMA;
     }
 
-    public void setSleepHoursEMA(Integer sleepHoursEMA) {
+    public void setSleepHoursEMA(Double sleepHoursEMA) {
         this.sleepHoursEMA = sleepHoursEMA;
     }
 
-    public Integer getSleepRateEMA() {
+    public Double getSleepRateEMA() {
         return sleepRateEMA;
     }
 
-    public void setSleepRateEMA(Integer sleepRateEMA) {
+    public void setSleepRateEMA(Double sleepRateEMA) {
         this.sleepRateEMA = sleepRateEMA;
     }
 
-    public Integer getStressLevelEMA() {
+    public Double getStressLevelEMA() {
         return stressLevelEMA;
     }
 
-    public void setStressLevelEMA(Integer stressLevelEMA) {
+    public void setStressLevelEMA(Double stressLevelEMA) {
         this.stressLevelEMA = stressLevelEMA;
     }
 
-    public Integer getMoodEMA() {
+    public Double getMoodEMA() {
         return moodEMA;
     }
 
-    public void setMoodEMA(Integer moodEMA) {
+    public void setMoodEMA(Double moodEMA) {
         this.moodEMA = moodEMA;
     }
 
-    public Integer getStressScore() {
+    public Double getStressScore() {
         return stressScore;
     }
 
-    public void setStressScore(Integer stressScore) {
+    public void setStressScore(Double stressScore) {
         this.stressScore = stressScore;
     }
 
-    public Integer getAnxietyScore() {
+    public Double getAnxietyScore() {
         return anxietyScore;
     }
 
-    public void setAnxietyScore(Integer anxietyScore) {
+    public void setAnxietyScore(Double anxietyScore) {
         this.anxietyScore = anxietyScore;
     }
 
-    public Integer getDepressionScore() {
+    public Double getDepressionScore() {
         return depressionScore;
     }
 
-    public void setDepressionScore(Integer depressionScore) {
+    public void setDepressionScore(Double depressionScore) {
         this.depressionScore = depressionScore;
     }
 }

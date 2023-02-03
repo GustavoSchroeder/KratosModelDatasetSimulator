@@ -8,6 +8,7 @@ import br.unisinos.pojo.ContextHistorySmartphoneUse;
 import br.unisinos.pojo.PersonaSmartphoneAddiction;
 import br.unisinos.util.JPAUtil;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +32,7 @@ public class GeneratePersonas {
         Set<String> dayType = new HashSet<>();
         Set<String> ageCategory = new HashSet<>();
 
-        Map<Boolean, Map<String, Map<String, Map<String, Map<String, List<ContextHistorySmartphoneUse>>>>>> map = new HashMap<>();
+        Map<Boolean, Map<String, Map<String, Map<String, List<ContextHistorySmartphoneUse>>>>> map = new HashMap<>();
 
         for (ContextHistorySmartphoneUse context : listContext) {
             String ageCat = categorizeAge(context.getPerson().getAge());
@@ -55,37 +56,24 @@ public class GeneratePersonas {
 
             if (null == map.get(context.getSmartphoneAddicted())
                     .get(context.getPerson().getGender())
-                    .get(context.getDayShift())) {
-                map.get(context.getSmartphoneAddicted())
-                        .get(context.getPerson().getGender())
-                        .put(context.getDayShift(), new HashMap<>());
-            }
-
-            if (null == map.get(context.getSmartphoneAddicted())
-                    .get(context.getPerson().getGender())
-                    .get(context.getDayShift())
                     .get(context.getDayType())) {
                 map.get(context.getSmartphoneAddicted())
                         .get(context.getPerson().getGender())
-                        .get(context.getDayShift())
                         .put(context.getDayType(), new HashMap<>());
             }
 
             if (null == map.get(context.getSmartphoneAddicted())
                     .get(context.getPerson().getGender())
-                    .get(context.getDayShift())
                     .get(context.getDayType())
                     .get(ageCat)) {
                 map.get(context.getSmartphoneAddicted())
                         .get(context.getPerson().getGender())
-                        .get(context.getDayShift())
                         .get(context.getDayType())
                         .put(ageCat, new ArrayList<>());
             }
 
             map.get(context.getSmartphoneAddicted())
                     .get(context.getPerson().getGender())
-                    .get(context.getDayShift())
                     .get(context.getDayType())
                     .get(ageCat).add(context);
         }
@@ -93,115 +81,126 @@ public class GeneratePersonas {
         EntityManager em = JPAUtil.getEntityManager();
         em.getTransaction().begin();
 
+        Map<String, List<Double>> values = instantiateMap();
+
         for (Boolean addicted : typeUserList) {
             for (String gender : genderList) {
-                for (Integer education : educationLevelList) {
-                    for (String shift : dayShift) {
-                        for (String type : dayType) {
-                            for (String ageCat : ageCategory) {
-                                String id = addicted + ";" + gender + ";" + shift + ";" + type + ";" + ageCat;
+                for (String type : dayType) {
+                    for (String ageCat : ageCategory) {
+                        String id = addicted + ";" + gender + ";" + type + ";" + ageCat;
 
-                                PersonaSmartphoneAddiction p = new PersonaSmartphoneAddiction();
-                                p.setId(id);
-                                p.setTypeUser(addicted ? "Smartphone Addicted Behavior" : "Normal Behavior");
-                                p.setGender(gender);
-                                p.setAgeCategory(ageCat);
-                                //p.setEducationLevel(education);
-                                p.setDayShift(shift);
-                                p.setDayType(type);
+                        PersonaSmartphoneAddiction p = new PersonaSmartphoneAddiction();
+                        p.setId(id);
+                        p.setTypeUser(addicted ? "Smartphone Addicted Behavior" : "Normal Behavior");
+                        p.setGender(gender);
+                        p.setAgeCategory(ageCat);
+                        //p.setEducationLevel(education);
+                        //p.setDayShift(shift);
+                        p.setDayType(type);
 
-                                System.out.println(id);
+                        System.out.println(id);
 
-                                List<ContextHistorySmartphoneUse> contextList = null;
-                                try {
-                                    contextList = map.get(addicted)
-                                            .get(gender)
-                                            .get(shift)
-                                            .get(type)
-                                            .get(ageCat);
-                                } catch (Exception e) {
-                                    System.out.println("error-stop");
-                                }
-
-                                if (null == contextList) {
-                                    continue;
-                                }
-
-                                Integer appMostUsedTimeInUse = 0;
-                                Integer applicationUseTime = 0;
-                                Integer minutesUnlocked = 0;
-                                Integer minutesLocked = 0;
-                                Integer batteryLevel = 0;
-                                //powerEvent
-                                Integer quantityNotifications = 0;
-                                Integer categoryNotificationsNumb = 0;
-                                //mood
-                                Integer sleepHoursEMA = 0;
-                                Integer sleepRateEMA = 0;
-                                Integer stressLevelEMA = 0;
-                                Integer moodEMA = 0;
-                                //DASS21
-                                Integer stressScore = 0;
-                                Integer anxietyScore = 0;
-                                Integer depressionScore = 0;
-
-                                for (ContextHistorySmartphoneUse chs : contextList) {
-                                    appMostUsedTimeInUse += chs.getAppMostUsedTimeInUse();
-                                    applicationUseTime += chs.getApplicationUseTime();
-                                    minutesUnlocked += chs.getMinutesUnlocked();
-                                    minutesLocked += chs.getMinutesLocked();
-                                    batteryLevel += chs.getBatteryLevel().intValue();
-                                    quantityNotifications += chs.getQuantityNotifications();
-                                    categoryNotificationsNumb += chs.getCategoryNotificationsNumb();
-                                    sleepHoursEMA += chs.getSleepHoursEMA();
-                                    sleepRateEMA += chs.getSleepRateEMA();
-                                    stressLevelEMA += chs.getStressLevelEMA();
-                                    try {
-                                        moodEMA += chs.getMoodEMA();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                    try {
-                                        stressScore += chs.getStressScore();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                    anxietyScore += chs.getAnxietyScore();
-                                    depressionScore += chs.getDepressionScore();
-                                }
-
-                                appMostUsedTimeInUse = (int) appMostUsedTimeInUse / contextList.size();
-                                applicationUseTime = (int) applicationUseTime / contextList.size();
-                                minutesUnlocked = (int) minutesUnlocked / contextList.size();
-                                minutesLocked = (int) minutesLocked / contextList.size();
-                                batteryLevel = (int) batteryLevel / contextList.size();
-                                quantityNotifications = (int) quantityNotifications / contextList.size();
-                                categoryNotificationsNumb = (int) categoryNotificationsNumb / contextList.size();
-                                sleepHoursEMA = (int) sleepHoursEMA / contextList.size();
-                                sleepRateEMA = (int) sleepRateEMA / contextList.size();
-                                stressLevelEMA = (int) stressLevelEMA / contextList.size();
-                                moodEMA = (int) moodEMA / contextList.size();
-                                stressScore = (int) stressScore / contextList.size();
-                                anxietyScore = (int) anxietyScore / contextList.size();
-                                depressionScore = (int) depressionScore / contextList.size();
-
-                                p.setAppMostUsedTimeInUse(appMostUsedTimeInUse);
-                                p.setApplicationUseTime(applicationUseTime);
-                                p.setMinutesUnlocked(minutesUnlocked);
-                                p.setMinutesLocked(minutesLocked);
-                                p.setBatteryLevel(batteryLevel);
-                                p.setQuantityNotifications(quantityNotifications);
-                                p.setCategoryNotificationsNumb(categoryNotificationsNumb);
-                                p.setSleepHoursEMA(sleepHoursEMA);
-                                p.setSleepRateEMA(sleepRateEMA);
-                                p.setStressLevelEMA(stressLevelEMA);
-                                p.setMoodEMA(moodEMA);
-                                p.setStressScore(stressScore);
-                                p.setAnxietyScore(anxietyScore);
-                                p.setDepressionScore(depressionScore);
-                                em.merge(p);
-                            }
+                        List<ContextHistorySmartphoneUse> contextList = null;
+                        try {
+                            contextList = map.get(addicted)
+                                    .get(gender)
+                                    .get(type)
+                                    .get(ageCat);
+                        } catch (Exception e) {
+                            System.out.println("error-stop");
                         }
+
+                        if (null == contextList) {
+                            continue;
+                        }
+
+                        Double appMostUsedTimeInUse = 0.0;
+                        Double applicationUseTime = 0.0;
+                        Double minutesUnlocked = 0.0;
+                        Double minutesLocked = 0.0;
+                        Double batteryLevel = 0.0;
+                        //powerEvent
+                        Double quantityNotifications = 0.0;
+                        Double categoryNotificationsNumb = 0.0;
+                        //mood
+                        Double sleepHoursEMA = 0.0;
+                        Double sleepRateEMA = 0.0;
+                        Double stressLevelEMA = 0.0;
+                        Double moodEMA = 0.0;
+                        //DASS21
+                        Double stressScore = 0.0;
+                        Double anxietyScore = 0.0;
+                        Double depressionScore = 0.0;
+
+                        for (ContextHistorySmartphoneUse chs : contextList) {
+                            appMostUsedTimeInUse += chs.getAppMostUsedTimeInUse();
+                            values.get("appMostUsedTimeInUse").add(chs.getAppMostUsedTimeInUse().doubleValue());
+                            applicationUseTime += chs.getApplicationUseTime();
+                            values.get("applicationUseTime").add(chs.getApplicationUseTime().doubleValue());
+                            minutesUnlocked += chs.getMinutesUnlocked();
+                            values.get("minutesUnlocked").add(chs.getMinutesUnlocked().doubleValue());
+                            minutesLocked += chs.getMinutesLocked();
+                            values.get("minutesLocked").add(chs.getMinutesLocked().doubleValue());
+                            batteryLevel += chs.getBatteryLevel().intValue();
+                            values.get("batteryLevel").add(chs.getBatteryLevel());
+                            quantityNotifications += chs.getQuantityNotifications();
+                            values.get("quantityNotifications").add(chs.getQuantityNotifications().doubleValue());
+                            categoryNotificationsNumb += chs.getCategoryNotificationsNumb();
+                            values.get("categoryNotificationsNumb").add(chs.getCategoryNotificationsNumb().doubleValue());
+                            sleepHoursEMA += chs.getSleepHoursEMA();
+                            values.get("sleepHoursEMA").add(chs.getSleepHoursEMA().doubleValue());
+                            sleepRateEMA += chs.getSleepRateEMA();
+                            values.get("sleepRateEMA").add(chs.getSleepRateEMA().doubleValue());
+                            stressLevelEMA += chs.getStressLevelEMA();
+                            values.get("stressLevelEMA").add(chs.getStressLevelEMA().doubleValue());
+                            try {
+                                moodEMA += chs.getMoodEMA();
+                                values.get("moodEMA").add(chs.getMoodEMA().doubleValue());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                stressScore += chs.getStressScore();
+                                values.get("stressScore").add(chs.getStressScore().doubleValue());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            anxietyScore += chs.getAnxietyScore();
+                            values.get("anxietyScore").add(chs.getAnxietyScore().doubleValue());
+                            depressionScore += chs.getDepressionScore();
+                            values.get("depressionScore").add(chs.getDepressionScore().doubleValue());
+                        }
+
+                        appMostUsedTimeInUse = normalize(appMostUsedTimeInUse, fetchMinValue(values, "appMostUsedTimeInUse"), fetchMaxValue(values, "appMostUsedTimeInUse"));
+                        applicationUseTime = normalize(applicationUseTime, fetchMinValue(values, "applicationUseTime"), fetchMaxValue(values, "applicationUseTime"));
+                        minutesUnlocked = normalize(minutesUnlocked, fetchMinValue(values, "minutesUnlocked"), fetchMaxValue(values, "minutesUnlocked"));
+                        minutesLocked = normalize(minutesLocked, fetchMinValue(values, "minutesLocked"), fetchMaxValue(values, "minutesLocked"));
+                        batteryLevel = normalize(batteryLevel, fetchMinValue(values, "batteryLevel"), fetchMaxValue(values, "batteryLevel"));
+                        quantityNotifications = normalize(quantityNotifications, fetchMinValue(values, "quantityNotifications"), fetchMaxValue(values, "quantityNotifications"));
+                        categoryNotificationsNumb = normalize(categoryNotificationsNumb, fetchMinValue(values, "categoryNotificationsNumb"), fetchMaxValue(values, "categoryNotificationsNumb"));
+                        sleepHoursEMA = normalize(sleepHoursEMA, fetchMinValue(values, "sleepHoursEMA"), fetchMaxValue(values, "sleepHoursEMA"));
+                        sleepRateEMA = normalize(sleepRateEMA, fetchMinValue(values, "sleepRateEMA"), fetchMaxValue(values, "sleepRateEMA"));
+                        stressLevelEMA = normalize(stressLevelEMA, fetchMinValue(values, "stressLevelEMA"), fetchMaxValue(values, "stressLevelEMA"));
+                        moodEMA = normalize(moodEMA, fetchMinValue(values, "moodEMA"), fetchMaxValue(values, "moodEMA"));
+                        stressScore = normalize(stressScore, fetchMinValue(values, "stressScore"), fetchMaxValue(values, "stressScore"));
+                        anxietyScore = normalize(anxietyScore, fetchMinValue(values, "anxietyScore"), fetchMaxValue(values, "anxietyScore"));
+                        depressionScore = normalize(depressionScore, fetchMinValue(values, "depressionScore"), fetchMaxValue(values, "depressionScore"));
+
+                        p.setAppMostUsedTimeInUse(appMostUsedTimeInUse);
+                        p.setApplicationUseTime(applicationUseTime);
+                        p.setMinutesUnlocked(minutesUnlocked);
+                        p.setMinutesLocked(minutesLocked);
+                        p.setBatteryLevel(batteryLevel);
+                        p.setQuantityNotifications(quantityNotifications);
+                        p.setCategoryNotificationsNumb(categoryNotificationsNumb);
+                        p.setSleepHoursEMA(sleepHoursEMA);
+                        p.setSleepRateEMA(sleepRateEMA);
+                        p.setStressLevelEMA(stressLevelEMA);
+                        p.setMoodEMA(moodEMA);
+                        p.setStressScore(stressScore);
+                        p.setAnxietyScore(anxietyScore);
+                        p.setDepressionScore(depressionScore);
+                        em.merge(p);
                     }
                 }
             }
@@ -218,10 +217,10 @@ public class GeneratePersonas {
         Set<String> dayShift = new HashSet<>();
         Set<String> dayType = new HashSet<>();
         Set<String> ageCategory = new HashSet<>();
-        
+
         String output = "";
 
-        Map<Boolean, Map<String, Map<String, Map<String, Map<String, List<ContextHistorySmartphoneUse>>>>>> map = new HashMap<>();
+        Map<Boolean, Map<String, Map<String, Map<String, List<ContextHistorySmartphoneUse>>>>> map = new HashMap<>();
 
         for (ContextHistorySmartphoneUse context : listContext) {
             String ageCat = categorizeAge(context.getPerson().getAge());
@@ -245,174 +244,188 @@ public class GeneratePersonas {
 
             if (null == map.get(context.getSmartphoneAddicted())
                     .get(context.getPerson().getGender())
-                    .get(context.getDayShift())) {
-                map.get(context.getSmartphoneAddicted())
-                        .get(context.getPerson().getGender())
-                        .put(context.getDayShift(), new HashMap<>());
-            }
-
-            if (null == map.get(context.getSmartphoneAddicted())
-                    .get(context.getPerson().getGender())
-                    .get(context.getDayShift())
                     .get(context.getDayType())) {
                 map.get(context.getSmartphoneAddicted())
                         .get(context.getPerson().getGender())
-                        .get(context.getDayShift())
                         .put(context.getDayType(), new HashMap<>());
             }
 
             if (null == map.get(context.getSmartphoneAddicted())
                     .get(context.getPerson().getGender())
-                    .get(context.getDayShift())
                     .get(context.getDayType())
                     .get(ageCat)) {
                 map.get(context.getSmartphoneAddicted())
                         .get(context.getPerson().getGender())
-                        .get(context.getDayShift())
                         .get(context.getDayType())
                         .put(ageCat, new ArrayList<>());
             }
 
             map.get(context.getSmartphoneAddicted())
                     .get(context.getPerson().getGender())
-                    .get(context.getDayShift())
                     .get(context.getDayType())
                     .get(ageCat).add(context);
         }
 
+        deleteProfiles();
         EntityManager em = JPAUtil.getEntityManager();
         em.getTransaction().begin();
 
+        Map<String, List<Double>> values = instantiateMap();
+
         for (Boolean addicted : typeUserList) {
             for (String gender : genderList) {
-                for (Integer education : educationLevelList) {
-                    for (String shift : dayShift) {
-                        for (String type : dayType) {
-                            for (String ageCat : ageCategory) {
-                                String id = addicted + ";" + gender + ";" + shift + ";" + type + ";" + ageCat;
+                for (String type : dayType) {
+                    for (String ageCat : ageCategory) {
+                        //String id = addicted + ";" + gender + ";" + shift + ";" + type + ";" + ageCat;
+                        String id = addicted + ";" + gender + ";" + type + ";" + ageCat;
 
-                                PersonaSmartphoneAddiction p = new PersonaSmartphoneAddiction();
-                                p.setId(id);
-                                p.setTypeUser(addicted ? "Smartphone Addicted Behavior" : "Normal Behavior");
-                                p.setGender(gender);
-                                p.setAgeCategory(ageCat);
-                                //p.setEducationLevel(education);
-                                p.setDayShift(shift);
-                                p.setDayType(type);
+                        PersonaSmartphoneAddiction p = new PersonaSmartphoneAddiction();
+                        p.setId(id);
+                        p.setTypeUser(addicted ? "Smartphone Addicted Behavior" : "Normal Behavior");
+                        p.setGender(gender);
+                        p.setAgeCategory(ageCat);
+                        //p.setEducationLevel(education);
+                        //p.setDayShift(shift);
+                        p.setDayType(type);
 
-                                List<ContextHistorySmartphoneUse> contextList = null;
-                                try {
-                                    contextList = map.get(addicted)
-                                            .get(gender)
-                                            .get(shift)
-                                            .get(type)
-                                            .get(ageCat);
-                                } catch (Exception e) {
-                                    System.out.println("error-stop");
-                                }
-
-                                if (null == contextList) {
-                                    continue;
-                                }
-
-                                Integer appMostUsedTimeInUse = 0;
-                                Integer applicationUseTime = 0;
-                                Integer minutesUnlocked = 0;
-                                Integer minutesLocked = 0;
-                                Integer batteryLevel = 0;
-                                //powerEvent
-                                Integer quantityNotifications = 0;
-                                Integer categoryNotificationsNumb = 0;
-                                //mood
-                                Integer sleepHoursEMA = 0;
-                                Integer sleepRateEMA = 0;
-                                Integer stressLevelEMA = 0;
-                                Integer moodEMA = 0;
-                                //DASS21
-                                Integer stressScore = 0;
-                                Integer anxietyScore = 0;
-                                Integer depressionScore = 0;
-
-                                for (ContextHistorySmartphoneUse chs : contextList) {
-                                    appMostUsedTimeInUse += chs.getAppMostUsedTimeInUse();
-                                    applicationUseTime += chs.getApplicationUseTime();
-                                    minutesUnlocked += chs.getMinutesUnlocked();
-                                    minutesLocked += chs.getMinutesLocked();
-                                    batteryLevel += chs.getBatteryLevel().intValue();
-                                    quantityNotifications += chs.getQuantityNotifications();
-                                    categoryNotificationsNumb += chs.getCategoryNotificationsNumb();
-                                    sleepHoursEMA += chs.getSleepHoursEMA();
-                                    sleepRateEMA += chs.getSleepRateEMA();
-                                    stressLevelEMA += chs.getStressLevelEMA();
-                                    try {
-                                        moodEMA += chs.getMoodEMA();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                    try {
-                                        stressScore += chs.getStressScore();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                    anxietyScore += chs.getAnxietyScore();
-                                    depressionScore += chs.getDepressionScore();
-                                }
-
-                                appMostUsedTimeInUse = (int) appMostUsedTimeInUse / contextList.size();
-                                applicationUseTime = (int) applicationUseTime / contextList.size();
-                                minutesUnlocked = (int) minutesUnlocked / contextList.size();
-                                minutesLocked = (int) minutesLocked / contextList.size();
-                                batteryLevel = (int) batteryLevel / contextList.size();
-                                quantityNotifications = (int) quantityNotifications / contextList.size();
-                                categoryNotificationsNumb = (int) categoryNotificationsNumb / contextList.size();
-                                sleepHoursEMA = (int) sleepHoursEMA / contextList.size();
-                                sleepRateEMA = (int) sleepRateEMA / contextList.size();
-                                stressLevelEMA = (int) stressLevelEMA / contextList.size();
-                                moodEMA = (int) moodEMA / contextList.size();
-                                stressScore = (int) stressScore / contextList.size();
-                                anxietyScore = (int) anxietyScore / contextList.size();
-                                depressionScore = (int) depressionScore / contextList.size();
-
-                                p.setAppMostUsedTimeInUse(appMostUsedTimeInUse);
-                                p.setApplicationUseTime(applicationUseTime);
-                                p.setMinutesUnlocked(minutesUnlocked);
-                                p.setMinutesLocked(minutesLocked);
-                                p.setBatteryLevel(batteryLevel);
-                                p.setQuantityNotifications(quantityNotifications);
-                                p.setCategoryNotificationsNumb(categoryNotificationsNumb);
-                                p.setSleepHoursEMA(sleepHoursEMA);
-                                p.setSleepRateEMA(sleepRateEMA);
-                                p.setStressLevelEMA(stressLevelEMA);
-                                p.setMoodEMA(moodEMA);
-                                p.setStressScore(stressScore);
-                                p.setAnxietyScore(anxietyScore);
-                                p.setDepressionScore(depressionScore);
-                                em.merge(p);
-                                output += (id
-                                        + "," + appMostUsedTimeInUse
-                                        + "," + applicationUseTime
-                                        + "," + minutesUnlocked
-                                        + "," + minutesLocked
-                                        + "," + batteryLevel
-                                        + "," + quantityNotifications
-                                        + "," + categoryNotificationsNumb
-                                        + "," + sleepHoursEMA
-                                        + "," + sleepRateEMA
-                                        + "," + stressLevelEMA
-                                        + "," + moodEMA
-                                        + "," + stressScore
-                                        + "," + anxietyScore
-                                        + "," + depressionScore
-                                        + "\n"
-                                );
-                            }
+                        List<ContextHistorySmartphoneUse> contextList = null;
+                        try {
+                            contextList = map.get(addicted)
+                                    .get(gender)
+                                    //        .get(shift)
+                                    .get(type)
+                                    .get(ageCat);
+                        } catch (Exception e) {
+                            System.out.println("error-stop");
                         }
+
+                        if (null == contextList) {
+                            continue;
+                        }
+
+                        Double appMostUsedTimeInUse = 0.0;
+                        Double applicationUseTime = 0.0;
+                        Double minutesUnlocked = 0.0;
+                        Double minutesLocked = 0.0;
+                        Double batteryLevel = 0.0;
+                        //powerEvent
+                        Double quantityNotifications = 0.0;
+                        Double categoryNotificationsNumb = 0.0;
+                        //mood
+                        Double sleepHoursEMA = 0.0;
+                        Double sleepRateEMA = 0.0;
+                        Double stressLevelEMA = 0.0;
+                        Double moodEMA = 0.0;
+                        //DASS21
+                        Double stressScore = 0.0;
+                        Double anxietyScore = 0.0;
+                        Double depressionScore = 0.0;
+
+                        for (ContextHistorySmartphoneUse chs : contextList) {
+                            appMostUsedTimeInUse += chs.getAppMostUsedTimeInUse();
+                            values.get("appMostUsedTimeInUse").add(chs.getAppMostUsedTimeInUse().doubleValue());
+                            applicationUseTime += chs.getApplicationUseTime();
+                            values.get("applicationUseTime").add(chs.getApplicationUseTime().doubleValue());
+                            minutesUnlocked += chs.getMinutesUnlocked();
+                            values.get("minutesUnlocked").add(chs.getMinutesUnlocked().doubleValue());
+                            minutesLocked += chs.getMinutesLocked();
+                            values.get("minutesLocked").add(chs.getMinutesLocked().doubleValue());
+                            batteryLevel += chs.getBatteryLevel().intValue();
+                            values.get("batteryLevel").add(chs.getBatteryLevel());
+                            quantityNotifications += chs.getQuantityNotifications();
+                            values.get("quantityNotifications").add(chs.getQuantityNotifications().doubleValue());
+                            categoryNotificationsNumb += chs.getCategoryNotificationsNumb();
+                            values.get("categoryNotificationsNumb").add(chs.getCategoryNotificationsNumb().doubleValue());
+                            sleepHoursEMA += chs.getSleepHoursEMA();
+                            values.get("sleepHoursEMA").add(chs.getSleepHoursEMA().doubleValue());
+                            sleepRateEMA += chs.getSleepRateEMA();
+                            values.get("sleepRateEMA").add(chs.getSleepRateEMA().doubleValue());
+                            stressLevelEMA += chs.getStressLevelEMA();
+                            values.get("stressLevelEMA").add(chs.getStressLevelEMA().doubleValue());
+                            try {
+                                moodEMA += chs.getMoodEMA();
+                                values.get("moodEMA").add(chs.getMoodEMA().doubleValue());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                stressScore += chs.getStressScore();
+                                values.get("stressScore").add(chs.getStressScore().doubleValue());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            anxietyScore += chs.getAnxietyScore();
+                            values.get("anxietyScore").add(chs.getAnxietyScore().doubleValue());
+                            depressionScore += chs.getDepressionScore();
+                            values.get("depressionScore").add(chs.getDepressionScore().doubleValue());
+                        }
+
+                        appMostUsedTimeInUse = appMostUsedTimeInUse / contextList.size();
+                        applicationUseTime = applicationUseTime / contextList.size();
+                        minutesUnlocked = minutesUnlocked / contextList.size();
+                        minutesLocked = minutesLocked / contextList.size();
+                        batteryLevel = batteryLevel / contextList.size();
+                        quantityNotifications = quantityNotifications / contextList.size();
+                        categoryNotificationsNumb = categoryNotificationsNumb / contextList.size();
+                        sleepHoursEMA = sleepHoursEMA / contextList.size();
+                        sleepRateEMA = sleepRateEMA / contextList.size();
+                        stressLevelEMA = stressLevelEMA / contextList.size();
+                        moodEMA = moodEMA / contextList.size();
+                        stressScore = stressScore / contextList.size();
+                        anxietyScore = anxietyScore / contextList.size();
+                        depressionScore = depressionScore / contextList.size();
+
+                        appMostUsedTimeInUse = normalize(appMostUsedTimeInUse, fetchMinValue(values, "appMostUsedTimeInUse"), fetchMaxValue(values, "appMostUsedTimeInUse"));
+                        applicationUseTime = normalize(applicationUseTime, fetchMinValue(values, "applicationUseTime"), fetchMaxValue(values, "applicationUseTime"));
+                        minutesUnlocked = normalize(minutesUnlocked, fetchMinValue(values, "minutesUnlocked"), fetchMaxValue(values, "minutesUnlocked"));
+                        minutesLocked = normalize(minutesLocked, fetchMinValue(values, "minutesLocked"), fetchMaxValue(values, "minutesLocked"));
+                        batteryLevel = normalize(batteryLevel, fetchMinValue(values, "batteryLevel"), fetchMaxValue(values, "batteryLevel"));
+                        quantityNotifications = normalize(quantityNotifications, fetchMinValue(values, "quantityNotifications"), fetchMaxValue(values, "quantityNotifications"));
+                        categoryNotificationsNumb = normalize(categoryNotificationsNumb, fetchMinValue(values, "categoryNotificationsNumb"), fetchMaxValue(values, "categoryNotificationsNumb"));
+                        sleepHoursEMA = normalize(sleepHoursEMA, fetchMinValue(values, "sleepHoursEMA"), fetchMaxValue(values, "sleepHoursEMA"));
+                        sleepRateEMA = normalize(sleepRateEMA, fetchMinValue(values, "sleepRateEMA"), fetchMaxValue(values, "sleepRateEMA"));
+                        stressLevelEMA = normalize(stressLevelEMA, fetchMinValue(values, "stressLevelEMA"), fetchMaxValue(values, "stressLevelEMA"));
+                        moodEMA = normalize(moodEMA, fetchMinValue(values, "moodEMA"), fetchMaxValue(values, "moodEMA"));
+                        stressScore = normalize(stressScore, fetchMinValue(values, "stressScore"), fetchMaxValue(values, "stressScore"));
+                        anxietyScore = normalize(anxietyScore, fetchMinValue(values, "anxietyScore"), fetchMaxValue(values, "anxietyScore"));
+                        depressionScore = normalize(depressionScore, fetchMinValue(values, "depressionScore"), fetchMaxValue(values, "depressionScore"));
+
+                        p.setAppMostUsedTimeInUse(appMostUsedTimeInUse);
+                        p.setApplicationUseTime(applicationUseTime);
+                        p.setMinutesUnlocked(minutesUnlocked);
+                        p.setMinutesLocked(minutesLocked);
+                        p.setBatteryLevel(batteryLevel);
+                        p.setQuantityNotifications(quantityNotifications);
+                        p.setCategoryNotificationsNumb(categoryNotificationsNumb);
+                        p.setSleepHoursEMA(sleepHoursEMA);
+                        p.setSleepRateEMA(sleepRateEMA);
+                        p.setStressLevelEMA(stressLevelEMA);
+                        p.setMoodEMA(moodEMA);
+                        p.setStressScore(stressScore);
+                        p.setAnxietyScore(anxietyScore);
+                        p.setDepressionScore(depressionScore);
+                        em.merge(p);
+                        output += (id
+                                + "," + appMostUsedTimeInUse
+                                + "," + applicationUseTime
+                                + "," + minutesUnlocked
+                                + "," + minutesLocked
+                                + "," + batteryLevel
+                                + "," + quantityNotifications
+                                + "," + categoryNotificationsNumb
+                                + "," + sleepHoursEMA
+                                + "," + sleepRateEMA
+                                + "," + stressLevelEMA
+                                + "," + moodEMA
+                                + "," + stressScore
+                                + "," + anxietyScore
+                                + "," + depressionScore
+                                + "\n");
                     }
                 }
             }
         }
 
-        deleteProfiles();
         em.getTransaction().commit();
         em.close();
         return output;
@@ -452,7 +465,7 @@ public class GeneratePersonas {
         Map<String, List<PersonaSmartphoneAddiction>> dictionary = new HashMap<>();
         for (PersonaSmartphoneAddiction persona : personas) {
             String key = persona.getGender()
-                    + ";" + persona.getDayShift()
+                    //+ ";" + persona.getDayShift()
                     + ";" + persona.getDayType()
                     + ";" + persona.getAgeCategory();
 
@@ -471,12 +484,71 @@ public class GeneratePersonas {
 
         try {
             em.getTransaction().begin();
-            Query query = em.createQuery("DELETE FROM ApplicationUse m");
+            Query query = em.createQuery("DELETE FROM PersonaSmartphoneAddiction m");
             query.executeUpdate();
             em.getTransaction().commit();
         } catch (Exception e) {
         } finally {
             em.close();
         }
+    }
+
+    public List<PersonaSmartphoneAddiction> fetchPersonas(String gender, String ageCategory) {
+        EntityManager em = JPAUtil.getEntityManager();
+        Query query = em.createQuery("SELECT i FROM PersonaSmartphoneAddiction i WHERE i.gender = :gender and i.ageCategory = :ageCategory");
+        query.setParameter("gender", gender);
+        query.setParameter("ageCategory", ageCategory);
+        try {
+            return query.getResultList();
+        } catch (Exception e) {
+            return new ArrayList<>();
+        } finally {
+            em.close();
+        }
+    }
+
+    private Map<String, List<Double>> instantiateMap() {
+        Map<String, List<Double>> values = new HashMap<>();
+
+        values.put("appMostUsedTimeInUse", new ArrayList<>());
+        values.put("applicationUseTime", new ArrayList<>());
+        values.put("minutesUnlocked", new ArrayList<>());
+        values.put("minutesLocked", new ArrayList<>());
+        values.put("batteryLevel", new ArrayList<>());
+        values.put("quantityNotifications", new ArrayList<>());
+        values.put("categoryNotificationsNumb", new ArrayList<>());
+        values.put("sleepHoursEMA", new ArrayList<>());
+        values.put("sleepRateEMA", new ArrayList<>());
+        values.put("stressLevelEMA", new ArrayList<>());
+        values.put("moodEMA", new ArrayList<>());
+        values.put("stressScore", new ArrayList<>());
+        values.put("anxietyScore", new ArrayList<>());
+        values.put("depressionScore", new ArrayList<>());
+
+        return values;
+    }
+
+    private Double fetchMaxValue(Map<String, List<Double>> mapValues, String key) {
+        List<Double> values = mapValues.get(key);
+        Collections.sort(values);
+        Collections.reverse(values);
+        return values.get(0);
+    }
+
+    private Double fetchMinValue(Map<String, List<Double>> mapValues, String key) {
+        List<Double> values = mapValues.get(key);
+        Collections.sort(values);
+        return values.get(0);
+    }
+
+    private Double normalize(double value, double min, double max) {
+        Double output = ((value - min) / (max - min));
+
+        if (output.isNaN()) {
+            System.out.println("stop");
+            output = 0.0;
+        }
+
+        return output;
     }
 }
