@@ -59,7 +59,7 @@ public class NearestNeighborAnalysis {
 
         Integer counter = 0;
         for (ContextHistorySmartphoneUse contextHistory : contextHistories) {
-            System.out.println(counter++ + "/" + contextHistories.size());
+            //System.out.println(counter++ + "/" + contextHistories.size());
             Calendar cal = Calendar.getInstance();
             cal.setTime(contextHistory.getDateTime());
             if (dayOfMonth == 0) {

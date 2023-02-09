@@ -9,8 +9,6 @@ import br.unisinos.pojo.ContextInformation.ApplicationUse;
 import br.unisinos.pojo.ContextInformation.Notification;
 import br.unisinos.pojo.Person;
 import br.unisinos.pojo.Scales.DepressionAnxietyScale;
-import br.unisinos.pojo.Scales.NomophobiaQuestionnaire;
-import br.unisinos.pojo.Scales.SmartphoneAddictionScale;
 import br.unisinos.util.JPAUtil;
 import br.unisinos.util.PersonUtil;
 import br.unisinos.util.TimeUtil;
