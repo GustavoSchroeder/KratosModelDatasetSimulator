@@ -320,6 +320,8 @@ public class GeneratePersonas {
                         Double stressScore = 0.0;
                         Double anxietyScore = 0.0;
                         Double depressionScore = 0.0;
+                        
+                        Double nomophobia = 0.0;
 
                         for (ContextHistorySmartphoneUse chs : contextList) {
                             appMostUsedTimeInUse += chs.getAppMostUsedTimeInUse();
@@ -358,6 +360,10 @@ public class GeneratePersonas {
                             values.get("anxietyScore").add(chs.getAnxietyScore().doubleValue());
                             depressionScore += chs.getDepressionScore();
                             values.get("depressionScore").add(chs.getDepressionScore().doubleValue());
+                            
+                            
+                            nomophobia += chs.getTotalResultNomophobia();
+                            values.get("nomophobia").add(chs.getTotalResultNomophobia().doubleValue());
                         }
 
                         appMostUsedTimeInUse = appMostUsedTimeInUse / contextList.size();
@@ -374,6 +380,7 @@ public class GeneratePersonas {
                         stressScore = stressScore / contextList.size();
                         anxietyScore = anxietyScore / contextList.size();
                         depressionScore = depressionScore / contextList.size();
+                        nomophobia = nomophobia / contextList.size();
 
                         appMostUsedTimeInUse = normalize(appMostUsedTimeInUse, fetchMinValue(values, "appMostUsedTimeInUse"), fetchMaxValue(values, "appMostUsedTimeInUse"));
                         applicationUseTime = normalize(applicationUseTime, fetchMinValue(values, "applicationUseTime"), fetchMaxValue(values, "applicationUseTime"));
@@ -389,6 +396,7 @@ public class GeneratePersonas {
                         stressScore = normalize(stressScore, fetchMinValue(values, "stressScore"), fetchMaxValue(values, "stressScore"));
                         anxietyScore = normalize(anxietyScore, fetchMinValue(values, "anxietyScore"), fetchMaxValue(values, "anxietyScore"));
                         depressionScore = normalize(depressionScore, fetchMinValue(values, "depressionScore"), fetchMaxValue(values, "depressionScore"));
+                        nomophobia = normalize(nomophobia, fetchMinValue(values, "nomophobia"), fetchMaxValue(values, "nomophobia"));
 
                         p.setAppMostUsedTimeInUse(appMostUsedTimeInUse);
                         p.setApplicationUseTime(applicationUseTime);
@@ -404,6 +412,8 @@ public class GeneratePersonas {
                         p.setStressScore(stressScore);
                         p.setAnxietyScore(anxietyScore);
                         p.setDepressionScore(depressionScore);
+                        p.setNomophobiaRate(nomophobia);
+                        
                         em.merge(p);
                         output += (id
                                 + "," + appMostUsedTimeInUse
@@ -524,6 +534,7 @@ public class GeneratePersonas {
         values.put("stressScore", new ArrayList<>());
         values.put("anxietyScore", new ArrayList<>());
         values.put("depressionScore", new ArrayList<>());
+        values.put("nomophobia", new ArrayList<>());
 
         return values;
     }

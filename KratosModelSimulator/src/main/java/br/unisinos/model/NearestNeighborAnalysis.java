@@ -70,7 +70,7 @@ public class NearestNeighborAnalysis {
                 dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
                 day++;
                 personasInfo += (new SimpleDateFormat("dd/MM/yyyy hh:mm:ss")).
-                        format(contextHistory.getDateTime()) + ";" + contextHistoryAcumulute.size() + ";" 
+                        format(contextHistory.getDateTime()) + ";" + contextHistoryAcumulute.size() + ";"
                         + this.personasGenerator.generatePersonas(contextHistoryAcumulute);
                 //System.out.println((new SimpleDateFormat("dd/MM/yyyy hh:mm:ss")).format(contextHistory.getDateTime()) + ";" + contextHistoryAcumulute.size());
                 //System.out.println("----------------------------");
@@ -104,6 +104,8 @@ public class NearestNeighborAnalysis {
             Double anxietyScore = contextHistory.getAnxietyScore().doubleValue();
             Double depressionScore = contextHistory.getDepressionScore().doubleValue();
 
+            Double nomophobia = contextHistory.getTotalResultNomophobia().doubleValue();
+
             //Normalize Values
             Integer counterIndex = 0;
             anxietyScore = normalize(anxietyScore, arrayMin[counterIndex], arrayMax[counterIndex]);
@@ -133,6 +135,8 @@ public class NearestNeighborAnalysis {
             stressLevelEMA = normalize(stressLevelEMA, arrayMin[counterIndex], arrayMax[counterIndex]);
             counterIndex++;
             stressScore = normalize(stressScore, arrayMin[counterIndex], arrayMax[counterIndex]);
+            counterIndex++;
+            nomophobia = normalize(nomophobia, arrayMin[counterIndex], arrayMax[counterIndex]);
 
             String keyAux = contextHistory.getPerson().getGender()
                     //+ ";" + contextHistory.getDayShift()
@@ -189,50 +193,25 @@ public class NearestNeighborAnalysis {
                 Double depressionScoreDistance = calcDistanceBack(depressionScore,
                         persona.getDepressionScore(), persona.getDepressionScore());
 
-//                System.out.println(anxietyScoreDistance + ";"
-//                        + applicationUseTimeDistance + ";"
-//                        + appsMostUsedTimeDistance + ";"
-//                        + batteryLevelDistance + ";"
-//                        + categoryNotificationsNumbDistance + ";"
-//                        + depressionScoreDistance + ";"
-//                        + minutesLockedDistance + ";"
-//                        + minutesUnlockedDistance + ";"
-//                        + moodEMADistance + ";"
-//                        + quantityNotificationsDistance + ";"
-//                        + sleepHoursEMADistance + ";"
-//                        + sleepRateEMADistance + ";"
-//                        + stressLevelEMADistance + ";"
-//                        + stressScoreDistance);
-//                Double[] dist = {
-//                    anxietyScoreDistance / maxValues[counterIndex++],
-//                    applicationUseTimeDistance / maxValues[counterIndex++],
-//                    appsMostUsedTimeDistance / maxValues[counterIndex++],
-//                    batteryLevelDistance / maxValues[counterIndex++],
-//                    categoryNotificationsNumbDistance / maxValues[counterIndex++],
-//                    depressionScoreDistance / maxValues[counterIndex++],
-//                    minutesLockedDistance / maxValues[counterIndex++],
-//                    minutesUnlockedDistance / maxValues[counterIndex++],
-//                    //moodEMADistance / maxValues[counterIndex++],
-//                    quantityNotificationsDistance / maxValues[counterIndex++],
-//                    sleepHoursEMADistance / maxValues[counterIndex++],
-//                    //sleepRateEMADistance / maxValues[counterIndex++],
-//                    //stressLevelEMADistance / maxValues[counterIndex++],
-//                    stressScoreDistance / maxValues[counterIndex++]};
+                Double nomophobiaScoreDistance = calcDistanceBack(nomophobia,
+                        persona.getNomophobiaRate(), persona.getNomophobiaRate());
+
                 Double[] dist = {
-                    anxietyScoreDistance,
-                    applicationUseTimeDistance,
-                    appsMostUsedTimeDistance,
-                    batteryLevelDistance,
-                    categoryNotificationsNumbDistance,
-                    depressionScoreDistance,
-                    minutesLockedDistance,
-                    minutesUnlockedDistance,
-                    moodEMADistance,
-                    quantityNotificationsDistance,
-                    sleepHoursEMADistance,
-                    sleepRateEMADistance,
-                    stressLevelEMADistance,
-                    stressScoreDistance};
+                    anxietyScoreDistance, //12
+                    applicationUseTimeDistance, //5
+                    appsMostUsedTimeDistance, //7
+                    batteryLevelDistance, //15
+                    categoryNotificationsNumbDistance, //10
+                    depressionScoreDistance, //3
+                    minutesLockedDistance, //8
+                    minutesUnlockedDistance, //6
+                    moodEMADistance, //14
+                    quantityNotificationsDistance, //1
+                    //sleepHoursEMADistance,
+                    //sleepRateEMADistance,
+                    stressLevelEMADistance, //16
+                    stressScoreDistance, //4
+                    nomophobiaScoreDistance}; //2
 
                 Double total = 0.0;
                 for (int i = 0; i < dist.length; i++) {
@@ -470,7 +449,8 @@ public class NearestNeighborAnalysis {
                 /*10*/ + "MAX(i.sleepHoursEMA), "
                 /*11*/ + "MAX(i.sleepRateEMA), "
                 /*12*/ + "MAX(i.stressLevelEMA), "
-                /*13*/ + "MAX(i.stressScore) "
+                /*13*/ + "MAX(i.stressScore), "
+                /*14*/ + "MAX(i.totalResultNomophobia) "
                 + "FROM ContextHistorySmartphoneUse i");
         Object[] maxValues = (Object[]) query.getResultList().get(0);
         em.close();
@@ -501,7 +481,8 @@ public class NearestNeighborAnalysis {
                 /*10*/ + "MIN(i.sleepHoursEMA), "
                 /*11*/ + "MIN(i.sleepRateEMA), "
                 /*12*/ + "MIN(i.stressLevelEMA), "
-                /*13*/ + "MIN(i.stressScore) "
+                /*13*/ + "MIN(i.stressScore), "
+                /*14*/ + "MIN(i.totalResultNomophobia) "
                 + "FROM ContextHistorySmartphoneUse i");
         Object[] maxValues = (Object[]) query.getResultList().get(0);
         em.close();
@@ -515,10 +496,10 @@ public class NearestNeighborAnalysis {
         }
         return outputMaxValues;
     }
-    
-    public void categorizeAge(){
+
+    public void categorizeAge() {
         List<ContextHistorySmartphoneUse> contextHistories = this.contextGenerator.fetchContextHistories();
-        
+
         EntityManager em = JPAUtil.getEntityManager();
         em.getTransaction().begin();
         for (ContextHistorySmartphoneUse contextHistory : contextHistories) {

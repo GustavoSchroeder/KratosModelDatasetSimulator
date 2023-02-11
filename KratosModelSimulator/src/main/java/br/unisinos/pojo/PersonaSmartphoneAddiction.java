@@ -38,6 +38,8 @@ public class PersonaSmartphoneAddiction implements Serializable {
     private Double stressScore;
     private Double anxietyScore;
     private Double depressionScore;
+    
+    private Double nomophobiaRate;
 
     @Id
     public String getId() {
@@ -206,5 +208,13 @@ public class PersonaSmartphoneAddiction implements Serializable {
 
     public void setDepressionScore(Double depressionScore) {
         this.depressionScore = depressionScore;
+    }
+
+    public Double getNomophobiaRate() {
+        return nomophobiaRate;
+    }
+
+    public void setNomophobiaRate(Double nomophobiaRate) {
+        this.nomophobiaRate = nomophobiaRate;
     }
 }
