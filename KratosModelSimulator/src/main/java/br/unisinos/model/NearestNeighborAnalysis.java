@@ -302,8 +302,8 @@ public class NearestNeighborAnalysis {
         em.close();
     }
 
-    private String suggestIntervention(ContextHistorySmartphoneUse context) {
-        //Preventive
+    
+     //Preventive
         // Mindfulness
         // PhysicalExercises
         // SleepProcedures
@@ -312,6 +312,8 @@ public class NearestNeighborAnalysis {
         // GreyScaleDisplay
         // NotificationDisable
         // SocialMediaDisabling
+    private String suggestIntervention(ContextHistorySmartphoneUse context) {
+       
 
         List<String> inverventions = new ArrayList<>();
 
