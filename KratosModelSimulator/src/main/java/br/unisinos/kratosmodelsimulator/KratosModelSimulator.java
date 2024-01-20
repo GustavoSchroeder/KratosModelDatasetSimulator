@@ -46,13 +46,13 @@ public class KratosModelSimulator {
 //            (new ImportNotification()).importFiles();
 
 //Context Generation
-//            (new ContextGenerator()).generateContext();
+            (new ContextGenerator()).generateContext();
 //            (new QuestionnaireSimulator()).fetchPeopleEligibleNomophobia();
 //            (new QuestionnaireSimulator()).fetchPeopleEligibleSAS();
 //Manhattan Distance
-  //          (new GeneratePersonas()).generatePersonas();
-            (new NearestNeighborAnalysis()).calcularManhattan();
-            (new NearestNeighborAnalysis()).categorizeAge();
+//          (new GeneratePersonas()).generatePersonas();
+//            (new NearestNeighborAnalysis()).calcularManhattan();
+//            (new NearestNeighborAnalysis()).categorizeAge();
         } catch (Exception e) {
             e.printStackTrace();
         }

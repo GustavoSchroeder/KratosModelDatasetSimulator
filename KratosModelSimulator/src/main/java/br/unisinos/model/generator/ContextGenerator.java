@@ -54,10 +54,10 @@ public class ContextGenerator {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         List<Person> persons = this.personUtil.fetchPersons();
 
-        EntityManager em = JPAUtil.getEntityManager();
+        //EntityManager em = JPAUtil.getEntityManager();
 
         //printHeader();
-        deleteContextBase();
+        //deleteContextBase();
 
         Map<String, List<Integer>> dictionaryMoodEMA = this.emaGenerator.createDictionaryMood();
         Map<String, List<Integer>> dictionaryStress = this.emaGenerator.createDictionaryStress();
@@ -69,7 +69,7 @@ public class ContextGenerator {
         //Map<Boolean, Map<Long, SmartphoneAddictionScale>> sasMap = this.questionnaireSimulator.fetchSAS();
 
         for (Person person : persons) {
-            em.getTransaction().begin();
+            //em.getTransaction().begin();
             Calendar cal = Calendar.getInstance();
 
             System.out.println(person.getId());
@@ -250,20 +250,20 @@ public class ContextGenerator {
                     ch.setScreenStatus(null);
                     ch.setPlace(null);
 
-                    //printSb(arrayObj);
+                    printSb(arrayObj);
                     //persistir no banco
                     // ordernar maiores utilizadores de smartphone
-                    em.merge(ch);
+                    //em.merge(ch);
 
                     cal.add(Calendar.HOUR_OF_DAY, 1);
                     batteryLevelControl = batteryLevel.doubleValue();
                 }
             }
             System.out.println(person.getId());
-            em.getTransaction().commit();
+            //em.getTransaction().commit();
         }
 
-        em.close();
+        //em.close();
     }
 
     private void printHeader() {
